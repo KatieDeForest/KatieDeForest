@@ -72,8 +72,9 @@ function toggleDarkMode() {
     container
     :style="{
       transition: 'background-color 0.35s, color 0.35s',
-      backgroundColor: darkMode ? '#222' : '#fff',
-      color: darkMode ? '#fff' : '#222'
+      backgroundColor: darkMode ? 'rgba(34,34,34,0.2)' : 'rgba(255,255,255,0.2)',
+      color: darkMode ? '#fff' : '#222',
+      backdropFilter: 'blur(2px)',
     }"
   >
       <MDBNavbarToggler

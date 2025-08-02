@@ -3,20 +3,17 @@
 const props = defineProps({
   title: { type: String, default: 'Welcome to the Forest' },
   subtitle: { type: String, default: 'Discover the beauty of nature' },
-  background: { type: String, default: 'banner.jpg' },
+  background: { type: String, default: 'frontpagebanner.jpg' },
 });
 
 
 </script>
 
 <template>
-  <section class="hero-banner d-flex flex-column justify-content-center align-items-center text-center">
-    <img
-      v-if="props.background"
-      :src="`/Images/${props.background}`"
-      alt="Hero background"
-      class="hero-bg-img"
-    />
+  <section
+    class="hero-banner d-flex flex-column justify-content-center align-items-center text-center"
+    :style="props.background ? { backgroundImage: `linear-gradient(rgba(34,34,34,0.3),rgba(34,34,34,0.3)), url('/images/${props.background}')`,
+    backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' } : {}">
     <h1 class="hero-title mb-2">{{ title }}</h1>
     <p class="hero-subtitle mb-4">{{ subtitle }}</p>
     <slot />
@@ -24,26 +21,14 @@ const props = defineProps({
 </template>
 
 <style scoped>
-.hero-banner {
+ .hero-banner {
   min-height: 60vh;
   width: 100%;
-  padding: 3rem 1rem;
+  padding: 0 1rem;
   color: #fff;
   position: relative;
-  background: #222;
   transition: background 0.4s;
   overflow: hidden;
-}
-.hero-bg-img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  opacity: 0.7;
-  pointer-events: none;
 }
 .hero-title {
   font-size: 2.8rem;
