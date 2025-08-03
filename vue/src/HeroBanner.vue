@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+// HeroBanner component logic: handles props for title, subtitle, and background image
 const props = defineProps({
   title: { type: String, default: 'Welcome to the Forest' },
   subtitle: { type: String, default: 'Discover the beauty of nature' },
@@ -10,6 +11,7 @@ const props = defineProps({
 </script>
 
 <template>
+<!-- Hero banner section with background image, title, subtitle, and slot -->
   <section
     class="hero-banner d-flex flex-column justify-content-center align-items-center text-center"
     :style="props.background ? { backgroundImage: `linear-gradient(rgba(34,34,34,0.3),rgba(34,34,34,0.3)), url('/images/${props.background}')`,
@@ -21,8 +23,9 @@ const props = defineProps({
 </template>
 
 <style scoped>
+/* HeroBanner component styles: layout, colors, transitions */
  .hero-banner {
-  min-height: 60vh;
+  min-height: 100vh;
   width: 100%;
   padding: 0 1rem;
   color: #fff;
