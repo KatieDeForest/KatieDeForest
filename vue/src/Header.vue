@@ -47,7 +47,6 @@ const dropdown3 = ref(false);
       fontSize: '1.5em',
       padding: '0.5em 0',
       boxShadow: '0 6px 32px rgba(0,0,0,0.5)',
-      position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
