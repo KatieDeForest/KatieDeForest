@@ -5,7 +5,6 @@ import {
   MDBNavbar,
   MDBNavbarToggler,
   MDBNavbarBrand,
-// Header component logic: navigation, branding, dropdowns
   MDBNavbarNav,
   MDBNavbarItem,
   MDBCollapse,
@@ -34,29 +33,6 @@ const brandFontStyle = computed(() => ({
 const collapse1 = ref(false);
 const dropdown3 = ref(false);
 
-// Header visibility state
-const showHeader = ref(true);
-let lastScrollY = 0;
-
-function handleScroll() {
-  const currentY = window.scrollY;
-  if (currentY <= 0) {
-    showHeader.value = true;
-  } else if (currentY > lastScrollY && currentY > 80) {
-    showHeader.value = false;
-  } else if (currentY < lastScrollY) {
-    showHeader.value = true;
-  }
-  lastScrollY = currentY;
-}
-
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-});
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
-
 </script>
 
 <template>
@@ -65,7 +41,7 @@ onUnmounted(() => {
     bg="dark"
     container
     :style="{
-      transition: 'background-color 0.35s, color 0.35s, transform 0.4s',
+      transition: 'background-color 0.35s, color 0.35s',
       backgroundColor: '#111',
       color: '#fff',
       fontSize: '1.5em',
@@ -75,9 +51,7 @@ onUnmounted(() => {
       top: 0,
       left: 0,
       right: 0,
-      zIndex: 2000,
-      transform: showHeader ? 'translateY(0)' : 'translateY(-110%)',
-      pointerEvents: showHeader ? 'auto' : 'none'
+      zIndex: 2000
     }"
   >
       <MDBNavbarToggler

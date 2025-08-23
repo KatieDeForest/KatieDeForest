@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // App component logic: imports and sets up main layout
+import GalleryShortcut from './GalleryShortcut.vue';
 import Header from './Header.vue';
 import HeroBanner from './HeroBanner.vue';
 </script>
@@ -8,6 +9,7 @@ import HeroBanner from './HeroBanner.vue';
 <!-- Main app structure: header, hero banner, and main content -->
   <Header />
   <HeroBanner />
+  <GalleryShortcut />
 </template>
 
 <style scoped>
