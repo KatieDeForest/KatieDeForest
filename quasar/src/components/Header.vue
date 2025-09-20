@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  MDBBtn,
   MDBIcon,
   MDBNavbar,
   MDBNavbarToggler,
@@ -13,7 +12,7 @@ import {
   MDBDropdownMenu,
   MDBDropdownItem
 } from 'mdb-vue-ui-kit';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed} from 'vue';
 
 // Brand style (static, dark-mode friendly) with green glow
 const brandFontStyle = computed(() => ({

@@ -1,15 +1,26 @@
 
-<script lang="ts">
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-</script>
-
+<!-- Quasar version: Remove Material UI imports -->
 
 <template>
+  <div class="row q-col-gutter-md">
+    <div
+      v-for="item in items"
+      :key="item.id"
+      class="col-12 col-md-6 col-lg-3"
+    >
+      <q-card :style="{ background: item.color }" class="gallery-shortcut">
+        <q-card-section>
+          <div class="text-h6">{{ item.title }}</div>
+          <div class="text-subtitle2">{{ item.description }}</div>
+        </q-card-section>
+        <!-- Optionally add an image or button here -->
+      </q-card>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
+// Quasar components are auto-imported if using Quasar CLI
 import { reactive } from 'vue';
 
 const items = reactive([
