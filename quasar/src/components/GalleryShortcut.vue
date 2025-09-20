@@ -2,19 +2,27 @@
 <!-- Quasar version: Remove Material UI imports -->
 
 <template>
-  <div class="row q-col-gutter-md">
+  <div class="gallery-shortcut-page">
     <div
-      v-for="item in items"
+      v-for="(item, idx) in items"
       :key="item.id"
-      class="col-12 col-md-6 col-lg-3"
+      class="gallery-row artistic"
+      :class="{ 'reverse': idx % 2 === 1 }"
     >
-      <q-card :style="{ background: item.color }" class="gallery-shortcut">
-        <q-card-section>
-          <div class="text-h6">{{ item.title }}</div>
-          <div class="text-subtitle2">{{ item.description }}</div>
-        </q-card-section>
-        <!-- Optionally add an image or button here -->
-      </q-card>
+      <div class="gallery-card">
+        <div class="gallery-image">
+          <q-img
+            src="/src/assets/frontpagebanner.jpg"
+            spinner-color="white"
+            :ratio="16/9"
+            class="image-placeholder"
+          />
+        </div>
+        <div class="gallery-text">
+          <div class="text-h3">{{ item.title }}</div>
+          <div class="text-body1">{{ item.description }}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -32,14 +40,98 @@ const items = reactive([
 </script>
 
 <style scoped>
-.gallery-shortcut { background-color: #111; }
-.image-placeholder {
-	width: 100%;
-	height: 260px;
-	background-size: cover;
-	background-position: center;
+
+.gallery-shortcut-page {
+  width: 100vw;
+  padding: 48px 0 0 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #c24d4d; /* matches herobanner bg-dark */
 }
-@media (min-width: 992px) {
-	.image-placeholder { height: 320px; }
+.gallery-row.artistic {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 64px;
+}
+.gallery-row.artistic.reverse .gallery-card {
+  flex-direction: row-reverse;
+}
+
+.gallery-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 1100px;
+  width: 80vw;
+  min-height: 220px;
+  box-shadow: 0 4px 32px 0 rgba(138, 138, 138, 0.517);
+  border-radius: 22px;
+  overflow: visible;
+  background: none;
+  margin: 0 0 32px 0;
+}
+.gallery-image {
+  flex: 1 1 48%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.gallery-text {
+  flex: 1 1 52%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 56px;
+  color: #fff;
+  min-width: 0;
+  font-family: 'Montserrat', 'Roboto', sans-serif;
+  font-size: 1.7rem;
+  background: none;
+  box-shadow: none;
+}
+.gallery-text .text-h3 {
+  font-size: 2.7rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.gallery-text .text-body1 {
+  font-size: 1.45rem;
+  font-weight: 400;
+  opacity: 0.94;
+}
+.image-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.12);
+}
+@media (max-width: 900px) {
+  .gallery-card {
+    flex-direction: column;
+    max-width: 98vw;
+    min-height: 140px;
+  }
+  .gallery-image, .gallery-text {
+    padding: 16px;
+    min-height: 100px;
+  }
+  .image-placeholder {
+    aspect-ratio: 16/9;
+  }
+  .gallery-text {
+    font-size: 1.2rem;
+    padding: 18px 12px;
+  }
+  .gallery-text .text-h3 {
+    font-size: 1.5rem;
+  }
+  .gallery-text .text-body1 {
+    font-size: 1.1rem;
+  }
 }
 </style>
