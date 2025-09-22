@@ -48,7 +48,7 @@ const items = reactive([
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #c24d4d; /* matches herobanner bg-dark */
+  background: #9a9292;
 }
 .gallery-row.artistic {
   width: 100%;
@@ -67,10 +67,10 @@ const items = reactive([
   max-width: 1100px;
   width: 80vw;
   min-height: 220px;
-  box-shadow: 0 4px 32px 0 rgba(138, 138, 138, 0.517);
+  background: #232222;
+  box-shadow: 0 4px 32px 0 rgba(224, 73, 73, 0.517);
   border-radius: 22px;
   overflow: visible;
-  background: none;
   margin: 0 0 32px 0;
 }
 .gallery-image {
