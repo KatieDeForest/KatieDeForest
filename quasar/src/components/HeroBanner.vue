@@ -79,16 +79,16 @@ function positionFor(index: number) {
   </section>
 </template>
 
-<style scoped>
-/* Component-local styles only; uses utility classes where possible. */
+<style lang="scss" scoped>
+@import '../css/quasar.variables.scss';
 .hero {
-  /* small visual breathing room; header spacing is handled by marginTop */
   padding-top: 0rem;
+  background: $primary;
 }
 .slides-inner {
   max-width: 1500px;
   perspective: 1000px;
-  overflow: show; /* prevent transformed slides from creating page horizontal scroll */
+  overflow: show;
 }
 .slide {
   position: absolute;

@@ -2,13 +2,13 @@
 import 'mdb-vue-ui-kit/css/mdb.min.css';
 // App component logic: imports and sets up main layout
 import GalleryShortcut from './components/GalleryShortcut.vue';
-import Header from './components/Header.vue';
+import SiteHeader from './components/SiteHeader.vue';
 import HeroBanner from './components/HeroBanner.vue';
 </script>
 
 <template>
 <!-- Main app structure: header, hero banner, and main content -->
-  <Header />
+  <SiteHeader />
   <HeroBanner />
   <GalleryShortcut />
 </template>

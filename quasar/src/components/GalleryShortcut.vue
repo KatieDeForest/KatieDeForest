@@ -1,6 +1,3 @@
-
-<!-- Quasar version: Remove Material UI imports -->
-
 <template>
   <div class="gallery-shortcut-page">
     <div
@@ -28,7 +25,6 @@
 </template>
 
 <script setup lang="ts">
-// Quasar components are auto-imported if using Quasar CLI
 import { reactive } from 'vue';
 
 const items = reactive([
@@ -39,7 +35,8 @@ const items = reactive([
 ]);
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '../css/quasar.variables.scss';
 
 .gallery-shortcut-page {
   width: 100vw;
@@ -48,7 +45,7 @@ const items = reactive([
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #9a9292;
+  background: $primary;
 }
 .gallery-row.artistic {
   width: 100%;
@@ -59,33 +56,33 @@ const items = reactive([
 .gallery-row.artistic.reverse .gallery-card {
   flex-direction: row-reverse;
 }
-
 .gallery-card {
   display: flex;
   flex-direction: row;
   align-items: center;
-  max-width: 1100px;
-  width: 80vw;
-  min-height: 220px;
+  width: 70%;
+  min-height: 320px;
   background: #232222;
-  box-shadow: 0 4px 32px 0 rgba(224, 73, 73, 0.517);
-  border-radius: 22px;
+  box-shadow: 0 8px 40px 0 rgba(224, 73, 73, 0.517);
+  border-radius: 32px;
   overflow: visible;
   margin: 0 0 32px 0;
+  padding: 40px 48px;
 }
 .gallery-image {
-  flex: 1 1 48%;
+  flex: 1 1 40%;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
+  padding: 16px;
 }
 .gallery-text {
-  flex: 1 1 52%;
+  flex: 1 1 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 48px 56px;
+  padding: 16px 24px;
   color: #fff;
   min-width: 0;
   font-family: 'Montserrat', 'Roboto', sans-serif;
@@ -104,28 +101,31 @@ const items = reactive([
   opacity: 0.94;
 }
 .image-placeholder {
-  width: 100%;
+  width: 90%;
   aspect-ratio: 16/9;
   object-fit: cover;
   border-radius: 16px;
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.12);
+  margin: auto;
 }
 @media (max-width: 900px) {
   .gallery-card {
     flex-direction: column;
     max-width: 98vw;
-    min-height: 140px;
+    min-height: 180px;
+    padding: 16px 8px;
   }
   .gallery-image, .gallery-text {
-    padding: 16px;
+    padding: 8px;
     min-height: 100px;
   }
   .image-placeholder {
+    width: 98%;
     aspect-ratio: 16/9;
   }
   .gallery-text {
     font-size: 1.2rem;
-    padding: 18px 12px;
+    padding: 12px 8px;
   }
   .gallery-text .text-h3 {
     font-size: 1.5rem;
