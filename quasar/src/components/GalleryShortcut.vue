@@ -10,7 +10,6 @@
         <div class="gallery-image">
           <q-img
             src="/src/assets/frontpagebanner.jpg"
-            spinner-color="white"
             :ratio="16/9"
             class="image-placeholder"
           />
@@ -28,10 +27,10 @@
 import { reactive } from 'vue';
 
 const items = reactive([
-	{ id: 1, title: 'Featured Album', description: 'A short intro to the first gallery section.', color: 'linear-gradient(135deg,#2d6a4f,#134e4a)' },
-	{ id: 2, title: 'Nature Collection', description: 'A short intro to the second gallery section.', color: 'linear-gradient(135deg,#1b4332,#0f5132)' },
-	{ id: 3, title: 'Urban Scenes', description: 'A short intro to the third gallery section.', color: 'linear-gradient(135deg,#40916c,#265b48)' },
-	{ id: 4, title: 'Studio Works', description: 'A short intro to the fourth gallery section.', color: 'linear-gradient(135deg,#52b788,#2f8a63)' }
+  { id: 1, title: 'Featured Album', description: 'A short intro to the first gallery section.' },
+  { id: 2, title: 'Nature Collection', description: 'A short intro to the second gallery section.' },
+  { id: 3, title: 'Urban Scenes', description: 'A short intro to the third gallery section.' },
+  { id: 4, title: 'Studio Works', description: 'A short intro to the fourth gallery section.' }
 ]);
 </script>
 
@@ -57,13 +56,13 @@ const items = reactive([
   flex-direction: row-reverse;
 }
 .gallery-card {
-  display: flex;
+  display: flex; 
   flex-direction: row;
   align-items: center;
   width: 70%;
   min-height: 320px;
-  background: #232222;
-  box-shadow: 0 8px 40px 0 rgba(224, 73, 73, 0.517);
+  background: #ffffff; 
+  box-shadow: 0 8px 40px 0 rgb(211, 209, 209);
   border-radius: 32px;
   overflow: visible;
   margin: 0 0 32px 0;
@@ -87,8 +86,6 @@ const items = reactive([
   min-width: 0;
   font-family: 'Montserrat', 'Roboto', sans-serif;
   font-size: 1.7rem;
-  background: none;
-  box-shadow: none;
 }
 .gallery-text .text-h3 {
   font-size: 2.7rem;

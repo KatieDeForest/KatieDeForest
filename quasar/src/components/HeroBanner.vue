@@ -51,7 +51,7 @@ function positionFor(index: number) {
 </script>
 
 <template>
-  <section class="hero bg-dark d-flex align-items-center justify-content-center">
+  <section class="hero d-flex align-items-center justify-content-center">
     <div class="slides w-100 d-flex align-items-center justify-content-center">
   <div class="slides-inner position-relative w-100 d-flex align-items-center justify-content-center" :style="{ height: slidesHeight }">
         <template v-for="(item, idx) in items" :key="item.id">
