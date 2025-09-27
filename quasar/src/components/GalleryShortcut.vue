@@ -56,25 +56,33 @@ const items = reactive([
   flex-direction: row-reverse;
 }
 .gallery-card {
-  display: flex; 
+  display: flex;
   flex-direction: row;
   align-items: center;
   width: 70%;
   min-height: 320px;
-  background: #181818; 
-  box-shadow: 0 8px 20px 0 rgb(211, 209, 209);
+  background: #181818;
   border-radius: 32px;
   overflow: visible;
   margin: 0 0 32px 0;
-  padding: 40px 48px;
+  padding: 20px 0px;
+  /* 3D effect: strong shadow, subtle border, and transform */
+  box-shadow: 0 18px 16px -8px rgba(0,0,0,0.38);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  transform: perspective(900px) rotateX(4deg) scale(1.01);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.gallery-card:hover {
+  box-shadow: 0 32px 16px -14px rgba(0,0,0,0.48);
+  transform: perspective(900px) rotateX(0deg) scale(1.025);
 }
 .gallery-image {
-  flex: 1 1 40%;
+  flex: 1 1 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
-  padding: 16px;
+  padding: 10px;
 }
 .gallery-text {
   flex: 1 1 40%;

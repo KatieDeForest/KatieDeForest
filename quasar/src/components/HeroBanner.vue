@@ -2,13 +2,12 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { MDBIcon } from 'mdb-vue-ui-kit';
 
-// Simple placeholder items (colors + label). Replace with real images later.
 const items = [
-  { id: 1, label: 'Placeholder 1', color: '#2d6a4f' },
-  { id: 2, label: 'Placeholder 2', color: '#1b4332' },
-  { id: 3, label: 'Placeholder 3', color: '#40916c' },
-  { id: 4, label: 'Placeholder 4', color: '#52b788' },
-  { id: 5, label: 'Placeholder 5', color: '#74c69d' }
+  { id: 1, img: '/src/assets/frontpagebanner.jpg' },
+  { id: 2, img: '/src/assets/frontpagebanner.jpg' },
+  { id: 3, img: '/src/assets/frontpagebanner.jpg' },
+  { id: 4, img: '/src/assets/frontpagebanner.jpg' },
+  { id: 5, img: '/src/assets/frontpagebanner.jpg' }
 ];
 
 const current = ref(0);
@@ -57,20 +56,20 @@ function positionFor(index: number) {
         <template v-for="(item, idx) in items" :key="item.id">
           <div
             :class="['slide', positionFor(idx)]"
-            :style="{ background: `linear-gradient(135deg, ${item.color}, rgba(0,0,0,0.25))` }"
+            style="background: #222;"
             role="img"
-            :aria-label="item.label"
           >
-            <div class="slide-content text-white text-center px-3">
-              <h2 class="display-4 fw-bold">{{ item.label }}</h2>
-              <p class="lead opacity-75">This is a placeholder slide — replace with an image or component.</p>
-            </div>
+            <img
+              :src="item.img"
+              alt="Slide image"
+              class="slide-img"
+            />
             <!-- arrows inside images -->
             <button class="carousel-arrow left btn btn-link text-white" @click="prev" aria-label="Previous slide">
-              <MDBIcon icon="chevron-left" />
+              <MDBIcon icon="chevron-left" size="2x" class="text-white" />
             </button>
             <button class="carousel-arrow right btn btn-link text-white" @click="next" aria-label="Next slide">
-              <MDBIcon icon="chevron-right" />
+              <MDBIcon icon="chevron-right" size="2x" class="text-white" />
             </button>
           </div>
         </template>
@@ -86,7 +85,7 @@ function positionFor(index: number) {
   background: $primary;
 }
 .slides-inner {
-  max-width: 1500px;
+  max-width: 60%;
   perspective: 1000px;
   overflow: show;
 }
@@ -96,14 +95,14 @@ function positionFor(index: number) {
   top: 50%;
   transform-style: preserve-3d;
   transform-origin: center center;
-  width: 100%;
-  height: 80%;
+  width: 90%;
+  height: 70%;
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 14px rgba(0,0,0,0.5);
   transition: transform 550ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease, filter 450ms ease;
   opacity: 0;
   z-index: 10;
@@ -145,10 +144,25 @@ function positionFor(index: number) {
   border-radius: 999px;
   background: rgba(0,0,0,0.18);
   backdrop-filter: blur(4px);
+  z-index: 1000;
+  color: #120202;
 }
+
 .carousel-arrow.left { left: 1rem; }
 .carousel-arrow.right { right: 1rem; }
+// ...existing code...
 .carousel-arrow:hover { background: rgba(0,0,0,0.28); }
+
+.slide-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  border-radius: 12px;
+}
 
 @media (max-width: 992px) {
   .slides-inner { max-width: 100%; }
