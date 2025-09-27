@@ -61,8 +61,8 @@ const items = reactive([
   align-items: center;
   width: 70%;
   min-height: 320px;
-  background: #ffffff; 
-  box-shadow: 0 8px 40px 0 rgb(211, 209, 209);
+  background: #181818; 
+  box-shadow: 0 8px 20px 0 rgb(211, 209, 209);
   border-radius: 32px;
   overflow: visible;
   margin: 0 0 32px 0;
