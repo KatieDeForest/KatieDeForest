@@ -12,7 +12,37 @@ import {
   MDBDropdownMenu,
   MDBDropdownItem
 } from 'mdb-vue-ui-kit';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
+import type { Ref } from 'vue';
+
+// Demo search data (replace with your real search logic)
+const allResults = [
+  'Gallery',
+  'About Me',
+  'Contact',
+  'Featured Album',
+  'Nature Collection',
+  'Urban Scenes',
+  'Studio Works',
+  'Photography',
+  'Phone',
+  'Art',
+  'Blog'
+];
+
+const searchQuery = ref('');
+const searchResults: Ref<string[]> = ref([]);
+
+watch(searchQuery, (val) => {
+  if (val.trim().length > 0) {
+    // Simple filter for demo; replace with API or real search
+    searchResults.value = allResults.filter(item =>
+      item.toLowerCase().includes(val.trim().toLowerCase())
+    );
+  } else {
+    searchResults.value = [];
+  }
+});
 
 // Brand style
 const brandFontStyle = computed(() => ({
@@ -35,9 +65,13 @@ const showSearchModal = ref(false);
 
 function openSearchModal() {
   showSearchModal.value = true;
+  searchQuery.value = '';
+  searchResults.value = [];
 }
 function closeSearchModal() {
   showSearchModal.value = false;
+  searchQuery.value = '';
+  searchResults.value = [];
 }
 
 </script>
@@ -101,8 +135,22 @@ function closeSearchModal() {
             <div v-if="showSearchModal" class="search-modal-overlay">
               <div class="search-modal-content">
                 <button class="close-btn" @click="closeSearchModal" aria-label="Close search">&times;</button>
-                <input type="search" class="form-control bg-dark text-white border-0" placeholder="Type your search..." style="font-size:1.2em; margin-bottom: 1em;" autofocus />
-                <button class="btn btn-success w-100">Search</button>
+                <input
+                  v-model="searchQuery"
+                  type="search"
+                  class="form-control bg-dark text-white border-0"
+                  placeholder="Type your search..."
+                  style="font-size:1.2em; margin-bottom: 1em;"
+                  autofocus
+                />
+                <div v-if="searchQuery.trim().length > 0" class="live-search-results">
+                  <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">No results found.</div>
+                  <ul v-else class="list-group">
+                    <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
+                      {{ result }}
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           <!-- User dropdown -->
@@ -158,15 +206,38 @@ function closeSearchModal() {
 }
 .search-modal-content {
   background: #181818;
-  padding: 2em 2em 2em 2em;
+  padding: 2.5em 2.5em 2.5em 2.5em;
   border-radius: 12px;
-  min-width: 320px;
-  max-width: 90vw;
+  width: 30%;
+  height: 50%;
   box-shadow: 0 8px 32px #000a;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+}
+.live-search-results {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: -0.5em;
+}
+.live-search-results ul {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.live-search-results .list-group-item {
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 0.5em;
+  border-radius: 8px;
+  background: #232323 !important;
+  border: 1px solid #333;
+  box-shadow: 0 2px 8px #0002;
+  padding: 0.75em 1em;
+  font-size: 1.1em;
+}
+.live-search-results .list-group-item:hover {
+  background: #222 !important;
 }
 .close-btn {
   position: absolute;

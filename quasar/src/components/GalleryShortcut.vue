@@ -139,4 +139,14 @@ const items = reactive([
     font-size: 1.1rem;
   }
 }
+
+// Custom styles for regular and reverse gallery text
+.gallery-row.artistic:not(.reverse) .gallery-text {
+  text-align: left;
+  /* Add more regular-specific styles here */
+}
+.gallery-row.artistic.reverse .gallery-text {
+  text-align: right;
+  /* Add more reverse-specific styles here */
+}
 </style>
