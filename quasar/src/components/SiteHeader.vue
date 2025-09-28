@@ -12,9 +12,9 @@ import {
   MDBDropdownMenu,
   MDBDropdownItem
 } from 'mdb-vue-ui-kit';
-import { ref, computed} from 'vue';
+import { ref, computed } from 'vue';
 
-// Brand style (static, dark-mode friendly) with green glow
+// Brand style
 const brandFontStyle = computed(() => ({
   fontFamily: 'CustomLeafFont, serif',
   fontWeight: 500,
@@ -31,6 +31,14 @@ const brandFontStyle = computed(() => ({
 
 const collapse1 = ref(false);
 const dropdown3 = ref(false);
+const showSearchModal = ref(false);
+
+function openSearchModal() {
+  showSearchModal.value = true;
+}
+function closeSearchModal() {
+  showSearchModal.value = false;
+}
 
 </script>
 
@@ -43,7 +51,7 @@ const dropdown3 = ref(false);
       transition: 'background-color 0.35s, color 0.35s',
       backgroundColor: '#111',
       color: '#fff',
-      fontSize: '1.5em',
+      fontSize: '1.2em',
       padding: '0.5em 0',
       boxShadow: '0 6px 32px rgba(0,0,0,0.5)',
       top: 0,
@@ -78,25 +86,25 @@ const dropdown3 = ref(false);
             <MDBNavbarBrand href="#" :style="{...brandFontStyle, fontSize: '2.85rem'}">Katie De Forest</MDBNavbarBrand>
           </div>
           <!-- Header controls: search + user -->
-          <form class="d-flex w-auto justify-content-end me-3 align-items-center">
-            <!-- Search bar -->
-            <div class="position-relative" style="width: 300px; font-size:0.8em;">
-              <input
-                type="search"
-                class="form-control bg-transparent text-white border-0"
-                placeholder="Type query"
-                aria-label="Search"
-                style="padding-right: 2.2rem; font-size:1.1em; height:2.7em; width:100%;"
-              />
+            <!-- Header controls: search button + user -->
+            <div class="d-flex w-auto justify-content-end me-3 align-items-center">
               <button
-                type="submit"
-                aria-label="Search"
-                class="position-absolute top-50 end-0 translate-middle-y h-100 border-0 bg-transparent px-2"
+                class="btn btn-link p-0 me-2"
+                aria-label="Open search"
+                @click="openSearchModal"
+                style="color: #fff; font-size: 1em;"
               >
-                <MDBIcon icon="search" size="lg" class="text-white" />
+                <MDBIcon icon="search" size="sm" class="text-white" />
               </button>
             </div>
-          </form>
+            <!-- Search Modal -->
+            <div v-if="showSearchModal" class="search-modal-overlay">
+              <div class="search-modal-content">
+                <button class="close-btn" @click="closeSearchModal" aria-label="Close search">&times;</button>
+                <input type="search" class="form-control bg-dark text-white border-0" placeholder="Type your search..." style="font-size:1.2em; margin-bottom: 1em;" autofocus />
+                <button class="btn btn-success w-100">Search</button>
+              </div>
+            </div>
           <!-- User dropdown -->
           <MDBNavbarNav class="d-flex flex-row">
             <MDBNavbarItem class="me-3 me-lg-0 dropdown">
@@ -107,7 +115,7 @@ const dropdown3 = ref(false);
                   @click="dropdown3 = !dropdown3"
                   style="font-size:1.3em;"
                 >
-                  <MDBIcon icon="user" class="text-white" />
+                  <MDBIcon icon="user" size="sm" class="text-white" />
                 </MDBDropdownToggle>
                 <MDBDropdownMenu class="dropdown-menu-dark">
                   <MDBDropdownItem href="#">Login</MDBDropdownItem>
@@ -127,5 +135,55 @@ const dropdown3 = ref(false);
   src: url('/fonts/leavesfont.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
+}
+.btn-link[aria-label="Open search"]:hover,
+.btn-link[aria-label="Open search"]:focus {
+  color: #b5ffb5 !important;
+  background: none !important;
+  text-decoration: none !important;
+}
+</style>
+<style scoped>
+.search-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.search-modal-content {
+  background: #181818;
+  padding: 2em 2em 2em 2em;
+  border-radius: 12px;
+  min-width: 320px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px #000a;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.close-btn {
+  position: absolute;
+  top: 0.1em;
+  right: 0.1em;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #b5ffb5;
+  font-size: 2em;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
 }
 </style>

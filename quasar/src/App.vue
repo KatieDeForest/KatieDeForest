@@ -4,13 +4,14 @@ import 'mdb-vue-ui-kit/css/mdb.min.css';
 import GalleryShortcut from './components/GalleryShortcut.vue';
 import SiteHeader from './components/SiteHeader.vue';
 import HeroBanner from './components/HeroBanner.vue';
+import SiteFooter from './components/SiteFooter.vue';
 </script>
 
 <template>
-<!-- Main app structure: header, hero banner, and main content -->
   <SiteHeader />
   <HeroBanner />
   <GalleryShortcut />
+  <SiteFooter />
 </template>
 
 <style scoped>

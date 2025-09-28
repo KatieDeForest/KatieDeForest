@@ -71,8 +71,19 @@ function positionFor(index: number) {
             <button class="carousel-arrow right btn btn-link text-white" @click="next" aria-label="Next slide">
               <MDBIcon icon="chevron-right" size="2x" class="text-white" />
             </button>
+            <!-- Only show the row of dots on the active slide -->
+            <div v-if="positionFor(idx) === 'active'" class="slide-dots-fixed d-flex justify-content-center align-items-center">
+              <span
+                v-for="(dot, dotIdx) in items"
+                :key="'dot-fixed-' + dot.id"
+                :class="['slide-dot', { 'slide-dot-fixed': true, active: dotIdx === current }]"
+                @click="current = dotIdx"
+                aria-label="Go to slide"
+              ></span>
+            </div>
           </div>
         </template>
+
       </div>
     </div>
   </section>
@@ -103,7 +114,7 @@ function positionFor(index: number) {
   align-items: center;
   justify-content: center;
   box-shadow: 0 20px 14px rgba(0,0,0,0.5);
-  transition: transform 550ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease, filter 450ms ease;
+  transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease, filter 450ms ease;
   opacity: 0;
   z-index: 10;
 }
@@ -168,5 +179,46 @@ function positionFor(index: number) {
   .slides-inner { max-width: 100%; }
   .slide { width: 92%; }
   .slide .slide-content { max-width: 80%; }
+}
+ .slide-dot {
+  display: inline-block;
+  margin: 0 0.22em;
+  border-radius: 50%;
+  background: #181818;
+  opacity: 0.7;
+  transition: all 0.25s cubic-bezier(.2,.9,.2,1);
+  cursor: pointer;
+  width: 0.65em;
+  height: 0.65em;
+  box-shadow: 0 2px 8px #000a;
+}
+.slide-dot .slide-dot-active-on-slide {
+  position: absolute;
+  left: 50%;
+  bottom: 0.5rem;
+  transform: translateX(-50%);
+  width: 1.1em;
+  height: 1.1em;
+  opacity: 1;
+  background: #222;
+  box-shadow: 0 4px 16px #000c;
+  z-index: 2002;
+  pointer-events: none;
+}
+.slide-dots-fixed {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.5rem;
+  z-index: 2001;
+  width: 100%;
+  pointer-events: auto;
+}
+.slide-dot.slide-dot-fixed.active {
+  background: #222;
+  opacity: 1;
+  width: 0.85em;
+  height: 0.85em;
+  box-shadow: 0 2px 8px #000c;
 }
 </style>
