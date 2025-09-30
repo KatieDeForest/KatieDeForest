@@ -180,7 +180,7 @@ function positionFor(index: number) {
   .slide { width: 92%; }
   .slide .slide-content { max-width: 80%; }
 }
- .slide-dot {
+.slide-dot {
   display: inline-block;
   margin: 0 0.22em;
   border-radius: 50%;
@@ -188,9 +188,10 @@ function positionFor(index: number) {
   opacity: 0.7;
   transition: all 0.25s cubic-bezier(.2,.9,.2,1);
   cursor: pointer;
-  width: 0.65em;
-  height: 0.65em;
+  width: 0.75em;
+  height: 0.75em;
   box-shadow: 0 2px 8px #000a;
+  border: 1px solid #fff;
 }
 .slide-dot .slide-dot-active-on-slide {
   position: absolute;
@@ -217,8 +218,8 @@ function positionFor(index: number) {
 .slide-dot.slide-dot-fixed.active {
   background: #222;
   opacity: 1;
-  width: 0.85em;
-  height: 0.85em;
+  width: 1em;
+  height: 1em;
   box-shadow: 0 2px 8px #000c;
 }
 </style>
