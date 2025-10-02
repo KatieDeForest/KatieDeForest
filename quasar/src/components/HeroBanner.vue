@@ -64,13 +64,15 @@ function positionFor(index: number) {
               alt="Slide image"
               class="slide-img"
             />
-            <!-- arrows inside images -->
-            <button class="carousel-arrow left btn btn-link text-white" @click="prev" aria-label="Previous slide">
-              <MDBIcon icon="chevron-left" size="2x" class="text-white" />
-            </button>
-            <button class="carousel-arrow right btn btn-link text-white" @click="next" aria-label="Next slide">
-              <MDBIcon icon="chevron-right" size="2x" class="text-white" />
-            </button>
+              <!-- arrows inside images, only on active slide -->
+              <template v-if="positionFor(idx) === 'active'">
+                <button class="carousel-arrow left btn btn-link text-white" @click="prev" aria-label="Previous slide">
+                  <MDBIcon icon="chevron-left" size="2x" class="text-white" />
+                </button>
+                <button class="carousel-arrow right btn btn-link text-white" @click="next" aria-label="Next slide">
+                  <MDBIcon icon="chevron-right" size="2x" class="text-white" />
+                </button>
+              </template>
             <!-- Only show the row of dots on the active slide -->
             <div v-if="positionFor(idx) === 'active'" class="slide-dots-fixed d-flex justify-content-center align-items-center">
               <span
