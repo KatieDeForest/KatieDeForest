@@ -1,76 +1,134 @@
 <template>
-  <footer class="site-footer d-flex align-items-center px-4 py-3 position-relative">
-    <nav class="footer-links d-flex align-items-center flex-grow-1 justify-content-start">
-      <a href="#" class="footer-link mx-2">Home</a>
-      <a href="#" class="footer-link mx-2">Gallery</a>
-      <a href="#" class="footer-link mx-2">About</a>
-      <a href="#" class="footer-link mx-2">Contact</a>
-    </nav>
-    <!-- Centered brand name, horizontally centered only -->
-    <div class="footer-center-brand position-absolute start-50 translate-middle-x d-flex align-items-center justify-content-center" style="top: 0; bottom: 0; height: 100%; transform: translateX(-50%);">
-      <span
-        class="footer-brand"
-        v-bind:style="footerBrandStyle"
-      >Katie De Forest</span>
-    </div>
-    <div class="footer-actions d-flex align-items-center justify-content-end flex-grow-1">
-      <button class="footer-icon-btn" aria-label="Search">
-        <i class="fa fa-search"></i>
-      </button>
-      <button class="footer-icon-btn ms-2" aria-label="Account">
-        <i class="fa fa-user"></i>
-      </button>
+  <footer class="site-footer px-4 py-3 position-relative">
+    <div class="footer-main d-flex flex-row justify-content-between align-items-start w-100">
+      <div class="footer-brand-left d-flex flex-column align-items-start">
+        <span class="footer-brand" v-bind:style="footerBrandStyle">Katie De Forest</span>
+  <span class="footer-description mt-2">Fine art, portrait, and nature photography<br>Capturing emotion and light.</span>
+      </div>
+  <div class="footer-links-legal d-flex flex-row align-items-start" style="align-items: flex-start;">
+        <nav class="footer-links d-flex flex-column align-items-end me-4">
+          <a href="#" class="footer-link">Gallery</a>
+          <a href="#" class="footer-link">About</a>
+          <a href="#" class="footer-link">Contact</a>
+        </nav>
+        <nav class="footer-legal-links d-flex flex-column align-items-end">
+          <a href="#" class="footer-link legal">Privacy Policy</a>
+          <a href="#" class="footer-link legal">Terms of Service</a>
+        </nav>
+      </div>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-// Match header logo style
 const footerBrandStyle = computed(() => ({
   fontFamily: 'CustomLeafFont, serif',
   fontWeight: 500,
   fontStyle: 'italic',
   letterSpacing: '0.08em',
-  fontSize: '2.1rem',
+  fontSize: '1.6rem',
   color: 'inherit',
   textShadow: '0 2px 0 #222, 0 6px 14px #000, 0 0 8px #39ff14, 0 0 2px #7fff7f',
   WebkitTextStroke: '0.5px #b5ffb5',
   transition: 'color 0.35s, text-shadow 0.35s',
-  // textTransform intentionally omitted for compatibility
 }));
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .site-footer {
   background: #181818;
   color: #fff;
   font-family: 'Montserrat', 'Roboto', sans-serif;
   border-top: 2px solid #2d6a4f;
-  min-height: 64px;
+  min-height: 80px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   position: relative;
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
 }
-.footer-center-brand {
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  height: 100%;
-  transform: translateX(-50%);
-  z-index: 2;
+.footer-main {
+  width: 100%;
   display: flex;
-  align-items: center;
-  pointer-events: none;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+.footer-links-legal {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2.5rem;
+}
+.footer-brand-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.footer-description {
+  font-size: 1.08rem;
+  color: #b5ffb5;
+  font-family: 'Montserrat', 'Roboto', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin-top: 0.3rem;
 }
 .footer-links {
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
-.footer-logo-img {
-  display: none;
+.footer-link {
+  color: #7fff7f;
+  text-decoration: none;
+  font-size: 0.98rem;
+  transition: color 0.2s;
+  margin-bottom: 0.18rem;
+}
+.footer-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+.footer-legal-group {
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.footer-link-item {
+  color: #b5ffb5;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+  margin-bottom: 0.25rem;
+}
+.footer-bottom {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+.footer-divider {
+  border: none;
+  border-top: 1.2px solid #39ff14;
+  width: 80%;
+  margin: 0 auto 0.3rem auto;
 }
 .footer-brand {
-  margin-left: 0.5rem;
+  font-size: 1.6rem;
+  font-family: 'CustomLeafFont', serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: inherit;
+  text-shadow: 0 2px 0 #222, 0 6px 14px #000, 0 0 8px #39ff14, 0 0 2px #7fff7f;
+  -webkit-text-stroke: 0.5px #b5ffb5;
+  transition: color 0.35s, text-shadow 0.35s;
+  margin-bottom: 0.3rem;
 }
 @font-face {
   font-family: 'CustomLeafFont';
@@ -78,15 +136,11 @@ const footerBrandStyle = computed(() => ({
   font-weight: 500;
   font-style: normal;
 }
-.footer-link {
-  color: #b5ffb5;
-  text-decoration: none;
-  font-size: 1.1rem;
-  transition: color 0.2s;
-}
-.footer-link:hover {
-  color: #fff;
-  text-decoration: underline;
+@font-face {
+  font-family: 'CustomLeafFont';
+  src: url('/fonts/leavesfont.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
 }
 .footer-actions {
   min-width: 0;
