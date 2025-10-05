@@ -35,9 +35,10 @@ const searchResults: Ref<string[]> = ref([]);
 
 watch(searchQuery, (val) => {
   if (val.trim().length > 0) {
-    // Simple filter for demo; replace with API or real search
+    // Only show results that start with the search query
+    const query = val.trim().toLowerCase();
     searchResults.value = allResults.filter(item =>
-      item.toLowerCase().includes(val.trim().toLowerCase())
+      item.toLowerCase().startsWith(query)
     );
   } else {
     searchResults.value = [];
@@ -105,7 +106,7 @@ function closeSearchModal() {
             <MDBNavbarItem to="#" active>
               <span class="text-white" style="font-size:1.15em;">Home</span>
             </MDBNavbarItem>
-            <MDBNavbarItem href="#">
+            <MDBNavbarItem to="/gallery" active>
               <span class="text-white" style="font-size:1.15em;">Gallery</span>
             </MDBNavbarItem>
             <MDBNavbarItem href="#">
