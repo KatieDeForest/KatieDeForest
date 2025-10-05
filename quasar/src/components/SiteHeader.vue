@@ -74,7 +74,6 @@ function closeSearchModal() {
   searchQuery.value = '';
   searchResults.value = [];
 }
-
 </script>
 
 <template>
@@ -103,22 +102,24 @@ function closeSearchModal() {
         <div class="d-flex w-100 align-items-center justify-content-between">
           <!-- Navigation links -->
             <MDBNavbarNav class="mb-2 mb-lg-0 flex-grow-1">
-            <MDBNavbarItem to="#" active>
+            <MDBNavbarItem to="/" active>
               <span class="text-white" style="font-size:1.15em;">Home</span>
             </MDBNavbarItem>
             <MDBNavbarItem to="/gallery" active>
               <span class="text-white" style="font-size:1.15em;">Gallery</span>
             </MDBNavbarItem>
-            <MDBNavbarItem href="#">
+            <MDBNavbarItem to="/about">
               <span class="text-white" style="font-size:1.15em;">About Me</span>
             </MDBNavbarItem>
-            <MDBNavbarItem href="#">
+            <MDBNavbarItem to="/contact">
               <span class="text-white" style="font-size:1.15em;">Contact</span>
             </MDBNavbarItem>
           </MDBNavbarNav>
           <!-- Brand name -->
           <div class="position-absolute start-50 translate-middle-x">
-            <MDBNavbarBrand href="#" :style="{...brandFontStyle, fontSize: '2.85rem'}">Katie De Forest</MDBNavbarBrand>
+                <router-link to="/" class="brand-link">
+                  <MDBNavbarBrand :style="{...brandFontStyle, fontSize: '2.85rem'}">Katie De Forest</MDBNavbarBrand>
+                </router-link>
           </div>
           <!-- Header controls: search + user -->
             <!-- Header controls: search button + user -->
@@ -185,14 +186,19 @@ function closeSearchModal() {
   font-weight: 500;
   font-style: normal;
 }
+.brand-link {
+  text-decoration: none !important;
+  color: inherit !important;
+  all: unset;
+  display: inline-block;
+  cursor: pointer;
+}
 .btn-link[aria-label="Open search"]:hover,
 .btn-link[aria-label="Open search"]:focus {
   color: #b5ffb5 !important;
   background: none !important;
   text-decoration: none !important;
 }
-</style>
-<style scoped>
 .search-modal-overlay {
   position: fixed;
   top: 0;
