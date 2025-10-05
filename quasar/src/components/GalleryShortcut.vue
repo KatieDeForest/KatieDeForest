@@ -61,7 +61,7 @@ const items = reactive([
   align-items: center;
   width: 70%;
   min-height: 320px;
-  background: #181818;
+  background: $secondary;
   border-radius: 32px;
   overflow: visible;
   margin: 0 0 32px 0;
