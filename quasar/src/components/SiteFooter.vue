@@ -1,11 +1,12 @@
 <template>
   <footer class="site-footer px-4 py-3 position-relative">
-    <div class="footer-main d-flex flex-row justify-content-between align-items-start w-100">
-      <div class="footer-brand-left d-flex flex-column align-items-start">
+    <div class="d-flex flex-row justify-content-between align-items-start w-100">
+      <div class="d-flex flex-column">
         <span class="footer-brand" v-bind:style="footerBrandStyle">Katie De Forest</span>
-  <span class="footer-description mt-2">Fine art, portrait, and nature photography<br>Capturing emotion and light.</span>
+        <span class="footer-description mt-2">Fine art, portrait, and nature photography<br>Capturing emotion and light.</span>
       </div>
-  <div class="footer-links-legal d-flex flex-row align-items-start" style="align-items: flex-start;">
+  <span class="footer-copyright">© 2025 Katie De Forest. All rights reserved.</span>
+      <div class="footer-links-legal d-flex flex-row align-items-start">
         <nav class="footer-links d-flex flex-column align-items-end me-4">
           <a href="#" class="footer-link">Gallery</a>
           <a href="#" class="footer-link">About</a>
@@ -36,6 +37,19 @@ const footerBrandStyle = computed(() => ({
 </script>
 
 <style lang="scss" scoped>
+.footer-copyright {
+  font-size: 0.85rem;
+  color: #b5ffb5;
+  text-align: center;
+  letter-spacing: 0.02em;
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  width: max-content;
+  margin: 0;
+  z-index: 10;
+}
 .site-footer {
   background: #181818;
   color: #fff;
@@ -49,24 +63,11 @@ const footerBrandStyle = computed(() => ({
   padding-top: 1rem;
   padding-bottom: 0.5rem;
 }
-.footer-main {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1.5rem;
-}
 .footer-links-legal {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 2.5rem;
-}
-.footer-brand-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
 }
 .footer-description {
   font-size: 1.08rem;
@@ -106,11 +107,22 @@ const footerBrandStyle = computed(() => ({
   margin-bottom: 0.25rem;
 }
 .footer-bottom {
+  position: absolute;
+  left: 0;
+  bottom: 0;
   width: 100%;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-top: 1rem;
+  pointer-events: none;
+  z-index: 2;
+}
+.footer-copyright {
+  font-size: 0.85rem;
+  color: #b5ffb5;
+  text-align: center;
+  letter-spacing: 0.02em;
+  pointer-events: auto;
 }
 .footer-divider {
   border: none;
