@@ -38,7 +38,7 @@ const items = reactive([
 @import '../css/quasar.variables.scss';
 
 .gallery-shortcut-page {
-  width: 100vw;
+  width: 100%;
   padding: 48px 0 0 0;
   margin: 0;
   display: flex;
