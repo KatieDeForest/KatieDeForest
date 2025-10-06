@@ -7,10 +7,6 @@ import {
   MDBNavbarNav,
   MDBNavbarItem,
   MDBCollapse,
-  MDBDropdown,
-  MDBDropdownToggle,
-  MDBDropdownMenu,
-  MDBDropdownItem
 } from 'mdb-vue-ui-kit';
 import { ref, computed, watch } from 'vue';
 import type { Ref } from 'vue';
@@ -61,8 +57,26 @@ const brandFontStyle = computed(() => ({
 }));
 
 const collapse1 = ref(false);
-const dropdown3 = ref(false);
 const showSearchModal = ref(false);
+const showLanguageModal = ref(false);
+const languages = [
+  { code: 'en', name: 'English' },
+  { code: 'da', name: 'Dansk' },
+  { code: 'de', name: 'Deutsch' },
+  { code: 'no', name: 'Norsk' },
+  { code: 'sv', name: 'Svenska' }
+].sort((a, b) => a.name.localeCompare(b.name));
+const selectedLanguage = ref('en');
+function openLanguageModal() {
+  showLanguageModal.value = true;
+}
+function closeLanguageModal() {
+  showLanguageModal.value = false;
+}
+function selectLanguage(code: string) {
+  selectedLanguage.value = code;
+  closeLanguageModal();
+}
 
 function openSearchModal() {
   showSearchModal.value = true;
@@ -101,7 +115,7 @@ function closeSearchModal() {
       <MDBCollapse v-model="collapse1" id="navbarSupportedContent">
         <div class="d-flex w-100 align-items-center justify-content-between">
           <!-- Navigation links -->
-            <MDBNavbarNav class="mb-2 mb-lg-0 flex-grow-1">
+          <MDBNavbarNav class="mb-2 mb-lg-0 flex-grow-1">
             <MDBNavbarItem to="/" active>
               <span class="text-white" style="font-size:1.15em;">Home</span>
             </MDBNavbarItem>
@@ -117,63 +131,77 @@ function closeSearchModal() {
           </MDBNavbarNav>
           <!-- Brand name -->
           <div class="position-absolute start-50 translate-middle-x">
-                <router-link to="/" class="brand-link">
-                  <MDBNavbarBrand :style="{...brandFontStyle, fontSize: '2.85rem'}">Katie De Forest</MDBNavbarBrand>
-                </router-link>
+            <router-link to="/" class="brand-link">
+              <MDBNavbarBrand :style="{...brandFontStyle, fontSize: '2.85rem'}">Katie De Forest</MDBNavbarBrand>
+            </router-link>
           </div>
-          <!-- Header controls: search + user -->
-            <!-- Header controls: search button + user -->
-            <div class="d-flex w-auto justify-content-end me-3 align-items-center">
-              <button
-                class="btn btn-link p-0 me-2"
-                aria-label="Open search"
-                @click="openSearchModal"
-                style="color: #fff; font-size: 1em;"
-              >
-                <MDBIcon icon="search" size="sm" class="text-white" />
-              </button>
-            </div>
-            <!-- Search Modal -->
-            <div v-if="showSearchModal" class="search-modal-overlay">
-              <div class="search-modal-content">
-                <button class="close-btn" @click="closeSearchModal" aria-label="Close search">&times;</button>
-                <input
-                  v-model="searchQuery"
-                  type="search"
-                  class="form-control bg-dark text-white border-0"
-                  placeholder="Type your search..."
-                  style="font-size:1.2em; margin-bottom: 1em;"
-                  autofocus
-                />
-                <div v-if="searchQuery.trim().length > 0" class="live-search-results">
-                  <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">No results found.</div>
-                  <ul v-else class="list-group">
-                    <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
-                      {{ result }}
+          <!-- Header controls: search only -->
+          <div class="d-flex w-auto justify-content-end me-3 align-items-center">
+            <button
+              class="btn btn-link p-0 globe-btn"
+              aria-label="Select language"
+              @click="openLanguageModal"
+              style="color: #fff; font-size: 1em;"
+            >
+              <MDBIcon icon="globe" size="sm" class="text-white" />
+            </button>
+            <button
+              class="btn btn-link p-0 me-2"
+              aria-label="Open search"
+              @click="openSearchModal"
+              style="color: #fff; font-size: 1em;"
+            >
+              <MDBIcon icon="search" size="sm" class="text-white" />
+            </button>
+          </div>
+              <!-- Search Modal -->
+              <div v-if="showSearchModal" class="search-modal-overlay">
+                  <div class="search-modal-content">
+                  <button class="close-btn" @click="closeSearchModal" aria-label="Close search">&times;</button>
+                  <input
+                    v-model="searchQuery"
+                    type="search"
+                    class="form-control bg-dark text-white border-0"
+                    placeholder="Type your search..."
+                    style="font-size:1.2em; margin-bottom: 1em;"
+                    autofocus
+                  />
+                  <div v-if="searchQuery.trim().length > 0" class="live-search-results">
+                    <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">No results found.</div>
+                    <ul v-else class="list-group">
+                      <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
+                        {{ result }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!-- Language Modal -->
+              <div v-if="showLanguageModal" class="search-modal-overlay">
+                  <div class="language-modal-content">
+                  <button class="close-btn" @click="closeLanguageModal" aria-label="Close language">&times;</button>
+                  <div class="d-flex align-items-center mb-3">
+                    <h5 class="mb-0 me-2">Select Language</h5>
+                    <span class="manual-translations-label">(Manual Translations)</span>
+                  </div>
+                  <ul class="list-group">
+                    <li
+                      v-for="(lang) in languages"
+                      :key="lang.code"
+                      class="list-group-item bg-dark text-white border-0 d-flex flex-column align-items-stretch language-option"
+                      :style="{ cursor: 'pointer', fontWeight: selectedLanguage === lang.code ? 'bold' : 'normal' }"
+                      @click="selectLanguage(lang.code)"
+                    >
+                      <div class="d-flex justify-content-between align-items-center w-100">
+                        <span>{{ lang.name }}</span>
+                        <span v-if="selectedLanguage === lang.code" style="font-size:1.2em;">
+                          <MDBIcon icon="check" size="sm" style="color: #39ff14;" />
+                        </span>
+                      </div>
                     </li>
                   </ul>
                 </div>
               </div>
-            </div>
-          <!-- User dropdown -->
-          <MDBNavbarNav class="d-flex flex-row">
-            <MDBNavbarItem class="me-3 me-lg-0 dropdown">
-              <MDBDropdown v-model="dropdown3">
-                <MDBDropdownToggle
-                  tag="a"
-                  class="nav-link text-white"
-                  @click="dropdown3 = !dropdown3"
-                  style="font-size:1.3em;"
-                >
-                  <MDBIcon icon="user" size="sm" class="text-white" />
-                </MDBDropdownToggle>
-                <MDBDropdownMenu class="dropdown-menu-dark">
-                  <MDBDropdownItem href="#">Login</MDBDropdownItem>
-                  <MDBDropdownItem href="#">Create Account</MDBDropdownItem>
-                </MDBDropdownMenu>
-              </MDBDropdown>
-            </MDBNavbarItem>
-          </MDBNavbarNav>
         </div>
       </MDBCollapse>
     </MDBNavbar>
@@ -193,11 +221,17 @@ function closeSearchModal() {
   display: inline-block;
   cursor: pointer;
 }
-.btn-link[aria-label="Open search"]:hover,
-.btn-link[aria-label="Open search"]:focus {
-  color: #b5ffb5 !important;
-  background: none !important;
-  text-decoration: none !important;
+.search-modal-content {
+  background: #181818;
+  padding: 2.5em 2.5em 2.5em 2.5em;
+  border-radius: 12px;
+  width: 30%;
+  height: 50%;
+  box-shadow: 0 8px 32px #000a;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 .search-modal-overlay {
   position: fixed;
@@ -211,17 +245,38 @@ function closeSearchModal() {
   justify-content: center;
   z-index: 3000;
 }
-.search-modal-content {
+.language-modal-content {
   background: #181818;
-  padding: 2.5em 2.5em 2.5em 2.5em;
+  padding: 1em 1.2em 1em 1.2em;
   border-radius: 12px;
   width: 30%;
-  height: 50%;
+  height: 35%;
   box-shadow: 0 8px 32px #000a;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+}
+.manual-translations-label {
+  font-size: 0.95em;
+  color: #aaa;
+  font-weight: 400;
+  margin-top: 2px;
+}
+.language-option {
+  margin-bottom: 0.2em;
+  padding-bottom: 0.2em;
+}
+.globe-btn:hover,
+.globe-btn:focus {
+  color: #fff !important;
+  background: none !important;
+  text-decoration: none !important;
+}
+.btn-link[aria-label="Open search"]:hover,
+.btn-link[aria-label="Open search"]:focus {
+  background: none !important;
+  text-decoration: none !important;
 }
 .live-search-results {
   max-height: 220px;
@@ -263,5 +318,9 @@ function closeSearchModal() {
   justify-content: center;
   cursor: pointer;
   z-index: 1;
+}
+/* Custom spacing for globe (language) button */
+.globe-btn {
+  margin-right: 1.2em;
 }
 </style>
