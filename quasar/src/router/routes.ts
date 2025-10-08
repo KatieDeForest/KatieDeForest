@@ -9,7 +9,14 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/gallery',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/GalleryPage.vue') }],
+    children: [{ path: '', component: () => import('pages/GalleryCatPage.vue') }],
+  },
+  {
+    path: '/gallery/:category',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/GalleryPage.vue') },
+    ],
   },
 
   // Always leave this as last one,
