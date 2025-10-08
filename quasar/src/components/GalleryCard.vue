@@ -1,27 +1,29 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import frontpageBanner from 'src/assets/frontpagebanner.jpg';
+
 const router = useRouter();
 const categories = [
-	{
-		name: 'Featured Album',
-		description: 'A showcase of my best works.',
-		image: '/src/assets/frontpagebanner.jpg'
-	},
-	{
-		name: 'Nature Collection',
-		description: 'Landscapes, wildlife.',
-		image: '/src/assets/frontpagebanner.jpg'
-	},
-	{
-		name: 'Urban Scenes',
-		description: 'City life and architecture.',
-		image: '/src/assets/frontpagebanner.jpg'
-	},
-	{
-		name: 'Studio Works',
-		description: 'Portraits and creative studio shots.',
-		image: '/src/assets/frontpagebanner.jpg'
-	}
+  {
+    name: 'Featured Album',
+    description: 'A showcase of my best works.',
+    image: frontpageBanner
+  },
+  {
+    name: 'Nature Collection',
+    description: 'Landscapes, wildlife.',
+    image: frontpageBanner
+  },
+  {
+    name: 'Urban Scenes',
+    description: 'City life and architecture.',
+    image: frontpageBanner
+  },
+  {
+    name: 'Studio Works',
+    description: 'Portraits and creative studio shots.',
+    image: frontpageBanner
+  }
 ];
 </script>
 
