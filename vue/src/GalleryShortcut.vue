@@ -1,25 +1,12 @@
 
+<script lang="ts">
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+</script>
+
 
 <template>
-	<section class="gallery-shortcut bg-dark text-white py-5" aria-label="Gallery shortcuts">
-		<div class="container">
-			<div v-for="(item, idx) in items" :key="item.id" class="row align-items-center py-4">
-				<div
-					class="col-12 col-lg-6"
-					:class="{ 'order-lg-2': idx % 2 === 0 }"
-				>
-					<div class="p-4">
-						<h3 class="display-6 fw-bold">{{ item.title }}</h3>
-						<p class="lead opacity-75">{{ item.description }}</p>
-						<button class="btn btn-outline-light mt-3">View Gallery</button>
-					</div>
-				</div>
-				<div class="col-12 col-lg-6" :class="{ 'order-lg-1': idx % 2 === 0 }">
-					<div class="image-placeholder rounded shadow-sm mx-auto" :style="{ background: item.color }" role="img" :aria-label="item.title"></div>
-				</div>
-			</div>
-		</div>
-	</section>
 </template>
 
 <script setup lang="ts">
