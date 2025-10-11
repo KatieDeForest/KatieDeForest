@@ -1,11 +1,11 @@
 <template>
   <q-page>
     <GalleryGrid />
-    <GallerySearchReminder />
+    <SearchReminder />
   </q-page>
 </template>
 
 <script setup lang="ts">
 import GalleryGrid from 'src/components/GalleryGrid.vue';
-import GallerySearchReminder from 'src/components/GallerySearchReminder.vue';
+import SearchReminder from 'src/components/SearchReminder.vue';
 </script>
