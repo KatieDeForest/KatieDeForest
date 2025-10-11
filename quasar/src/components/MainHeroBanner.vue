@@ -12,6 +12,7 @@ const items = [
 
 const current = ref(0);
 const n = items.length;
+const dotsVisible = ref(true);
 
 // dynamic sizing to exactly fill the viewport under the fixed header
 const headerHeight = ref(0);
@@ -27,8 +28,12 @@ function updateHeights() {
 onMounted(() => {
   updateHeights();
   window.addEventListener('resize', updateHeights);
+  window.addEventListener('scroll', onScroll, { passive: true });
 });
-onUnmounted(() => window.removeEventListener('resize', updateHeights));
+onUnmounted(() => {
+  window.removeEventListener('resize', updateHeights);
+  window.removeEventListener('scroll', onScroll);
+});
 
 function prev() {
   current.value = (current.value - 1 + n) % n;
@@ -47,11 +52,17 @@ function positionFor(index: number) {
   return 'behind';
 }
 
+function onScroll() {
+  // Hide dots when the user scrolls down more than 60px from top, show when near top
+  const y = window.scrollY || window.pageYOffset || 0;
+  dotsVisible.value = y < 60;
+}
+
 </script>
 
 <template>
   <section class="hero d-flex align-items-center justify-content-center">
-    <div class="slides w-100 d-flex align-items-center justify-content-center">
+    <div class="slides w-100 d-flex flex-column align-items-center justify-content-center">
   <div class="slides-inner position-relative w-100 d-flex align-items-center justify-content-center" :style="{ height: slidesHeight }">
         <template v-for="(item, idx) in items" :key="item.id">
           <div
@@ -73,20 +84,24 @@ function positionFor(index: number) {
                   <MDBIcon icon="chevron-right" size="2x" class="text-white" />
                 </button>
               </template>
-            <!-- Only show the row of dots on the active slide -->
-            <div v-if="positionFor(idx) === 'active'" class="slide-dots-fixed d-flex justify-content-center align-items-center">
-              <span
-                v-for="(dot, dotIdx) in items"
-                :key="'dot-fixed-' + dot.id"
-                :class="['slide-dot', { 'slide-dot-fixed': true, active: dotIdx === current }]"
-                @click="current = dotIdx"
-                aria-label="Go to slide"
-              ></span>
-            </div>
+            <!-- per-slide dots removed; now rendered once below slides -->
           </div>
         </template>
 
-      </div>
+  <!-- global dots centered below the slides - moved into normal flow so flexbox can center them cleanly -->
+  </div>
+  <div class="slide-dots" :class="{ 'dots-hidden': !dotsVisible }" role="tablist" aria-label="Slide navigation">
+      <span v-for="(dot, dotIdx) in items"
+            :key="'dot-' + dot.id"
+            :class="['slide-dot', { active: dotIdx === current }]"
+            @click="current = dotIdx"
+            role="button"
+            tabindex="0"
+            @keydown.enter="current = dotIdx"
+            aria-label="Go to slide"
+      ></span>
+    </div>
+
     </div>
   </section>
 </template>
@@ -97,6 +112,7 @@ function positionFor(index: number) {
   padding-top: 0rem;
   background: $primary;
 }
+.slides { position: relative; }
 .slides-inner {
   max-width: 60%;
   perspective: 1000px;
@@ -186,8 +202,8 @@ function positionFor(index: number) {
   display: inline-block;
   margin: 0 0.22em;
   border-radius: 50%;
-  background: #181818;
-  opacity: 0.7;
+  opacity: 0.9;
+  transform: scale(1.2);
   transition: all 0.25s cubic-bezier(.2,.9,.2,1);
   cursor: pointer;
   width: 0.75em;
@@ -195,33 +211,22 @@ function positionFor(index: number) {
   box-shadow: 0 2px 8px #000a;
   border: 1px solid #fff;
 }
-.slide-dot .slide-dot-active-on-slide {
-  position: absolute;
-  left: 50%;
-  bottom: 0.5rem;
-  transform: translateX(-50%);
-  width: 1.1em;
-  height: 1.1em;
-  opacity: 1;
-  background: #222;
-  box-shadow: 0 4px 16px #000c;
-  z-index: 2002;
-  pointer-events: none;
+.slide-dot.active { transform: scale(1.8); }
+
+.slide-dots-wrapper {
+  display: flex;
+  justify-content: center;
 }
-.slide-dots-fixed {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0.5rem;
-  z-index: 2001;
-  width: 100%;
-  pointer-events: auto;
+
+.slides-inner { position: relative; }
+.slide-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.33rem;
+  align-items: center;
+  margin-top: -1.6rem; /* pull dots slightly up to sit closer under the slide */
+  z-index: 60; /* below arrows (1000) but above slide backgrounds */
+  transition: all 240ms cubic-bezier(.2,.9,.2,1);
 }
-.slide-dot.slide-dot-fixed.active {
-  background: #222;
-  opacity: 1;
-  width: 1em;
-  height: 1em;
-  box-shadow: 0 2px 8px #000c;
-}
+.dots-hidden { opacity: 0; pointer-events: none; transform: translateY(6px); }
 </style>
