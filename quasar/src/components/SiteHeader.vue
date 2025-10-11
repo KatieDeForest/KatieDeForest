@@ -8,7 +8,7 @@ import {
   MDBNavbarItem,
   MDBCollapse,
 } from 'mdb-vue-ui-kit';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import type { Ref } from 'vue';
 
 // Demo search data (replace with your real search logic)
@@ -88,6 +88,17 @@ function closeSearchModal() {
   searchQuery.value = '';
   searchResults.value = [];
 }
+
+function onGlobalOpenSearch() {
+  openSearchModal();
+}
+
+onMounted(() => {
+  window.addEventListener('open-search', onGlobalOpenSearch as EventListener);
+});
+onUnmounted(() => {
+  window.removeEventListener('open-search', onGlobalOpenSearch as EventListener);
+});
 </script>
 
 <template>
