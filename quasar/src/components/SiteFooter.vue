@@ -1,6 +1,6 @@
 <template>
   <footer class="site-footer px-4 py-3 position-relative">
-    <div class="d-flex flex-row justify-content-between align-items-start w-100">
+    <div class="footer-inner mx-auto d-flex flex-row justify-content-between align-items-start w-100">
       <div class="d-flex flex-column">
         <span class="footer-brand" v-bind:style="footerBrandStyle">Katie De Forest</span>
         <span class="footer-description mt-2">Fine art, portrait, and nature photography<br>Capturing emotion and light.</span>
@@ -62,6 +62,10 @@ const footerBrandStyle = computed(() => ({
   position: relative;
   padding-top: 1rem;
   padding-bottom: 0.5rem;
+}
+.footer-inner {
+  max-width: 1300px;
+  gap: 1.2rem;
 }
 .footer-links-legal {
   display: flex;
@@ -141,12 +145,6 @@ const footerBrandStyle = computed(() => ({
   -webkit-text-stroke: 0.5px #b5ffb5;
   transition: color 0.35s, text-shadow 0.35s;
   margin-bottom: 0.3rem;
-}
-@font-face {
-  font-family: 'CustomLeafFont';
-  src: url('/fonts/leavesfont.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
 }
 @font-face {
   font-family: 'CustomLeafFont';

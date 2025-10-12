@@ -13,7 +13,6 @@ function triggerSearch() {
     // dispatch a global event so the header (or any listener) can open the search UI
     window.dispatchEvent(new CustomEvent('open-search'));
 }
-
 </script>
 
 <style lang="scss" scoped>

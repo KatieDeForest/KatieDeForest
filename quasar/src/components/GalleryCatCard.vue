@@ -36,7 +36,6 @@ const categories = [
 					@click="router.push(`/gallery/${cat.name.replace(/\s+/g, '-').toLowerCase()}`)">
 					<div class="gallery-info-box">
 						<div class="text-h5">{{ cat.name }}</div>
-						<div class="text-body2 text-grey-6">{{ cat.description }}</div>
 					</div>
 					<div class="gallery-card-img-wrapper">
 						<q-img :src="cat.image" ratio="16/9" class="gallery-card-img" />
@@ -104,7 +103,7 @@ const categories = [
 	font-weight: 500;
 	position: relative;
 	z-index: 2;
-	height: 80px;
+	height: 56px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -117,10 +116,7 @@ const categories = [
 	font-weight: 700;
 }
 
-.gallery-info-box .text-body2 {
-	font-size: 1.08em;
-	color: #ffffff !important;
-}
+
 
 .gallery-card-img-wrapper {
 	width: 100%;
