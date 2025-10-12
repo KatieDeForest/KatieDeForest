@@ -1,13 +1,13 @@
 <template>
   <q-page>
     <GalleryHeroBanner />
-    <GalleryCard />
+    <GalleryCatCard />
     <SearchReminder />
   </q-page>
 </template>
 
 <script setup lang="ts">
-import GalleryCard from 'src/components/GalleryCard.vue';
+import GalleryCatCard from 'src/components/GalleryCatCard.vue';
 import GalleryHeroBanner from 'src/components/GalleryHeroBanner.vue';
 import SearchReminder from 'src/components/SearchReminder.vue';
 </script>
