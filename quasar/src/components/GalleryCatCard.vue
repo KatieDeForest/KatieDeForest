@@ -57,18 +57,20 @@ const categories = [
 }
 
 .gallery-cards {
-	display: flex;
-	flex-wrap: wrap;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(240px, 1fr));
 	gap: 3rem;
 	justify-content: center;
+	width: 100%;
+	max-width: 1200px;
 	perspective: 1200px;
 }
 
 .gallery-card {
-	flex: 1 1 380px;
+	display: block;
+	width: 100%;
 	max-width: 420px;
-	display: flex;
-	justify-content: center;
+	justify-self: start;
 }
 
 .gallery-card-outer {
