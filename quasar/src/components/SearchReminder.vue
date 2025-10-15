@@ -28,7 +28,7 @@ function triggerSearch() {
     font-size: 1.1rem;
 }
 .search-link {
-    color: lighten($accent, 20%);
+    color: $light-accent;
     text-decoration: underline;
     cursor: pointer;
 }
