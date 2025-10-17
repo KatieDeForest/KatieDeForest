@@ -118,12 +118,15 @@
                     :style="{ background: c }"
                     role="button"
                     tabindex="0"
-                    :aria-label="`Show hex color code ${c}`"
+                    :aria-label="`Show hex and RGB color codes ${c}`"
                     @click="showHexCode(i)"
                     @keyup.enter="showHexCode(i)"
                     @keyup.space="showHexCode(i)"
                   >
-                    <span class="hex-bubble" :class="{ show: hexCodeVisible[i] }">{{ c }}</span>
+                    <span class="hex-bubble" :class="{ show: hexCodeVisible[i] }">
+                      <span class="hex-line">{{ displayHex(c) }}</span>
+                      <span class="rgb-line" v-if="displayRgb(c)">{{ displayRgb(c) }}</span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -207,8 +210,9 @@ const currentShutter = computed(() => currentItem.value?.shutter ?? '1/125s');
 const currentFocal = computed(() => currentItem.value?.focalLength ?? '50mm');
 const currentColors = computed(() => currentItem.value?.colors ?? ['#444', '#666', '#888', '#aaa']);
 const currentAlt = computed(() => `${currentTitle.value} — ${displayName.value}`);
-const hasPrev = computed(() => currentIndex.value > 0);
-const hasNext = computed(() => currentIndex.value < albumImages.value.length - 1);
+// With wrap-around navigation, both are enabled if there is more than one image
+const hasPrev = computed(() => albumImages.value.length > 1);
+const hasNext = computed(() => albumImages.value.length > 1);
 
 function openLightbox(index: number) {
   currentIndex.value = index;
@@ -220,11 +224,17 @@ function closeLightbox() {
 }
 
 function prev() {
-  if (hasPrev.value) currentIndex.value -= 1;
+  const len = albumImages.value.length;
+  if (len === 0) return;
+  if (len === 1) { currentIndex.value = 0; return; }
+  currentIndex.value = (currentIndex.value - 1 + len) % len;
 }
 
 function next() {
-  if (hasNext.value) currentIndex.value += 1;
+  const len = albumImages.value.length;
+  if (len === 0) return;
+  if (len === 1) { currentIndex.value = 0; return; }
+  currentIndex.value = (currentIndex.value + 1) % len;
 }
 
 function onKey(e: KeyboardEvent) {
@@ -298,17 +308,80 @@ onMounted(() => {
 function showHexCode(i: number) {
   // bounds check
   if (i < 0 || i >= (currentColors.value?.length || 0)) return;
-  // show
+  // hide all other bubbles immediately (no need to wait their timers)
+  const count = currentColors.value?.length || 0;
+  for (let j = 0; j < count; j++) {
+    if (j === i) continue;
+    hexCodeVisible.value[j] = false;
+    const tj = hexCodeTimers.get(j);
+    if (tj) {
+      window.clearTimeout(tj);
+      hexCodeTimers.delete(j);
+    }
+  }
+
+  // show the clicked one
   hexCodeVisible.value[i] = true;
   // clear existing timer for this index
   const existing = hexCodeTimers.get(i);
   if (existing) window.clearTimeout(existing);
-  // hide after 900ms
+  // hide after 4000ms
   const timer = window.setTimeout(() => {
     hexCodeVisible.value[i] = false;
     hexCodeTimers.delete(i);
-  }, 2000);
+  }, 4000);
   hexCodeTimers.set(i, timer);
+}
+
+// Color formatting helpers for swatch bubble
+function isHexColor(s: string): boolean {
+  return /^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(s.trim());
+}
+
+function normalizeHex(s: string): string {
+  const v = s.trim();
+  if (!isHexColor(v)) return v;
+  const hex = v.slice(1);
+  if (hex.length === 3 || hex.length === 4) {
+    // expand short hex (#rgb or #rgba)
+    const r = hex[0];
+    const g = hex[1];
+    const b = hex[2];
+    // ignore alpha for display
+    return ('#' + r + r + g + g + b + b).toUpperCase();
+  }
+  // 6 or 8 (ignore alpha)
+  return ('#' + hex.slice(0, 6)).toUpperCase();
+}
+
+function parseRgb(s: string): { r: number; g: number; b: number } | null {
+  const v = s.trim();
+  if (isHexColor(v)) {
+    const h = normalizeHex(v).slice(1);
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return { r, g, b };
+  }
+  const rgbMatch = v.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(0|0?\.\d+|1(?:\.0+)?)\s*)?\)$/i);
+  if (rgbMatch) {
+    const r = Math.max(0, Math.min(255, parseInt(rgbMatch[1]!, 10)));
+    const g = Math.max(0, Math.min(255, parseInt(rgbMatch[2]!, 10)));
+    const b = Math.max(0, Math.min(255, parseInt(rgbMatch[3]!, 10)));
+    return { r, g, b };
+  }
+  // Could add hsl/hsla support later
+  return null;
+}
+
+function displayHex(c: string): string {
+  return isHexColor(c) ? normalizeHex(c) : c;
+}
+
+function displayRgb(c: string): string {
+  const rgb = parseRgb(c);
+  if (!rgb) return '';
+  return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
 }
 
 // ---------------------------
@@ -568,22 +641,55 @@ onBeforeUnmount(() => {
 }
 
 .nav-btn {
-  position: absolute;
+  /* Fixed so arrows remain centered on the screen; styled as vertical pill pillars */
+  position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--nav-pill-width, clamp(40px, 4.6vw, 64px));
+  height: var(--nav-pill-height, clamp(140px, 38vh, 420px));
+  /* light gray translucent “glass” look */
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.10));
   color: #fff;
-  border: none;
-  border-radius: 8px;
-  width: clamp(40px, 4vw, 72px);
-  height: clamp(40px, 4vw, 72px);
-  font-size: clamp(24px, 3vw, 48px);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.06);
+  backdrop-filter: saturate(120%) blur(2px);
+  -webkit-backdrop-filter: saturate(120%) blur(2px);
+  font-size: clamp(22px, 3.4vw, 46px);
   line-height: 1;
   cursor: pointer;
+  z-index: 1000; /* ensure above image/info */
+  user-select: none;
+  touch-action: manipulation;
+  transition: background 160ms ease, box-shadow 50ms ease, transform 180ms ease;
 }
 .nav-btn:disabled { opacity: 0.4; cursor: default; }
-.nav-btn.prev { left: 8px; }
-.nav-btn.next { right: 8px; }
+.nav-btn.prev { left: max(8px, env(safe-area-inset-left)); }
+.nav-btn.next { right: max(8px, env(safe-area-inset-right)); }
+
+/* Hover/active/focus states for better affordance */
+.nav-btn:hover:not(:disabled), .nav-btn:focus-visible:not(:disabled) {
+  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.15));
+  box-shadow: 0 8px 28px rgba(0,0,0,0.42), inset 0 0 0 1px rgba(255,255,255,0.10), 0 0 0 2px rgba(255,255,255,0.12);
+  outline: none;
+  transform: translateY(-50%) scale(1.05); /* grow more on hover */
+}
+
+.nav-btn:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.98);
+}
+
+/* Tweak size on small screens to keep the pillar usable but not overwhelming */
+@media (max-width: 600px) {
+  .nav-btn {
+    width: var(--nav-pill-width-sm, clamp(36px, 7vw, 56px));
+    height: var(--nav-pill-height-sm, clamp(120px, 32vh, 280px));
+    font-size: clamp(20px, 6.5vw, 38px);
+  }
+}
 
 .lightbox-info {
   background: #111;
@@ -697,8 +803,9 @@ onBeforeUnmount(() => {
   background: rgba(0,0,0,0.85);
   color: #fff;
   font-size: 12px;
-  padding: 2px 6px;
+  padding: 4px 8px;
   border-radius: 4px;
+  text-align: center;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
@@ -713,6 +820,15 @@ onBeforeUnmount(() => {
   opacity: 1;
   transform: translate(-50%, -6px); /* sit a bit higher above the swatch */
 }
+
+/* Two-line layout inside the bubble */
+.hex-bubble .hex-line,
+.hex-bubble .rgb-line {
+  display: block;
+  line-height: 1.2;
+}
+.hex-bubble .hex-line { font-weight: 600; }
+.hex-bubble .rgb-line { opacity: 0.9; }
 
 /* Center section typography */
 .info-center .title { font-size: clamp(16px, 1.8vw, 24px); font-weight: 600; }
