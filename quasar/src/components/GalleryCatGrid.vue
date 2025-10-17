@@ -141,7 +141,36 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { api } from 'src/boot/axios';
+import { useQuasar } from 'quasar'
 
+const $q = useQuasar()
+const data = ref(null)
+
+const accessToken = '6da5f6a26b0e6f924915b1ff5e259e8b1d4b8f0a14c4789e60fec9f4c31e56fecac73d0802ae61c784b6643d69ff9418be2395bcedfd42d78a941adf724c8c22408c2dce452d5992a45a9aae0d3a38914f6734b562eed540615aa923a0e01b1ec5fb362d8088bde2aefe8d720c5aa17fa123eb50e8068206ece6504fc11c1b3d';
+api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+
+async function fetchAlbum() {
+
+  try {
+    const response = await api.get('/api/photos?filters[collection][Title][$eq]=Nature&populate=*')
+    data.value = response.data;
+  }
+  catch (error) {
+    $q.notify({
+      color: 'negative',
+      position: 'top',
+      message: 'Error fetching album data',
+      icon: 'report_problem'
+    })
+    console.log('Error fetching album data:', error);
+  }
+}
+
+onMounted(async () => {
+  await fetchAlbum()
+  console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
+})
 const route = useRoute();
 
 // current album from route
