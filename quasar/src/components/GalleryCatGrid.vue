@@ -23,6 +23,27 @@
             loading="lazy"
             class="photo-item__img"
           />
+
+          <!-- Heart overlay (grid) -->
+          <div class="heart-overlay" role="group" aria-label="Like control">
+            <span class="grid-like-count" :class="{ pulse: gridPulseForIndex(idx) }">
+              {{ totalLikesForIndex(idx) }}
+            </span>
+            <q-btn
+              flat
+              dense
+              color="white"
+              size="sm"
+              class="like-heart-btn"
+               :class="{ pulse: gridPulseForIndex(idx), liked: isIndexLiked(idx) }"
+              :icon="isIndexLiked(idx) ? 'favorite' : 'favorite_border'"
+              :aria-pressed="isIndexLiked(idx) ? 'true' : 'false'"
+              :aria-label="heartAriaLabel(idx)"
+              @click.stop="onGridToggleLike(idx)"
+              @keyup.enter.stop="onGridToggleLike(idx)"
+              @keyup.space.stop.prevent="onGridToggleLike(idx)"
+            />
+          </div>
         </div>
       </div>
 
@@ -33,6 +54,19 @@
             <q-btn flat color="white" icon="close" aria-label="Close" @click="closeLightbox" />
             <div class="lightbox-title">{{ displayName }}</div>
             <div class="lightbox-spacer"></div>
+            <div class="lightbox-like">
+              <span class="lightbox-like-count" :class="{ pulse: likePulse }">{{ totalLikesCurrent }}</span>
+              <q-btn
+                flat
+                color="white"
+                :icon="isCurrentLiked ? 'favorite' : 'favorite_border'"
+                :aria-pressed="isCurrentLiked ? 'true' : 'false'"
+                :aria-label="isCurrentLiked ? 'Unlike this image' : 'Like this image'"
+                class="like-heart-btn"
+                 :class="{ pulse: likePulse, liked: isCurrentLiked }"
+                @click="toggleLikeCurrent"
+              />
+            </div>
           </div>
 
           <div class="lightbox-content">
@@ -276,6 +310,144 @@ function showHexCode(i: number) {
   }, 2000);
   hexCodeTimers.set(i, timer);
 }
+
+// ---------------------------
+// Likes (Hearts) with local storage and fake counts
+// ---------------------------
+type LikesMap = Record<string, boolean>;
+const likesStorageKey = 'gallery:likes:v1';
+const likesMap = ref<LikesMap>({});
+
+function loadLikes() {
+  try {
+    const raw = localStorage.getItem(likesStorageKey);
+    likesMap.value = raw ? (JSON.parse(raw) as LikesMap) : {};
+  } catch {
+    likesMap.value = {};
+  }
+}
+
+function saveLikes() {
+  try {
+    localStorage.setItem(likesStorageKey, JSON.stringify(likesMap.value));
+  } catch {
+    /* ignore */
+  }
+}
+
+function imageIdByIndex(index: number): string {
+  const item = albumImages.value[index];
+  if (!item) return `${category.value}:${index}`;
+  return item.fullUrl || item.url || `${category.value}:${index}`;
+}
+
+function isIdLiked(id: string): boolean {
+  return !!likesMap.value[id];
+}
+
+function toggleLikeById(id: string) {
+  const next = !likesMap.value[id];
+  likesMap.value = { ...likesMap.value, [id]: next };
+  saveLikes();
+}
+
+function isIndexLiked(index: number): boolean {
+  return isIdLiked(imageIdByIndex(index));
+}
+
+function toggleLikeForIndex(index: number) {
+  toggleLikeById(imageIdByIndex(index));
+}
+
+const isCurrentLiked = computed(() => isIndexLiked(currentIndex.value));
+function toggleLikeCurrent() {
+  toggleLikeForIndex(currentIndex.value);
+  pulseLike();
+}
+
+// Deterministic fake baseline count per image
+function hashString(s: string): number {
+  let h = 2166136261 >>> 0; // FNV-like hash
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    // mix
+    h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function baselineForId(id: string): number {
+  const h = hashString(id);
+  const min = 8;
+  const max = 220;
+  return min + (h % (max - min + 1));
+}
+
+function totalLikesForId(id: string): number {
+  return baselineForId(id) + (isIdLiked(id) ? 1 : 0);
+}
+
+function totalLikesForIndex(index: number): number {
+  return totalLikesForId(imageIdByIndex(index));
+}
+
+const totalLikesCurrent = computed(() => totalLikesForIndex(currentIndex.value));
+
+function heartAriaLabel(index: number): string {
+  return `${isIndexLiked(index) ? 'Unlike' : 'Like'} this image. Total likes: ${totalLikesForIndex(index)}`;
+}
+
+onMounted(loadLikes);
+
+// Lightbox like pulse animation
+const likePulse = ref(false);
+function pulseLike() {
+  likePulse.value = false;
+  // next tick-like delay to restart animation reliably
+  window.setTimeout(() => {
+    likePulse.value = true;
+    window.setTimeout(() => { likePulse.value = false; }, 320);
+  }, 0);
+}
+
+// Grid pulse per image id
+const gridPulseTimers = new Map<string, number>();
+const gridPulseIds = ref<Set<string>>(new Set());
+
+function triggerGridPulseForId(id: string) {
+  // remove then add next tick to restart animation
+  const clearExisting = new Set(gridPulseIds.value);
+  clearExisting.delete(id);
+  gridPulseIds.value = clearExisting;
+  const existing = gridPulseTimers.get(id);
+  if (existing) window.clearTimeout(existing);
+  window.setTimeout(() => {
+    const withId = new Set(gridPulseIds.value);
+    withId.add(id);
+    gridPulseIds.value = withId;
+    const t = window.setTimeout(() => {
+      const removed = new Set(gridPulseIds.value);
+      removed.delete(id);
+      gridPulseIds.value = removed;
+      gridPulseTimers.delete(id);
+    }, 320);
+    gridPulseTimers.set(id, t);
+  }, 0);
+}
+
+function gridPulseForIndex(index: number): boolean {
+  return gridPulseIds.value.has(imageIdByIndex(index));
+}
+
+function onGridToggleLike(index: number) {
+  toggleLikeForIndex(index);
+  triggerGridPulseForId(imageIdByIndex(index));
+}
+
+onBeforeUnmount(() => {
+  gridPulseTimers.forEach((t) => window.clearTimeout(t));
+  gridPulseTimers.clear();
+});
 </script>
 
 <style scoped lang="scss">
@@ -285,8 +457,9 @@ function showHexCode(i: number) {
 }
 
 .album-page {
-  width: 100%;
-  max-width: 1200px;
+  width: 80%;
+  /* allow full-width container without a numeric cap */
+  max-width: none;
   margin: 0 auto;
 }
 
@@ -298,8 +471,28 @@ function showHexCode(i: number) {
   width: 100%;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  /* Max 4 columns; tiles scale to fill available width */
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+}
+
+/* Step down columns as space decreases */
+@media (max-width: 1400px) {
+  .photo-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 980px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .photo-item {
@@ -307,6 +500,7 @@ function showHexCode(i: number) {
   overflow: hidden;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative; /* for heart overlay positioning */
 }
 
 .photo-item:hover {
@@ -527,4 +721,82 @@ function showHexCode(i: number) {
 @media (max-width: 600px) {
   .photo-grid { gap: 16px; }
 }
+
+/* Heart overlay in grid (match lightbox look) */
+.heart-overlay {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgb(0, 0, 0, 0.7);
+  color: #fff;
+  border-radius: 999px;
+  z-index: 2;
+  backdrop-filter: saturate(110%) blur(1.5px);
+}
+
+/* Lightbox like area */
+.lightbox-like { display: inline-flex; align-items: center; gap: 8px; }
+.lightbox-like-count {
+  font-size: var(--lightbox-like-font-size, clamp(14px, 1.6vw, 18px));
+  color: #fff;
+  opacity: 0.95;
+  font-weight: 700;
+}
+
+/* Grid like count uses its own variable so it can be sized independently */
+.grid-like-count {
+  font-size: var(--grid-like-font-size, 15px);
+  color: #fff;
+  opacity: 0.95;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* Clamp heart clickable area; neutralize external gutter padding */
+.heart-overlay .like-heart-btn {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1;
+  min-width: auto;
+}
+.heart-overlay .like-heart-btn :deep(i.q-icon) {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px; /* increase actual heart glyph size */
+}
+
+/* Pulse animation for like count and heart */
+@keyframes like-pulse {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.12); }
+  60% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+.pulse {
+  animation: like-pulse 280ms ease-out;
+}
+
+.like-heart-btn.pulse :deep(i.q-icon) {
+  animation: like-pulse 280ms ease-out;
+}
+
+/* Red glow on hover/focus and persistent red when liked */
+.like-heart-btn:focus-visible :deep(i.q-icon),
+.like-heart-btn:hover :deep(i.q-icon) {
+  filter: drop-shadow(0 0 6px rgba(255, 90, 118, 0.9));
+}
+
+.like-heart-btn.liked :deep(i.q-icon) {
+  color: #ff5a76 !important;
+  filter: drop-shadow(0 0 6px rgba(255, 90, 118, 0.85));
+}
+
 </style>
