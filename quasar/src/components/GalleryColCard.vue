@@ -1,44 +1,27 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import frontpageBanner from 'src/assets/frontpagebanner.jpg';
+import useCollections from 'src/composables/useCollections';
 
 const router = useRouter();
-const categories = [
-  {
-    name: 'Featured Album',
-    description: 'A showcase of my best works.',
-    image: frontpageBanner
-  },
-  {
-    name: 'Nature Collection',
-    description: 'Landscapes, wildlife.',
-    image: frontpageBanner
-  },
-  {
-    name: 'Urban Scenes',
-    description: 'City life and architecture.',
-    image: frontpageBanner
-  },
-  {
-    name: 'Studio Works',
-    description: 'Portraits and creative studio shots.',
-    image: frontpageBanner
-  }
-];
+const { collections, slugify } = useCollections();
+
+// attach an image per collection for the card view (keeps data DRY)
+const cardCollections = collections.map((c) => ({ ...c, image: frontpageBanner }));
 </script>
 
 <template>
 	<div class="gallery-page q-pa-xl column">
-		<!-- <h1 class="text-h3 q-mb-lg">Main Gallery Categories</h1> -->
+		<!-- <h1 class="text-h3 q-mb-lg">Main Gallery collections</h1> -->
 		<div class="gallery-cards">
-			<div v-for="cat in categories" :key="cat.name" class="gallery-card">
+			<div v-for="col in cardCollections" :key="col.slug" class="gallery-card">
 				<q-card class="gallery-card-outer q-hoverable" style="width: 100%; max-width: 350px; cursor: pointer;"
-					@click="router.push(`/gallery/${cat.name.replace(/\s+/g, '-').toLowerCase()}`)">
+					@click="router.push(`/gallery/${slugify(col.name)}`)">
 					<div class="gallery-info-box">
-						<div class="text-h5">{{ cat.name }}</div>
+						<div class="text-h5">{{ col.name }}</div>
 					</div>
 					<div class="gallery-card-img-wrapper">
-						<q-img :src="cat.image" ratio="16/9" class="gallery-card-img" />
+						<q-img :src="col.image" ratio="16/9" class="gallery-card-img" />
 					</div>
 				</q-card>
 			</div>

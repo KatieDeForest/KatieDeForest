@@ -1,14 +1,9 @@
 <template>
-  <div class="album-bg">
-    <div class="album-page q-pa-lg">
-      <div class="album-header q-mb-md">
-        <div class="text-h5">{{ displayName }}</div>
-        <div class="text-subtitle2 text-grey-7">Showing images for this album</div>
-      </div>
-
+  <div class="collection-bg">
+    <div class="collection-page q-pa-lg">
       <div class="photo-grid" aria-live="polite">
         <div
-          v-for="(item, idx) in albumImages"
+          v-for="(item, idx) in collectionImages"
           :key="idx"
           class="photo-item q-hoverable"
           role="button"
@@ -107,7 +102,7 @@
               </div>
               <div class="info-center">
                 <div class="title">{{ currentTitle }}</div>
-                <div class="count">Image {{ currentIndex + 1 }} of {{ albumImages.length }}</div>
+                <div class="count">Image {{ currentIndex + 1 }} of {{ collectionImages.length }}</div>
               </div>
               <div class="info-right" aria-label="Color Theme">
                 <div class="palette">
@@ -173,12 +168,12 @@ onMounted(async () => {
 })
 const route = useRoute();
 
-// current album from route
-const category = computed(() => (route.params.category as string) || '');
+// current collection from route
+const collection = computed(() => (route.params.collection as string) || '');
 
 // simple title case for header
 const toTitleCase = (s: string) => s.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
-const displayName = computed(() => (category.value ? toTitleCase(category.value) : 'Album'));
+const displayName = computed(() => (collection.value ? toTitleCase(collection.value) : 'Collection'));
 
 type ImageMeta = {
   url: string; // legacy main url
@@ -192,8 +187,8 @@ type ImageMeta = {
   colors: string[]; // up to 4 hex/rgb
 };
 
-// per-album visible placeholders with basic EXIF-like metadata and color theme
-const makeAlbumPlaceholders = (slug: string): ImageMeta[] => {
+// per-collection visible placeholders with basic EXIF-like metadata and color theme
+const makeCollectionPlaceholders = (slug: string): ImageMeta[] => {
   const apertures = ['f/1.8', 'f/2', 'f/2.8', 'f/4', 'f/5.6'];
   const shutters = ['1/60s', '1/125s', '1/250s', '1/500s', '1/1000s'];
   const focals = ['24mm', '35mm', '50mm', '85mm', '135mm'];
@@ -204,7 +199,7 @@ const makeAlbumPlaceholders = (slug: string): ImageMeta[] => {
     ['#0a9396', '#94d2bd', '#e9d8a6', '#ee9b00'],
     ['#2d3142', '#4f5d75', '#bfc0c0', '#ef8354'],
   ];
-  const seed = encodeURIComponent(slug || 'album');
+  const seed = encodeURIComponent(slug || 'collection');
   return Array.from({ length: 12 }, (_, i) => {
     const aperture = apertures[i % apertures.length] ?? 'f/2.8';
     const shutter = shutters[i % shutters.length] ?? '1/125s';
@@ -224,13 +219,13 @@ const makeAlbumPlaceholders = (slug: string): ImageMeta[] => {
   });
 };
 
-const albumImages = computed<ImageMeta[]>(() => makeAlbumPlaceholders(category.value));
+const collectionImages = computed<ImageMeta[]>(() => makeCollectionPlaceholders(collection.value));
 
 // Lightbox state
 const isLightboxOpen = ref(false);
 const currentIndex = ref(0);
 
-const currentItem = computed(() => albumImages.value[currentIndex.value] ?? null);
+const currentItem = computed(() => collectionImages.value[currentIndex.value] ?? null);
 const currentFullImage = computed(() => currentItem.value?.fullUrl || currentItem.value?.url || '');
 const currentTitle = computed(() => currentItem.value?.title ?? `Image ${currentIndex.value + 1}`);
 const currentISO = computed(() => currentItem.value?.iso ?? 100);
@@ -240,8 +235,8 @@ const currentFocal = computed(() => currentItem.value?.focalLength ?? '50mm');
 const currentColors = computed(() => currentItem.value?.colors ?? ['#444', '#666', '#888', '#aaa']);
 const currentAlt = computed(() => `${currentTitle.value} — ${displayName.value}`);
 // With wrap-around navigation, both are enabled if there is more than one image
-const hasPrev = computed(() => albumImages.value.length > 1);
-const hasNext = computed(() => albumImages.value.length > 1);
+const hasPrev = computed(() => collectionImages.value.length > 1);
+const hasNext = computed(() => collectionImages.value.length > 1);
 
 function openLightbox(index: number) {
   currentIndex.value = index;
@@ -253,14 +248,14 @@ function closeLightbox() {
 }
 
 function prev() {
-  const len = albumImages.value.length;
+  const len = collectionImages.value.length;
   if (len === 0) return;
   if (len === 1) { currentIndex.value = 0; return; }
   currentIndex.value = (currentIndex.value - 1 + len) % len;
 }
 
 function next() {
-  const len = albumImages.value.length;
+  const len = collectionImages.value.length;
   if (len === 0) return;
   if (len === 1) { currentIndex.value = 0; return; }
   currentIndex.value = (currentIndex.value + 1) % len;
@@ -283,7 +278,7 @@ function onKey(e: KeyboardEvent) {
 onMounted(() => window.addEventListener('keydown', onKey));
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 
-// Lightbox info collapse with global persistence across albums
+// Lightbox info collapse with global persistence across collections
 const isInfoCollapsed = ref(false);
 const collapseStorageKey = 'gallery:infoCollapsed';
 
@@ -310,9 +305,9 @@ function toggleInfo() {
   saveCollapseState();
 }
 
-// Load on mount (same for every album); keep watch to reload if route logic ever reuses component
+// Load on mount (same for every collection); keep watch to reload if route logic ever reuses component
 onMounted(loadCollapseState);
-watch(category, () => loadCollapseState());
+watch(collection, () => loadCollapseState());
 
 // Palette swatch: click to show hex color code temporarily
 const hexCodeVisible = ref<boolean[]>([]);
@@ -438,9 +433,9 @@ function saveLikes() {
 }
 
 function imageIdByIndex(index: number): string {
-  const item = albumImages.value[index];
-  if (!item) return `${category.value}:${index}`;
-  return item.fullUrl || item.url || `${category.value}:${index}`;
+  const item = collectionImages.value[index];
+  if (!item) return `${collection.value}:${index}`;
+  return item.fullUrl || item.url || `${collection.value}:${index}`;
 }
 
 function isIdLiked(id: string): boolean {
@@ -550,24 +545,23 @@ onBeforeUnmount(() => {
   gridPulseTimers.forEach((t) => window.clearTimeout(t));
   gridPulseTimers.clear();
 });
+
 </script>
 
 <style scoped lang="scss">
-.album-bg {
+.collection-bg {
   background: $primary;
   min-height: 100vh;
 }
 
-.album-page {
+.collection-page {
   width: 80%;
   /* allow full-width container without a numeric cap */
   max-width: none;
   margin: 0 auto;
 }
 
-.album-header {
-  text-align: center;
-}
+
 
 .photo-grid {
   width: 100%;
