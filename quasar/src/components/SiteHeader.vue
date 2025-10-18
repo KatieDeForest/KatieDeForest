@@ -130,22 +130,22 @@ onUnmounted(() => {
             </MDBNavbarItem>
           </MDBNavbarNav>
           <!-- Brand name -->
-            <div class="position-absolute start-50 translate-middle-x">
-            <router-link to="/" class="brand-link">
-              <MDBNavbarBrand class="brand-text brand-size-lg">Katie De Forest</MDBNavbarBrand>
+          <div class="brand-wrapper">
+            <router-link to="/" class="brand-text">
+              <MDBNavbarBrand class="brand-text">Katie De Forest</MDBNavbarBrand>
             </router-link>
           </div>
           <!-- Header controls: search only -->
-          <div class="d-flex w-auto justify-content-end me-3 align-items-center">
+          <div class="d-flex w-auto justify-content-end align-items-center">
             <button
-              class="btn btn-link p-0 globe-btn control-btn"
+              class="control-btn"
               aria-label="Select language"
               @click="openLanguageModal"
             >
               <MDBIcon icon="globe" size="sm" class="text-white" />
             </button>
             <button
-              class="btn btn-link p-0 me-2 control-btn"
+              class="control-btn"
               aria-label="Open search"
               @click="openSearchModal"
             >
@@ -212,13 +212,6 @@ onUnmounted(() => {
   font-weight: 500;
   font-style: normal;
 }
-.brand-link {
-  text-decoration: none !important;
-  color: inherit !important;
-  all: unset;
-  display: inline-block;
-  cursor: pointer;
-}
 /* Brand text class replacing JS style object */
 .brand-text {
   font-family: 'CustomLeafFont', serif;
@@ -231,10 +224,23 @@ onUnmounted(() => {
   transition: color 0.35s, text-shadow 0.35s;
   text-transform: none;
   display: inline-block;
-}
-.brand-size-lg {
+  margin: 0px;
+  padding: 0px;
   font-size: 2.85rem;
+  line-height: 1; /* prevent extra vertical spacing */
 }
+/* Brand wrapper centers the brand and keeps its hitbox tight */
+.brand-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-block; /* shrink-to-fit */
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+/* `.brand-link` removed — styles consolidated into `.brand-text` */
 .search-modal-content {
   background: #181818;
   padding: 2.5em 2.5em 2.5em 2.5em;
@@ -277,21 +283,6 @@ onUnmounted(() => {
   font-weight: 400;
   margin-top: 2px;
 }
-.language-option {
-  margin-bottom: 0.2em;
-  padding-bottom: 0.2em;
-}
-.globe-btn:hover,
-.globe-btn:focus {
-  color: #fff !important;
-  background: none !important;
-  text-decoration: none !important;
-}
-.btn-link[aria-label="Open search"]:hover,
-.btn-link[aria-label="Open search"]:focus {
-  background: none !important;
-  text-decoration: none !important;
-}
 .live-search-results {
   max-height: 220px;
   overflow-y: auto;
@@ -333,40 +324,42 @@ onUnmounted(() => {
   cursor: pointer;
   z-index: 1;
 }
-/* Custom spacing for globe (language) button */
-.globe-btn {
-  margin-right: 1.2em;
-}
 .nav-item-text {
   font-size: 1.15em;
   color: inherit;
   /* softer green glow similar to brand but reduced intensity */
   text-shadow: 0 1px 0 #222, 0 3px 8px rgba(0,0,0,0.7), 0 0 6px rgba(57,255,20,0.45);
   -webkit-text-stroke: 0.25px rgba(181,255,181,0.85);
-  transition: color 0.25s, text-shadow 0.25s;
+  display: inline-block; /* allow transform without shifting layout */
+  transition: color 0.22s ease, text-shadow 0.22s ease, transform 160ms ease;
 }
 .nav-item-text:hover {
   /* slightly increase glow on hover */
-  text-shadow: 0 1px 0 #222, 0 4px 12px rgba(0,0,0,0.75), 0 0 8px rgba(57,255,20,0.6);
+  text-shadow: 0 1px 0 #222, 0 4px 12px rgba(0,0,0,1), 0 0 8px rgba(57,255,20,1);
+  transform: translateY(-2px);
 }
-
 /* Shared control buttons (globe, search) use same softer brand glow */
 .control-btn {
   color: inherit;
-  font-size: 1em;
+  font-size: 1.2em;
   background: none !important;
   border: none;
-  padding: 0;
+  margin-right: 10px;
+  padding: 8px;
+  min-width: 40px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-shadow: 0 1px 0 #222, 0 3px 8px rgba(0,0,0,0.7), 0 0 6px rgba(57,255,20,0.45);
   -webkit-text-stroke: 0.25px rgba(181,255,181,0.85);
-  transition: color 0.25s, text-shadow 0.25s;
+  transition: color 0.22s ease, text-shadow 0.22s ease, transform 160ms ease;
+  will-change: transform, text-shadow;
 }
 .control-btn:hover,
 .control-btn:focus {
-  text-shadow: 0 1px 0 #222, 0 4px 12px rgba(0,0,0,0.75), 0 0 8px rgba(57,255,20,0.6);
+  text-shadow: 0 1px 0 #222, 0 4px 12px rgba(0,0,0,1), 0 0 8px rgba(57,255,20,1);
   color: inherit;
+  transform: translateY(-2px);
 }
 </style>
