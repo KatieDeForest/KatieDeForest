@@ -8,7 +8,7 @@ import {
   MDBNavbarItem,
   MDBCollapse,
 } from 'mdb-vue-ui-kit';
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import type { Ref } from 'vue';
 
 // Demo search data (replace with your real search logic)
@@ -41,20 +41,9 @@ watch(searchQuery, (val) => {
   }
 });
 
-// Brand style
-const brandFontStyle = computed(() => ({
-  fontFamily: 'CustomLeafFont, serif',
-  fontWeight: 500,
-  fontStyle: 'italic',
-  letterSpacing: '0.08em',
-  fontSize: '1.9rem',
-  color: 'inherit',
-  // green glow similar to previous design
-  textShadow: '0 2px 0 #222, 0 6px 14px #000, 0 0 8px #39ff14, 0 0 2px #7fff7f',
-  WebkitTextStroke: '0.5px #b5ffb5',
-  transition: 'color 0.35s, text-shadow 0.35s',
-  textTransform: 'none',
-}));
+// NOTE: Replaced JS computed inline style with a CSS class `.brand-text` in the
+// <style scoped> block below. If you need to change font family/size or the
+// glow effect, edit the .brand-text rules instead of the JS.
 
 const collapse1 = ref(false);
 const showSearchModal = ref(false);
@@ -128,39 +117,37 @@ onUnmounted(() => {
           <!-- Navigation links -->
           <MDBNavbarNav class="mb-2 mb-lg-0 flex-grow-1">
             <MDBNavbarItem to="/" active>
-              <span class="text-white" style="font-size:1.15em;">Home</span>
+              <span class="text-white nav-item-text">Home</span>
             </MDBNavbarItem>
             <MDBNavbarItem to="/gallery" active>
-              <span class="text-white" style="font-size:1.15em;">Gallery</span>
+              <span class="text-white nav-item-text">Gallery</span>
             </MDBNavbarItem>
             <MDBNavbarItem to="/about">
-              <span class="text-white" style="font-size:1.15em;">About Me</span>
+              <span class="text-white nav-item-text">About Me</span>
             </MDBNavbarItem>
             <MDBNavbarItem to="/contact">
-              <span class="text-white" style="font-size:1.15em;">Contact</span>
+              <span class="text-white nav-item-text">Contact</span>
             </MDBNavbarItem>
           </MDBNavbarNav>
           <!-- Brand name -->
-          <div class="position-absolute start-50 translate-middle-x">
+            <div class="position-absolute start-50 translate-middle-x">
             <router-link to="/" class="brand-link">
-              <MDBNavbarBrand :style="{...brandFontStyle, fontSize: '2.85rem'}">Katie De Forest</MDBNavbarBrand>
+              <MDBNavbarBrand class="brand-text brand-size-lg">Katie De Forest</MDBNavbarBrand>
             </router-link>
           </div>
           <!-- Header controls: search only -->
           <div class="d-flex w-auto justify-content-end me-3 align-items-center">
             <button
-              class="btn btn-link p-0 globe-btn"
+              class="btn btn-link p-0 globe-btn control-btn"
               aria-label="Select language"
               @click="openLanguageModal"
-              style="color: #fff; font-size: 1em;"
             >
               <MDBIcon icon="globe" size="sm" class="text-white" />
             </button>
             <button
-              class="btn btn-link p-0 me-2"
+              class="btn btn-link p-0 me-2 control-btn"
               aria-label="Open search"
               @click="openSearchModal"
-              style="color: #fff; font-size: 1em;"
             >
               <MDBIcon icon="search" size="sm" class="text-white" />
             </button>
@@ -231,6 +218,22 @@ onUnmounted(() => {
   all: unset;
   display: inline-block;
   cursor: pointer;
+}
+/* Brand text class replacing JS style object */
+.brand-text {
+  font-family: 'CustomLeafFont', serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: inherit;
+  text-shadow: 0 2px 0 #222, 0 6px 14px #000, 0 0 8px #39ff14, 0 0 2px #7fff7f;
+  -webkit-text-stroke: 0.5px #b5ffb5;
+  transition: color 0.35s, text-shadow 0.35s;
+  text-transform: none;
+  display: inline-block;
+}
+.brand-size-lg {
+  font-size: 2.85rem;
 }
 .search-modal-content {
   background: #181818;
@@ -333,5 +336,37 @@ onUnmounted(() => {
 /* Custom spacing for globe (language) button */
 .globe-btn {
   margin-right: 1.2em;
+}
+.nav-item-text {
+  font-size: 1.15em;
+  color: inherit;
+  /* softer green glow similar to brand but reduced intensity */
+  text-shadow: 0 1px 0 #222, 0 3px 8px rgba(0,0,0,0.7), 0 0 6px rgba(57,255,20,0.45);
+  -webkit-text-stroke: 0.25px rgba(181,255,181,0.85);
+  transition: color 0.25s, text-shadow 0.25s;
+}
+.nav-item-text:hover {
+  /* slightly increase glow on hover */
+  text-shadow: 0 1px 0 #222, 0 4px 12px rgba(0,0,0,0.75), 0 0 8px rgba(57,255,20,0.6);
+}
+
+/* Shared control buttons (globe, search) use same softer brand glow */
+.control-btn {
+  color: inherit;
+  font-size: 1em;
+  background: none !important;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 1px 0 #222, 0 3px 8px rgba(0,0,0,0.7), 0 0 6px rgba(57,255,20,0.45);
+  -webkit-text-stroke: 0.25px rgba(181,255,181,0.85);
+  transition: color 0.25s, text-shadow 0.25s;
+}
+.control-btn:hover,
+.control-btn:focus {
+  text-shadow: 0 1px 0 #222, 0 4px 12px rgba(0,0,0,0.75), 0 0 8px rgba(57,255,20,0.6);
+  color: inherit;
 }
 </style>
