@@ -1,65 +1,95 @@
 <template>
   <div class="error-wrapper">
-    <div class="error-inner">
       <div class="error-header">{{ title }}</div>
 
       <div class="error-description">{{ description }}</div>
 
-      <q-btn
-        class="error-btn"
-        to="/"
-        label="Go Home"
-        no-caps
-      />
-    </div>
+      <!-- Small live-search so 404 visitors can look around without using header icon -->
+      <div class="error-search">
+        <input
+          v-model="searchQuery"
+          type="search"
+          class="error-search-input"
+          placeholder="Search the site..."
+          aria-label="Search the site"
+        />
+
+        <div v-if="searchQuery.trim().length > 0" class="live-search-results">
+          <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">No results found.</div>
+          <ul v-else class="list-group">
+            <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
+              {{ result }}
+            </li>
+          </ul>
+        </div>
+      </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { withDefaults, defineProps } from 'vue';
+import { ref, watch, type Ref } from 'vue';
 
 const props = withDefaults(defineProps<{
   title?: string;
   description?: string;
 }>(), {
-  title: '404',
+  title: '404: Page not found',
   description: 'Oops. Nothing here...'
 });
 
 const { title, description } = props;
+
+// Reuse the header's demo search data and logic for the 404 search bar
+const allResults = [
+  'Gallery',
+  'About Me',
+  'Contact',
+  'Featured Album',
+  'Nature Collection',
+  'Urban Scenes',
+  'Studio Works',
+  'Photography',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Art',
+  'Blog'
+];
+
+const searchQuery = ref('');
+const searchResults: Ref<string[]> = ref([]);
+
+watch(searchQuery, (val) => {
+  if (val.trim().length > 0) {
+    const q = val.trim().toLowerCase();
+    searchResults.value = allResults.filter(item => item.toLowerCase().startsWith(q));
+  } else {
+    searchResults.value = [];
+  }
+});
 </script>
 
 <style scoped lang="scss">
-/* Replicate Quasar utility classes used previously: fullscreen bg-blue text-white text-center q-pa-md flex flex-center */
 .error-wrapper {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
+  height: 100%;
   align-items: center;
-  justify-content: center;
   text-align: center;
   background-color: $primary;
   color: #ffffff;
-  padding: 0;
-  z-index: 10;
-}
-
-.error-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
   padding: 16px;
-  box-sizing: border-box;
 }
 
 .error-header {
   box-sizing: border-box;
-  font-size: 24vh; /* large code size, adjust as needed */
+  font-size: 5vh;
 }
 
 .error-description {
+  font-size: 2vh;
   opacity: 0.4;
 }
 
@@ -81,5 +111,43 @@ const { title, description } = props;
 .error-btn:hover,
 .error-btn:focus {
   background: #f4f4f4;
+}
+
+.error-search {
+  margin-top: 1.25rem;
+  width: 100%;
+  max-width: 540px;
+}
+.error-search-input {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #121212;
+  color: #fff;
+  font-size: 1rem;
+}
+.live-search-results {
+  max-height: 40vh;
+  overflow-y: auto;
+  margin-top: 0.5em;
+}
+.live-search-results ul {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.live-search-results .list-group-item {
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 0.5em;
+  border-radius: 8px;
+  background: #232323 !important;
+  border: 1px solid #333;
+  box-shadow: 0 2px 8px #0002;
+  padding: 0.75em 1em;
+  font-size: 1.1em;
+}
+.live-search-results .list-group-item:hover {
+  background: #222 !important;
 }
 </style>
