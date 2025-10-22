@@ -17,6 +17,8 @@ function triggerSearch() {
 
 <style lang="scss" scoped>
 .search-reminder {
+    display: flex;
+    flex-direction: column;
     background: $primary;
     text-align: center;
 }
