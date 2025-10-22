@@ -8,8 +8,7 @@ import {
   MDBNavbarItem,
   MDBCollapse,
 } from 'mdb-vue-ui-kit';
-import { ref, watch, onMounted, onUnmounted } from 'vue';
-import type { Ref } from 'vue';
+import { ref, watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
 
 // Demo search data (replace with your real search logic)
 const allResults = [
@@ -22,23 +21,59 @@ const allResults = [
   'Studio Works',
   'Photography',
   'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
+  'Phone',
   'Art',
   'Blog'
 ];
 
 const searchQuery = ref('');
-const searchResults: Ref<string[]> = ref([]);
+// Derive searchResults from searchQuery using a computed — clearer and more
+// idiomatic than manually syncing a ref via a watcher.
+const searchResults = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase();
+  if (!q) return [] as string[];
+  return allResults.filter(item => item.toLowerCase().startsWith(q));
+});
 
-watch(searchQuery, (val) => {
-  if (val.trim().length > 0) {
-    // Only show results that start with the search query
-    const query = val.trim().toLowerCase();
-    searchResults.value = allResults.filter(item =>
-      item.toLowerCase().startsWith(query)
-    );
-  } else {
-    searchResults.value = [];
+// template ref for the search input so we can programmatically focus it
+const searchInput = ref<HTMLInputElement | null>(null);
+
+// timers for JS-driven staggered reveal (cleared when modal closes)
+const _revealTimers: number[] = [];
+
+// searchResults is now computed from searchQuery; no manual watcher required.
+
+// When searchResults changes, add a JS-driven staggered 'revealed' class to each item
+watch(searchResults, async (val) => {
+  // clear any pending timers first
+  while (_revealTimers.length) {
+    const t = _revealTimers.pop();
+    if (t) clearTimeout(t);
   }
+
+  if (!val || val.length === 0) return;
+
+  // wait for DOM to update
+  await nextTick();
+
+  const items = document.querySelectorAll('.live-search-results .list-group-item');
+  // remove any existing revealed classes
+  items.forEach(i => i.classList.remove('revealed'));
+
+  // stagger adding 'revealed' via setTimeout — small gaps to avoid heavy parallel work
+  const gap = 90; // ms between items (match CSS nth-child delays)
+  items.forEach((el, idx) => {
+    const t = window.setTimeout(() => {
+      (el as HTMLElement).classList.add('revealed');
+    }, idx * gap);
+    _revealTimers.push(t);
+  });
 });
 
 // NOTE: Replaced JS computed inline style with a CSS class `.brand-text` in the
@@ -67,19 +102,42 @@ function selectLanguage(code: string) {
   closeLanguageModal();
 }
 
-function openSearchModal() {
+async function openSearchModal() {
   showSearchModal.value = true;
   searchQuery.value = '';
-  searchResults.value = [];
+  // wait for DOM to render the input, then focus it for immediate typing
+  await nextTick();
+  if (searchInput.value) {
+    try {
+      searchInput.value.focus();
+      // select any prefilled text (usually empty) so typing replaces it
+      searchInput.value.select();
+    } catch {
+      // ignore focus errors (some browsers may block focus in certain contexts)
+    }
+  }
 }
 function closeSearchModal() {
   showSearchModal.value = false;
   searchQuery.value = '';
-  searchResults.value = [];
+  // cleanup any pending reveal timers and classes
+  while (_revealTimers.length) {
+    const t = _revealTimers.pop();
+    if (t) clearTimeout(t);
+  }
+  const items = document.querySelectorAll('.live-search-results .list-group-item');
+  items.forEach(i => i.classList.remove('revealed'));
+  // blur the input to release any focus when closing
+  if (searchInput.value) {
+    try { searchInput.value.blur(); } catch { /* ignore */ }
+  }
 }
 
 function onGlobalOpenSearch() {
-  openSearchModal();
+  // The call returns a Promise (async function). It's intentionally not awaited
+  // because the event handler should not block. Mark it with `void` to
+  // satisfy the `@typescript-eslint/no-floating-promises` rule.
+  void openSearchModal();
 }
 
 onMounted(() => {
@@ -152,60 +210,64 @@ onUnmounted(() => {
               <MDBIcon icon="search" size="sm" class="text-white" />
             </button>
           </div>
-              <!-- Search Modal -->
-              <div v-if="showSearchModal" class="search-modal-overlay">
+              <!-- Search Modal (teleported to body so it overlays entire page) -->
+              <teleport to="body" v-if="showSearchModal">
+                <div class="search-modal-overlay">
                   <div class="search-modal-content">
-                  <button class="close-btn" @click="closeSearchModal" aria-label="Close search">&times;</button>
-                  <input
-                    v-model="searchQuery"
-                    type="search"
-                    class="form-control bg-dark text-white border-0"
-                    placeholder="Type your search..."
-                    style="font-size:1.2em; margin-bottom: 1em;"
-                    autofocus
-                  />
-                  <div v-if="searchQuery.trim().length > 0" class="live-search-results">
-                    <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">No results found.</div>
-                    <ul v-else class="list-group">
-                      <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
-                        {{ result }}
+                    <button class="close-btn" @click="closeSearchModal" aria-label="Close search">&times;</button>
+                    <input
+                      ref="searchInput"
+                      v-model="searchQuery"
+                      type="search"
+                      class="form-control"
+                      placeholder="Type your search..."
+                      autofocus
+                    />
+                    <div v-if="searchQuery.trim().length > 0" class="live-search-results">
+                      <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">No results found.</div>
+                      <ul v-else class="list-group">
+                        <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
+                          {{ result }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </teleport>
+              <!-- Language Modal (teleported to body) -->
+              <teleport to="body" v-if="showLanguageModal">
+                <div class="search-modal-overlay">
+                  <div class="language-modal-content">
+                    <button class="close-btn" @click="closeLanguageModal" aria-label="Close language">&times;</button>
+                    <div class="d-flex align-items-center mb-3">
+                      <h5 class="mb-0 me-2">Select Language</h5>
+                      <span class="manual-translations-label">(Manual Translations)</span>
+                    </div>
+                    <ul class="list-group">
+                      <li
+                        v-for="(lang) in languages"
+                        :key="lang.code"
+                        class="list-group-item bg-dark text-white border-0 d-flex flex-column align-items-stretch language-option"
+                        :style="{ cursor: 'pointer', fontWeight: selectedLanguage === lang.code ? 'bold' : 'normal' }"
+                        @click="selectLanguage(lang.code)"
+                      >
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                          <span>{{ lang.name }}</span>
+                          <span v-if="selectedLanguage === lang.code" style="font-size:1.2em;">
+                            <MDBIcon icon="check" size="sm" style="color: #39ff14;" />
+                          </span>
+                        </div>
                       </li>
                     </ul>
                   </div>
                 </div>
-              </div>
-              <!-- Language Modal -->
-              <div v-if="showLanguageModal" class="search-modal-overlay">
-                  <div class="language-modal-content">
-                  <button class="close-btn" @click="closeLanguageModal" aria-label="Close language">&times;</button>
-                  <div class="d-flex align-items-center mb-3">
-                    <h5 class="mb-0 me-2">Select Language</h5>
-                    <span class="manual-translations-label">(Manual Translations)</span>
-                  </div>
-                  <ul class="list-group">
-                    <li
-                      v-for="(lang) in languages"
-                      :key="lang.code"
-                      class="list-group-item bg-dark text-white border-0 d-flex flex-column align-items-stretch language-option"
-                      :style="{ cursor: 'pointer', fontWeight: selectedLanguage === lang.code ? 'bold' : 'normal' }"
-                      @click="selectLanguage(lang.code)"
-                    >
-                      <div class="d-flex justify-content-between align-items-center w-100">
-                        <span>{{ lang.name }}</span>
-                        <span v-if="selectedLanguage === lang.code" style="font-size:1.2em;">
-                          <MDBIcon icon="check" size="sm" style="color: #39ff14;" />
-                        </span>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              </teleport>
         </div>
       </MDBCollapse>
     </MDBNavbar>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 @font-face {
   font-family: 'CustomLeafFont';
   src: url('/fonts/leavesfont.ttf') format('truetype');
@@ -243,16 +305,47 @@ onUnmounted(() => {
 /* `.brand-link` removed — styles consolidated into `.brand-text` */
 .search-modal-content {
   background: #181818;
-  padding: 2.5em 2.5em 2.5em 2.5em;
-  border-radius: 12px;
-  width: 30%;
-  height: 50%;
-  box-shadow: 0 8px 32px #000a;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  width: min(520px, 86%);
+  max-width: 520px;
+  height: auto;
+  max-height: calc(100vh - 7rem); /* leave a bit more space from top */
+  box-shadow: 0 8px 48px #000a;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  box-sizing: border-box;
+  /* keep modal content contained */
+  overflow: hidden;
 }
+
+.live-search-results .list-group-item {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 520ms ease-out, transform 520ms ease-out;
+  will-change: transform, opacity;
+}
+
+/* JS-driven revealed state (added by watcher) */
+.live-search-results .list-group-item.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger items for top-to-bottom flow (small gaps to avoid heavy parallel work) */
+.live-search-results .list-group-item:nth-child(1) { animation-delay: 80ms; }
+.live-search-results .list-group-item:nth-child(2) { animation-delay: 120ms; }
+.live-search-results .list-group-item:nth-child(3) { animation-delay: 160ms; }
+.live-search-results .list-group-item:nth-child(4) { animation-delay: 200ms; }
+.live-search-results .list-group-item:nth-child(5) { animation-delay: 240ms; }
+.live-search-results .list-group-item:nth-child(6) { animation-delay: 280ms; }
+.live-search-results .list-group-item:nth-child(7) { animation-delay: 320ms; }
+.live-search-results .list-group-item:nth-child(8) { animation-delay: 360ms; }
+.live-search-results .list-group-item:nth-child(9) { animation-delay: 400ms; }
+.live-search-results .list-group-item:nth-child(10) { animation-delay: 440ms; }
+
 .search-modal-overlay {
   position: fixed;
   top: 0;
@@ -261,9 +354,41 @@ onUnmounted(() => {
   height: 100vh;
   background: rgba(0,0,0,0.7);
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* align to top */
   justify-content: center;
+  padding-top: 5rem; /* space from the very top - nudged down a bit */
   z-index: 3000;
+  will-change: opacity;
+  animation: liveContainerFade 300ms ease-out both;
+}
+
+@keyframes liveContainerFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.search-modal-content .form-control {
+  border-radius: 8px;
+  color: white;
+  background-color: $primary;
+  width: 97%;      /* visual box width */
+  max-width: 100%;   /* stay responsive on small screens */
+  padding: 0.5rem 1rem; /* slightly tighter padding without changing font */
+  margin: 0 auto;    /* center inside the modal */
+  margin-left: 0rem; /* push the search input down inside the modal for breathing room */
+  font-size: inherit; /* keep font size unchanged */
+  box-sizing: border-box;
+}
+/* Focus styles for search input use the project's $light-accent color */
+.search-modal-content .form-control:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.15rem rgba($light-accent, 0.18), 0 0 12px rgba($light-accent, 0.25);
+  border-color: $light-accent;
+}
+/* Attempt to style browser autofill background on supported browsers */
+.search-modal-content .form-control:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px $primary inset;
+  box-shadow: 0 0 0px 1000px $primary inset;
+  -webkit-text-fill-color: #ffffff;
 }
 .language-modal-content {
   background: #181818;
@@ -276,6 +401,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  
 }
 .manual-translations-label {
   font-size: 0.95em;
@@ -284,9 +410,9 @@ onUnmounted(() => {
   margin-top: 2px;
 }
 .live-search-results {
-  max-height: 220px;
+  max-height: 60vh; /* show more results before scrolling */
   overflow-y: auto;
-  margin-top: -0.5em;
+  margin-top: 0.75rem;
 }
 .live-search-results ul {
   padding-left: 0;
@@ -304,25 +430,28 @@ onUnmounted(() => {
   font-size: 1.1em;
 }
 .live-search-results .list-group-item:hover {
-  background: #222 !important;
+  /* Add a subtle green tint on hover using the project's light accent */
+  background: mix($light-accent, #3a3a3a, 12%) !important;
+  border-color: rgba($light-accent, 0.18);
+  box-shadow: 0 2px 8px #0002, inset 0 0 10px rgba($light-accent, 0.06);
 }
 .close-btn {
   position: absolute;
-  top: 0.1em;
-  right: 0.1em;
-  width: 36px;
-  height: 36px;
+  top: 0em;
+  right: 0em;
+  width: 28px;
+  height: 28px;
   padding: 0;
   background: none;
   border: none;
   color: #b5ffb5;
-  font-size: 2em;
+  font-size: 1.75em;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 1;
+  z-index: 80; /* above modal */
 }
 .nav-item-text {
   font-size: 1.15em;
