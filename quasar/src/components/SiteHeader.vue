@@ -377,6 +377,8 @@ onUnmounted(() => {
   margin-left: 0rem; /* push the search input down inside the modal for breathing room */
   font-size: inherit; /* keep font size unchanged */
   box-sizing: border-box;
+  transition: box-shadow 240ms ease, border-color 200ms ease;
+  will-change: box-shadow, border-color;
 }
 /* Focus styles for search input use the project's $light-accent color */
 .search-modal-content .form-control:focus {
