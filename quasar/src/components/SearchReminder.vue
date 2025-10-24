@@ -3,7 +3,7 @@
         <span class="hero-search-reminder">
             Looking for something specific? (e.g Mountains)<br>
             Use the <span class="search-link" @click="triggerSearch">search button</span> in the
-            header to find images by tag!
+            top of the page, to find images by tag!
         </span>
     </div>
 </template>
