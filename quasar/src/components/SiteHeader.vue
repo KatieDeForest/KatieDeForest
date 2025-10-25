@@ -46,6 +46,8 @@ const searchInput = ref<HTMLInputElement | null>(null);
 
 // timers for JS-driven staggered reveal (cleared when modal closes)
 const _revealTimers: number[] = [];
+// separate timers for the language modal reveal so we don't mix with search timers
+const _langRevealTimers: number[] = [];
 
 // searchResults is now computed from searchQuery; no manual watcher required.
 
@@ -93,18 +95,51 @@ const languages = [
 const selectedLanguage = ref('en');
 function openLanguageModal() {
   showLanguageModal.value = true;
+  // prevent background scroll when language modal opens (coordinate with search modal)
+  try {
+    if (_prevBodyOverflow === null) _prevBodyOverflow = document.body.style.overflow || null;
+    document.body.style.overflow = 'hidden';
+  } catch {
+    /* ignore */
+  }
 }
 function closeLanguageModal() {
   showLanguageModal.value = false;
+  // only restore body scroll if no other modal (search) is open
+  try {
+    if (!showSearchModal.value) {
+      if (_prevBodyOverflow === null) {
+        document.body.style.overflow = '';
+      } else {
+        document.body.style.overflow = _prevBodyOverflow;
+      }
+      _prevBodyOverflow = null;
+    }
+  } catch {
+    /* ignore */
+  }
 }
 function selectLanguage(code: string) {
   selectedLanguage.value = code;
   closeLanguageModal();
 }
 
+// Save previous body overflow so we can restore it when the modal closes
+let _prevBodyOverflow: string | null = null;
+
 async function openSearchModal() {
   showSearchModal.value = true;
   searchQuery.value = '';
+  // Prevent the main page from scrolling while the modal is open. The modal
+  // itself (teleported to body) contains `.live-search-results` which already
+  // has `overflow-y: auto` so it can scroll independently.
+  try {
+    _prevBodyOverflow = document.body.style.overflow || null;
+    document.body.style.overflow = 'hidden';
+  } catch {
+    _prevBodyOverflow = null;
+  }
+
   // wait for DOM to render the input, then focus it for immediate typing
   await nextTick();
   if (searchInput.value) {
@@ -117,9 +152,22 @@ async function openSearchModal() {
     }
   }
 }
+
 function closeSearchModal() {
   showSearchModal.value = false;
   searchQuery.value = '';
+  // restore page scroll
+  try {
+    if (_prevBodyOverflow === null) {
+      document.body.style.overflow = '';
+    } else {
+      document.body.style.overflow = _prevBodyOverflow;
+    }
+    _prevBodyOverflow = null;
+  } catch {
+    /* ignore */
+  }
+
   // cleanup any pending reveal timers and classes
   while (_revealTimers.length) {
     const t = _revealTimers.pop();
@@ -145,6 +193,43 @@ onMounted(() => {
 });
 onUnmounted(() => {
   window.removeEventListener('open-search', onGlobalOpenSearch as EventListener);
+  // restore body overflow if component is destroyed while modal open
+  try {
+    if (document && document.body) {
+      document.body.style.overflow = '';
+    }
+  } catch {
+    /* ignore */
+  }
+});
+
+// Watcher to create the same staggered 'revealed' animation for language items
+watch(showLanguageModal, async (open) => {
+  // clear any pending language timers first
+  while (_langRevealTimers.length) {
+    const t = _langRevealTimers.pop();
+    if (t) clearTimeout(t);
+  }
+
+  if (!open) {
+    // remove revealed classes when closed
+    const items = document.querySelectorAll('.language-modal-content .list-group-item');
+    items.forEach(i => i.classList.remove('revealed'));
+    return;
+  }
+
+  // wait for DOM to render
+  await nextTick();
+  const items = document.querySelectorAll('.language-modal-content .list-group-item');
+  items.forEach(i => i.classList.remove('revealed'));
+
+  const gap = 90;
+  items.forEach((el, idx) => {
+    const t = window.setTimeout(() => {
+      (el as HTMLElement).classList.add('revealed');
+    }, idx * gap);
+    _langRevealTimers.push(t);
+  });
 });
 </script>
 
@@ -394,16 +479,66 @@ onUnmounted(() => {
 }
 .language-modal-content {
   background: #181818;
-  padding: 1em 1.2em 1em 1.2em;
+  padding: 1em 1.2em;
   border-radius: 12px;
-  width: 30%;
-  height: 35%;
+  /* Scale modal size with viewport while keeping sensible min/max bounds.
+     - Width grows with viewport (vw) but is clamped between a minimum and maximum.
+     - Typography also scales a little using clamp(). */
+  /* keep a stable base width so scaling visually enlarges the modal without making it wider */
+  width: min(420px, 92%);
   box-shadow: 0 8px 32px #000a;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  
+  box-sizing: border-box;
+  /* scale visually on larger monitors while keeping the modal's intrinsic width stable.
+     --lang-scale is 1 on typical viewports and grows above 1 on wide screens; it's clamped
+     to a reasonable maximum. We then scale the element and compensate internal max-heights
+     so the scaled result never exceeds the viewport. */
+  --lang-scale: clamp(1, calc(100vw / 1600), 1.6);
+  transform-origin: center;
+  transform: scale(var(--lang-scale));
+  max-height: calc(78vh / var(--lang-scale)); /* keep scaled modal within viewport */
+  font-size: clamp(0.95rem, 1.0vw, 1.25rem);
+}
+
+/* Make the language list scrollable and prevent items from wrapping or reflowing when zooming */
+.language-modal-content .list-group {
+  padding-left: 0;
+  margin: 0;
+  overflow-y: auto;
+  /* compensate for the scale so the visible list area fits inside the viewport */
+  max-height: calc((78vh - 5.2rem) / var(--lang-scale));
+}
+
+.language-modal-content .language-option {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.language-modal-content .list-group-item {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 520ms ease-out, transform 520ms ease-out;
+  will-change: transform, opacity;
+  cursor: pointer;
+  margin-bottom: 0.5em;
+  border-radius: 8px;
+  background: #232323 !important;
+  border: 1px solid #333;
+  box-shadow: 0 2px 8px #0002;
+  padding: 0.75em 1em;
+  font-size: 1.1em;
+}
+.language-modal-content .list-group-item.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.language-modal-content .list-group-item:hover {
+  background: mix($light-accent, #3a3a3a, 12%) !important;
+  border-color: rgba($light-accent, 0.18);
+  box-shadow: 0 2px 8px #0002, inset 0 0 10px rgba($light-accent, 0.06);
 }
 .manual-translations-label {
   font-size: 0.95em;
@@ -412,7 +547,7 @@ onUnmounted(() => {
   margin-top: 2px;
 }
 .live-search-results {
-  max-height: 60vh; /* show more results before scrolling */
+  max-height: 40%;
   overflow-y: auto;
   margin-top: 0.75rem;
 }
