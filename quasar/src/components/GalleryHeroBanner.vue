@@ -1,13 +1,15 @@
 <template>
     <div class="hero-banner q-pa-xl">
-        <h1 class="hero-title q-mb-md">Welcome to my Gallery!</h1>
+        <h1 class="hero-title q-mb-md">{{ t('hero.galleryWelcomeTitle') }}</h1>
         <p class="hero-description q-mb-lg">
-            Explore a curated collection of beautiful images and creative works.
+            {{ t('hero.galleryWelcomeDescription') }}
         </p>
     </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 </script>
 
 <style lang="scss" scoped>

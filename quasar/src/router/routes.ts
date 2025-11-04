@@ -2,6 +2,11 @@ import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
+    path: '/:catchAll(.*)*',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ErrorNotFoundPage.vue') }],
+  },
+  {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
@@ -9,21 +14,14 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/gallery',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/GalleryCatPage.vue') }],
+    children: [{ path: '', component: () => import('pages/GalleryColPage.vue') }],
   },
   {
-    path: '/gallery/:category',
+    path: '/gallery/:collection',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/GalleryPage.vue') },
     ],
-  },
-
-  // Always leave this as last one,
-  // but you can also remove it
-  {
-    path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
   },
 ];
 
