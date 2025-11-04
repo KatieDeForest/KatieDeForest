@@ -5,6 +5,8 @@ import useCollections from 'src/composables/useCollections';
 
 const router = useRouter();
 const { collections, slugify } = useCollections();
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 // attach an image per collection for the card view (keeps data DRY)
 const cardCollections = collections.map((c) => ({ ...c, image: frontpageBanner }));
@@ -18,7 +20,7 @@ const cardCollections = collections.map((c) => ({ ...c, image: frontpageBanner }
 				<q-card class="gallery-card-outer q-hoverable" style="width: 100%; max-width: 350px; cursor: pointer;"
 					@click="router.push(`/gallery/${slugify(col.name)}`)">
 					<div class="gallery-info-box">
-						<div class="text-h5">{{ col.name }}</div>
+						<div class="text-h5">{{ t(`collections.${col.slug}.name`) || col.name }}</div>
 					</div>
 					<div class="gallery-card-img-wrapper">
 						<q-img :src="col.image" ratio="16/9" class="gallery-card-img" />

@@ -1,22 +1,24 @@
 <template>
   <div class="error-wrapper">
-      <div class="error-header">{{ title }}</div>
+      <div class="error-header">{{ effectiveTitle }}</div>
 
-      <div class="error-description">{{ description }}</div>
+      <div class="error-description">{{ effectiveDescription }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   title?: string;
   description?: string;
-}>(), {
-  title: '404: Page not found',
-  description: 'Oops. Nothing here...'
-});
+}>();
 
-const { title, description } = props;
+const { t } = useI18n();
+
+const effectiveTitle = computed(() => props.title ?? t('error.notFoundTitle'));
+const effectiveDescription = computed(() => props.description ?? t('error.notFoundDescription'));
 </script>
 
 <style scoped lang="scss">

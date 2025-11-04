@@ -20,6 +20,7 @@
     "mdb-vue-ui-kit": "^6.0.0",
     "quasar": "^2.16.0",
     "vue": "3.5.20",
+    "vue-i18n": "^11.1.12",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {

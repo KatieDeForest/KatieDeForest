@@ -7,6 +7,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import useCollections from 'src/composables/useCollections';
 
@@ -15,15 +16,18 @@ const { findCollectionBySlug } = useCollections();
 
 const slugFromRoute = computed(() => (route.params.collection as string) || '');
 
+const { t } = useI18n();
+
 const title = computed(() => {
     const meta = findCollectionBySlug(slugFromRoute.value);
-    if (meta) return meta.name;
-    return slugFromRoute.value ? slugFromRoute.value.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : 'Welcome to my Gallery!';
+    if (meta) return t(`collections.${meta.slug}.name`) || meta.name;
+    return slugFromRoute.value ? slugFromRoute.value.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : t('collection.defaultTitle');
 });
 
 const description = computed(() => {
     const meta = findCollectionBySlug(slugFromRoute.value);
-    return meta ? meta.description : 'Explore a curated collection of beautiful images and creative works.';
+    if (meta) return t(`collections.${meta.slug}.description`) || meta.description;
+    return t('collection.defaultDescription');
 });
 </script>
 

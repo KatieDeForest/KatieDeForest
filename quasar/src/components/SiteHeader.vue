@@ -9,6 +9,8 @@ import {
   MDBCollapse,
 } from 'mdb-vue-ui-kit';
 import { ref, watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { MessageLanguages } from 'src/boot/i18n';
 
 // Demo search data (replace with your real search logic)
 const allResults = [
@@ -83,6 +85,7 @@ watch(searchResults, async (val) => {
 // glow effect, edit the .brand-text rules instead of the JS.
 
 const collapse1 = ref(false);
+const { t, locale } = useI18n();
 const showSearchModal = ref(false);
 const showLanguageModal = ref(false);
 const languages = [
@@ -92,7 +95,21 @@ const languages = [
   { code: 'no', name: 'Norsk' },
   { code: 'sv', name: 'Svenska' }
 ].sort((a, b) => a.name.localeCompare(b.name));
-const selectedLanguage = ref('en');
+
+const STORAGE_KEY = 'app:locale';
+
+// Identity mapping for current locales; keep compatibility for any stored 'en-US'
+function codeToLocale(code: string): string {
+  // Accept legacy 'en-US' input but normalize to 'en'
+  if (code === 'en-US') return 'en';
+  return code;
+}
+function localeToCode(loc: string): string {
+  if (loc === 'en-US') return 'en';
+  return loc;
+}
+
+const selectedLanguage = ref(localeToCode(String(locale.value)) || 'en');
 function openLanguageModal() {
   showLanguageModal.value = true;
   // prevent background scroll when language modal opens (coordinate with search modal)
@@ -121,6 +138,9 @@ function closeLanguageModal() {
 }
 function selectLanguage(code: string) {
   selectedLanguage.value = code;
+  const target = codeToLocale(code);
+  locale.value = target as MessageLanguages;
+  try { localStorage.setItem(STORAGE_KEY, code); } catch { /* ignore */ }
   closeLanguageModal();
 }
 
@@ -190,6 +210,15 @@ function onGlobalOpenSearch() {
 
 onMounted(() => {
   window.addEventListener('open-search', onGlobalOpenSearch as EventListener);
+  // initialize from storage if present
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const normalized = codeToLocale(stored);
+      selectedLanguage.value = normalized;
+      locale.value = normalized as MessageLanguages;
+    }
+  } catch { /* ignore */ }
 });
 onUnmounted(() => {
   window.removeEventListener('open-search', onGlobalOpenSearch as EventListener);
@@ -260,16 +289,16 @@ watch(showLanguageModal, async (open) => {
           <!-- Navigation links -->
           <MDBNavbarNav class="mb-2 mb-lg-0 flex-grow-1">
             <MDBNavbarItem to="/" active>
-              <span class="text-white nav-item-text">Home</span>
+              <span class="text-white nav-item-text">{{ t('nav.home') }}</span>
             </MDBNavbarItem>
             <MDBNavbarItem to="/gallery" active>
-              <span class="text-white nav-item-text">Gallery</span>
+              <span class="text-white nav-item-text">{{ t('nav.gallery') }}</span>
             </MDBNavbarItem>
             <MDBNavbarItem to="/about">
-              <span class="text-white nav-item-text">About Me</span>
+              <span class="text-white nav-item-text">{{ t('nav.about') }}</span>
             </MDBNavbarItem>
             <MDBNavbarItem to="/contact">
-              <span class="text-white nav-item-text">Contact</span>
+              <span class="text-white nav-item-text">{{ t('nav.contact') }}</span>
             </MDBNavbarItem>
           </MDBNavbarNav>
           <!-- Brand name -->
@@ -282,14 +311,14 @@ watch(showLanguageModal, async (open) => {
           <div class="d-flex w-auto justify-content-end align-items-center">
             <button
               class="control-btn"
-              aria-label="Select language"
+              :aria-label="t('aria.selectLanguage')"
               @click="openLanguageModal"
             >
               <MDBIcon icon="globe" size="sm" class="text-white" />
             </button>
             <button
               class="control-btn"
-              aria-label="Open search"
+              :aria-label="t('aria.openSearch')"
               @click="openSearchModal"
             >
               <MDBIcon icon="search" size="sm" class="text-white" />
@@ -299,17 +328,17 @@ watch(showLanguageModal, async (open) => {
               <teleport to="body" v-if="showSearchModal">
                 <div class="search-modal-overlay">
                   <div class="search-modal-content">
-                    <button class="close-btn" @click="closeSearchModal" aria-label="Close search">&times;</button>
+                    <button class="close-btn" @click="closeSearchModal" :aria-label="t('aria.closeSearch')">&times;</button>
                     <input
                       ref="searchInput"
                       v-model="searchQuery"
                       type="search"
                       class="form-control"
-                      placeholder="Type your search..."
+                      :placeholder="t('search.placeholder')"
                       autofocus
                     />
                     <div v-if="searchQuery.trim().length > 0" class="live-search-results">
-                      <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">No results found.</div>
+                      <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">{{ t('search.noResults') }}</div>
                       <ul v-else class="list-group">
                         <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
                           {{ result }}
@@ -323,10 +352,10 @@ watch(showLanguageModal, async (open) => {
               <teleport to="body" v-if="showLanguageModal">
                 <div class="search-modal-overlay">
                   <div class="language-modal-content">
-                    <button class="close-btn" @click="closeLanguageModal" aria-label="Close language">&times;</button>
+                    <button class="close-btn" @click="closeLanguageModal" :aria-label="t('aria.closeLanguage')">&times;</button>
                     <div class="d-flex align-items-center mb-3">
-                      <h5 class="mb-0 me-2">Select Language</h5>
-                      <span class="manual-translations-label">(Manual Translations)</span>
+                      <h5 class="mb-0 me-2">{{ t('header.selectLanguage') }}</h5>
+                      <span class="manual-translations-label">{{ t('header.manualTranslations') }}</span>
                     </div>
                     <ul class="list-group">
                       <li
@@ -392,10 +421,11 @@ watch(showLanguageModal, async (open) => {
   background: #181818;
   padding: 0.8rem 1rem;
   border-radius: 10px;
-  width: min(520px, 86%);
-  max-width: 520px;
+  /* match language modal width exactly */
+  width: min(520px, 94%);
+  max-width: 640px;
   height: auto;
-  max-height: calc(100vh - 7rem); /* leave a bit more space from top */
+  max-height: calc(80vh - 7rem); /* leave a bit more space from top */
   box-shadow: 0 8px 48px #000a;
   position: relative;
   display: flex;
@@ -457,10 +487,10 @@ watch(showLanguageModal, async (open) => {
   background-color: $primary;
   width: 97%;      /* visual box width */
   max-width: 100%;   /* stay responsive on small screens */
-  padding: 0.5rem 1rem; /* slightly tighter padding without changing font */
+  padding: 0.5rem 1.2rem; /* slightly tighter padding without changing font */
   margin: 0 auto;    /* center inside the modal */
   margin-left: 0rem; /* push the search input down inside the modal for breathing room */
-  font-size: inherit; /* keep font size unchanged */
+  font-size: 1.3em; /* keep font size unchanged */
   box-sizing: border-box;
   transition: box-shadow 240ms ease, border-color 200ms ease;
   will-change: box-shadow, border-color;
@@ -484,22 +514,20 @@ watch(showLanguageModal, async (open) => {
   /* Scale modal size with viewport while keeping sensible min/max bounds.
      - Width grows with viewport (vw) but is clamped between a minimum and maximum.
      - Typography also scales a little using clamp(). */
-  /* keep a stable base width so scaling visually enlarges the modal without making it wider */
-  width: min(420px, 92%);
+  /* match search modal width exactly */
+  width: min(520px, 94%);
+  max-width: 640px;
   box-shadow: 0 8px 32px #000a;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   box-sizing: border-box;
-  /* scale visually on larger monitors while keeping the modal's intrinsic width stable.
-     --lang-scale is 1 on typical viewports and grows above 1 on wide screens; it's clamped
-     to a reasonable maximum. We then scale the element and compensate internal max-heights
-     so the scaled result never exceeds the viewport. */
-  --lang-scale: clamp(1, calc(100vw / 1600), 1.6);
+  /* disable visual scaling so width matches search modal exactly */
+  --lang-scale: 1;
   transform-origin: center;
-  transform: scale(var(--lang-scale));
-  max-height: calc(78vh / var(--lang-scale)); /* keep scaled modal within viewport */
+  transform: none;
+  max-height: 78vh; /* keep within viewport */
   font-size: clamp(0.95rem, 1.0vw, 1.25rem);
 }
 
@@ -564,7 +592,7 @@ watch(showLanguageModal, async (open) => {
   border: 1px solid #333;
   box-shadow: 0 2px 8px #0002;
   padding: 0.75em 1em;
-  font-size: 1.1em;
+  font-size: 1.3em;
 }
 .live-search-results .list-group-item:hover {
   /* Add a subtle green tint on hover using the project's light accent */
