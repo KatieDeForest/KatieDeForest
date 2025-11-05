@@ -273,7 +273,7 @@ watch(showLanguageModal, async (open) => {
       color: '#fff',
       fontSize: '1.2em',
       padding: '0.5em 0',
-      boxShadow: '0 6px 32px rgba(0,0,0,0.5)',
+      boxShadow: '0 6px 32px rgba(0,0,0,0.65), 0 10px 50px rgba(66,150,112,0.32), 0 24px 50px rgba(0,0,0,0.45)',
       top: 0,
       left: 0,
       right: 0,
