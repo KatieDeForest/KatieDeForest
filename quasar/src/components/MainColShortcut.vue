@@ -126,6 +126,8 @@ const items = reactive([
   font-size: 1.45rem;
   font-weight: 400;
   opacity: 0.94;
+  /* Concentrate paragraph width without affecting the flex item sizing */
+  max-width: 35ch;
 }
 .image-placeholder {
   width: 90%;
@@ -169,11 +171,18 @@ const items = reactive([
 .gallery-row.artistic:not(.reverse) .gallery-text {
   text-align: left;
   /* Add more regular-specific styles here */
+  /* Create breathing room from the outer (right) edge without shifting layout */
+  padding-right: clamp(24px, 6vw, 80px);
 }
 .gallery-row.artistic.reverse .gallery-text {
   text-align: right;
   /* Add more reverse-specific styles here */
+  /* Create breathing room from the outer (left) edge without shifting layout */
+  padding-left: clamp(24px, 6vw, 80px);
 }
+/* Anchor the description block toward the inner edge depending on orientation */
+.gallery-row.artistic.reverse .gallery-text .text-body1 { margin-left: auto; margin-right: 0; }
+.gallery-row.artistic:not(.reverse) .gallery-text .text-body1 { margin-left: 0; margin-right: 0; }
 
 /* Absolutely positioned link to limit click area strictly to the card box */
 .card-click-overlay {
