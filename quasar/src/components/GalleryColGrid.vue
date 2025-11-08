@@ -255,7 +255,7 @@ function mapStrapiToImages(resp: any): ImageMeta[] {
       thumbUrl: thumb,
       fullUrl: full,
       // keep other fields as simple placeholders so rest of UI works
-      title: entry?.collection?.Title ?? entry?.Title ?? `Photo ${entry?.id ?? '1'}`,
+      title: entry?.Title ?? `Photo ${entry?.id ?? '1'}`,
       iso: 100,
       aperture: 'f/2.8',
       shutter: '1/125s',
