@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { MDBIcon } from 'mdb-vue-ui-kit';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const items = [
   { id: 1, img: '/src/assets/frontpagebanner.jpg' },
@@ -72,15 +75,15 @@ function onScroll() {
           >
             <img
               :src="item.img"
-              alt="Slide image"
+              :alt="t('carousel.slideAlt')"
               class="slide-img"
             />
               <!-- arrows inside images, only on active slide -->
               <template v-if="positionFor(idx) === 'active'">
-                <button class="carousel-arrow left btn btn-link text-white" @click="prev" aria-label="Previous slide">
+                <button class="carousel-arrow left btn btn-link text-white" @click="prev" :aria-label="t('carousel.prev')">
                   <MDBIcon icon="chevron-left" size="2x" class="text-white" />
                 </button>
-                <button class="carousel-arrow right btn btn-link text-white" @click="next" aria-label="Next slide">
+                <button class="carousel-arrow right btn btn-link text-white" @click="next" :aria-label="t('carousel.next')">
                   <MDBIcon icon="chevron-right" size="2x" class="text-white" />
                 </button>
               </template>
@@ -98,7 +101,7 @@ function onScroll() {
             role="button"
             tabindex="0"
             @keydown.enter="current = dotIdx"
-            aria-label="Go to slide"
+            :aria-label="t('carousel.goToSlide')"
       ></span>
     </div>
 

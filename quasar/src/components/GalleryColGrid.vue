@@ -20,7 +20,7 @@
           />
 
           <!-- Heart overlay (grid) -->
-          <div class="heart-overlay" role="group" aria-label="Like control">
+          <div class="heart-overlay" role="group" :aria-label="t('lightbox.like')">
             <span class="grid-like-count" :class="{ pulse: gridPulseForIndex(idx) }">
               {{ totalLikesForIndex(idx) }}
             </span>
@@ -46,7 +46,7 @@
       <q-dialog v-model="isLightboxOpen" maximized persistent transition-show="slide-up" transition-hide="slide-down">
   <div class="lightbox-container" :class="{ 'info-collapsed': isInfoCollapsed }">
           <div class="lightbox-toolbar">
-            <q-btn flat color="white" icon="close" aria-label="Close" @click="closeLightbox" />
+            <q-btn flat color="white" icon="close" :aria-label="t('lightbox.close')" @click="closeLightbox" />
             <div class="lightbox-title">{{ displayName }}</div>
             <div class="lightbox-spacer"></div>
             <div class="lightbox-like">
@@ -56,7 +56,7 @@
                 color="white"
                 :icon="isCurrentLiked ? 'favorite' : 'favorite_border'"
                 :aria-pressed="isCurrentLiked ? 'true' : 'false'"
-                :aria-label="isCurrentLiked ? 'Unlike this image' : 'Like this image'"
+                :aria-label="isCurrentLiked ? t('lightbox.unlike') : t('lightbox.like')"
                 class="like-heart-btn"
                  :class="{ pulse: likePulse, liked: isCurrentLiked }"
                 @click="toggleLikeCurrent"
@@ -65,9 +65,9 @@
           </div>
 
           <div class="lightbox-content">
-            <button class="nav-btn prev" aria-label="Previous" @click="prev" :disabled="!hasPrev">‹</button>
+            <button class="nav-btn prev" :aria-label="t('lightbox.prev')" @click="prev" :disabled="!hasPrev">‹</button>
             <img :src="currentFullImage" :alt="currentAlt" class="lightbox-img" />
-            <button class="nav-btn next" aria-label="Next" @click="next" :disabled="!hasNext">›</button>
+            <button class="nav-btn next" :aria-label="t('lightbox.next')" @click="next" :disabled="!hasNext">›</button>
           </div>
 
           <div class="lightbox-info-wrap">
@@ -81,7 +81,7 @@
               <button
                 class="info-toggle"
                 :aria-expanded="!isInfoCollapsed"
-                :title="isInfoCollapsed ? 'Show details' : 'Hide details'"
+                :title="isInfoCollapsed ? t('lightbox.showDetails') : t('lightbox.hideDetails')"
                 @click="toggleInfo"
                 @keyup.enter="toggleInfo"
                 @keyup.space="toggleInfo"
@@ -102,9 +102,9 @@
               </div>
               <div class="info-center">
                 <div class="title">{{ currentTitle }}</div>
-                <div class="count">Image {{ currentIndex + 1 }} of {{ collectionImages.length }}</div>
+                <div class="count">{{ t('lightbox.imageCount', { current: currentIndex + 1, total: collectionImages.length }) }}</div>
               </div>
-              <div class="info-right" aria-label="Color Theme">
+              <div class="info-right" :aria-label="t('lightbox.colorTheme')">
                 <div class="palette">
                   <div
                     v-for="(c, i) in currentColors"
@@ -113,7 +113,7 @@
                     :style="{ background: c }"
                     role="button"
                     tabindex="0"
-                    :aria-label="`Show hex and RGB color codes ${c}`"
+                    :aria-label="t('lightbox.showColorCodes', { color: c })"
                     @click="showHexCode(i)"
                     @keyup.enter="showHexCode(i)"
                     @keyup.space="showHexCode(i)"
@@ -136,44 +136,23 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { api } from 'src/boot/axios';
-import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n';
 
-const $q = useQuasar()
-const data = ref(null)
-
-const accessToken = '6da5f6a26b0e6f924915b1ff5e259e8b1d4b8f0a14c4789e60fec9f4c31e56fecac73d0802ae61c784b6643d69ff9418be2395bcedfd42d78a941adf724c8c22408c2dce452d5992a45a9aae0d3a38914f6734b562eed540615aa923a0e01b1ec5fb362d8088bde2aefe8d720c5aa17fa123eb50e8068206ece6504fc11c1b3d';
-api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-
-async function fetchAlbum() {
-
-  try {
-    const response = await api.get('/api/photos?filters[collection][Title][$eq]=Nature&populate=*')
-    data.value = response.data;
-  }
-  catch (error) {
-    $q.notify({
-      color: 'negative',
-      position: 'top',
-      message: 'Error fetching album data',
-      icon: 'report_problem'
-    })
-    console.log('Error fetching album data:', error);
-  }
-}
-
-onMounted(async () => {
-  await fetchAlbum()
-  console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
-})
 const route = useRoute();
+const { t } = useI18n();
 
 // current collection from route
 const collection = computed(() => (route.params.collection as string) || '');
 
-// simple title case for header
+// i18n-aware collection name for lightbox/header with graceful fallback
 const toTitleCase = (s: string) => s.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
-const displayName = computed(() => (collection.value ? toTitleCase(collection.value) : 'Collection'));
+const displayName = computed(() => {
+  const slug = collection.value;
+  if (!slug) return t('collection.defaultTitle');
+  const key = `collections.${slug}.name`;
+  const translated = t(key) as unknown as string;
+  return translated !== key ? translated : toTitleCase(slug);
+});
 
 type ImageMeta = {
   url: string; // legacy main url
@@ -227,7 +206,7 @@ const currentIndex = ref(0);
 
 const currentItem = computed(() => collectionImages.value[currentIndex.value] ?? null);
 const currentFullImage = computed(() => currentItem.value?.fullUrl || currentItem.value?.url || '');
-const currentTitle = computed(() => currentItem.value?.title ?? `Image ${currentIndex.value + 1}`);
+const currentTitle = computed(() => currentItem.value?.title ?? t('lightbox.imageTitle', { index: currentIndex.value + 1 }));
 const currentISO = computed(() => currentItem.value?.iso ?? 100);
 const currentAperture = computed(() => currentItem.value?.aperture ?? 'f/2.8');
 const currentShutter = computed(() => currentItem.value?.shutter ?? '1/125s');
@@ -491,7 +470,8 @@ function totalLikesForIndex(index: number): number {
 const totalLikesCurrent = computed(() => totalLikesForIndex(currentIndex.value));
 
 function heartAriaLabel(index: number): string {
-  return `${isIndexLiked(index) ? 'Unlike' : 'Like'} this image. Total likes: ${totalLikesForIndex(index)}`;
+  const action = isIndexLiked(index) ? t('lightbox.unlike') : t('lightbox.like');
+  return t('lightbox.heartAriaLabel', { action, total: totalLikesForIndex(index) });
 }
 
 onMounted(loadLikes);

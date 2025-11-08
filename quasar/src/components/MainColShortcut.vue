@@ -6,17 +6,26 @@
       class="gallery-row artistic"
       :class="{ 'reverse': idx % 2 === 1 }"
     >
-      <div class="gallery-card">
-        <div class="gallery-image">
-          <q-img
-            src="/src/assets/frontpagebanner.jpg"
-            :ratio="16/9"
-            class="image-placeholder"
+      <div class="gallery-card-link">
+        <div class="gallery-card">
+          <div class="gallery-image">
+            <q-img
+              src="/src/assets/frontpagebanner.jpg"
+              :ratio="16/9"
+              class="image-placeholder"
+              :alt="t(`collections.${item.slug}.name`)"
+            />
+          </div>
+          <div class="gallery-text">
+            <div class="text-h3">{{ t(`collections.${item.slug}.name`) }}</div>
+            <div class="text-body1">{{ t(`collections.${item.slug}.description`) }}</div>
+          </div>
+          <!-- Click overlay limited to the card box, not its margins -->
+          <router-link
+            :to="`/gallery/${item.slug}`"
+            class="card-click-overlay"
+            :aria-label="t(`collections.${item.slug}.name`)"
           />
-        </div>
-        <div class="gallery-text">
-          <div class="text-h3">{{ item.title }}</div>
-          <div class="text-body1">{{ item.description }}</div>
         </div>
       </div>
     </div>
@@ -26,11 +35,15 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
+// Store only stable IDs and slugs; render translated text via t() in template so it reacts to locale changes
 const items = reactive([
-  { id: 1, title: 'Featured Album', description: 'A short intro to the first gallery section.' },
-  { id: 2, title: 'Nature Collection', description: 'A short intro to the second gallery section.' },
-  { id: 3, title: 'Urban Scenes', description: 'A short intro to the third gallery section.' },
-  { id: 4, title: 'Studio Works', description: 'A short intro to the fourth gallery section.' }
+  { id: 1, slug: 'featured-collection' },
+  { id: 2, slug: 'nature-collection' },
+  { id: 3, slug: 'urban-collection' },
+  { id: 4, slug: 'studio-collection' }
 ]);
 </script>
 
@@ -55,22 +68,31 @@ const items = reactive([
 .gallery-row.artistic.reverse .gallery-card {
   flex-direction: row-reverse;
 }
+.gallery-card-link {
+  display: block;
+  width: 70%;
+  margin: 0 auto;
+  text-decoration: none;
+  color: inherit;
+}
 .gallery-card {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 70%;
+  width: 100%;
   min-height: 320px;
   background: $secondary;
   border-radius: 32px;
   overflow: visible;
-  margin: 0 0 32px 0;
+  margin: 0 0 42px 0;
   padding: 20px 0px;
   /* 3D effect: strong shadow, subtle border, and transform */
   box-shadow: 0 18px 16px -8px rgba(0,0,0,0.38);
   border: 1.5px solid rgba(255,255,255,0.08);
   transform: perspective(900px) rotateX(4deg) scale(1.01);
   transition: box-shadow 0.3s, transform 0.3s;
+  cursor: pointer;
+  position: relative; /* for click overlay */
 }
 .gallery-card:hover {
   box-shadow: 0 32px 16px -14px rgba(0,0,0,0.48);
@@ -114,6 +136,9 @@ const items = reactive([
   margin: auto;
 }
 @media (max-width: 900px) {
+  .gallery-card-link {
+    width: 98vw;
+  }
   .gallery-card {
     flex-direction: column;
     max-width: 98vw;
@@ -148,5 +173,19 @@ const items = reactive([
 .gallery-row.artistic.reverse .gallery-text {
   text-align: right;
   /* Add more reverse-specific styles here */
+}
+
+/* Absolutely positioned link to limit click area strictly to the card box */
+.card-click-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* Keep it on top but non-obstructive visually */
+  z-index: 1;
+}
+.card-click-overlay:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.6);
+  outline-offset: 4px;
+  border-radius: inherit;
 }
 </style>

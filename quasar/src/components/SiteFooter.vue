@@ -3,18 +3,18 @@
     <div class="footer-inner mx-auto d-flex flex-row justify-content-between align-items-start w-100">
       <div class="d-flex flex-column">
         <span class="footer-brand" v-bind:style="footerBrandStyle">Katie De Forest</span>
-        <span class="footer-description mt-2">Fine art, portrait, and nature photography<br>Capturing emotion and light.</span>
+        <span class="footer-description mt-2" v-html="footerDescription"></span>
       </div>
-  <span class="footer-copyright">© 2025 Katie De Forest. All rights reserved.</span>
+  <span class="footer-copyright">{{ copyright }}</span>
       <div class="footer-links-legal d-flex flex-row align-items-start">
         <nav class="footer-links d-flex flex-column align-items-end me-4">
-          <a href="#" class="footer-link">Gallery</a>
-          <a href="#" class="footer-link">About</a>
-          <a href="#" class="footer-link">Contact</a>
+          <a href="#" class="footer-link">{{ t('footer.links.gallery') }}</a>
+          <a href="#" class="footer-link">{{ t('footer.links.about') }}</a>
+          <a href="#" class="footer-link">{{ t('footer.links.contact') }}</a>
         </nav>
         <nav class="footer-legal-links d-flex flex-column align-items-end">
-          <a href="#" class="footer-link legal">Privacy Policy</a>
-          <a href="#" class="footer-link legal">Terms of Service</a>
+          <a href="#" class="footer-link legal">{{ t('footer.legal.privacy') }}</a>
+          <a href="#" class="footer-link legal">{{ t('footer.legal.terms') }}</a>
         </nav>
       </div>
     </div>
@@ -23,6 +23,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
 const footerBrandStyle = computed(() => ({
   fontFamily: 'CustomLeafFont, serif',
   fontWeight: 500,
@@ -34,6 +37,10 @@ const footerBrandStyle = computed(() => ({
   WebkitTextStroke: '0.5px #b5ffb5',
   transition: 'color 0.35s, text-shadow 0.35s',
 }));
+
+const footerDescription = computed(() => t('footer.description').replace(/\n/g, '<br>'));
+const year = new Date().getFullYear();
+const copyright = computed(() => t('footer.copyright', { year }));
 </script>
 
 <style lang="scss" scoped>
