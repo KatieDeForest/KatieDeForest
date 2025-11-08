@@ -12,6 +12,7 @@
           @keyup.enter="openLightbox(idx)"
           @keyup.space="openLightbox(idx)"
         >
+        <!-- <div>{{baseUrl + item[0]?.Image[0].formats.thumbnail.url}}</div> -->
           <img
             :src="item.thumbUrl || item.url"
             :alt="item.title || `Image ${idx + 1} of ${displayName}`"
@@ -138,6 +139,39 @@ import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
+import { api } from 'src/boot/axios';
+import { useQuasar } from 'quasar'
+
+const $q = useQuasar()
+// store raw Strapi response (object with `data` and `meta` keys)
+const data = ref<any>(null);
+// const data = ref<any[]>([]);
+
+const accessToken = 'aee3fc6822e242b81e85fbd6ceffcf154e9e617b9c88fff16755085679b00cfd7c2197b461186c7c7cda4078d7b25c250cfa26bc9e7d2f72e5c45f1c31694fe3f1abcef1c11dcd775c8981266f9de6860a314936e84918c671eccb3f264fcfca0bbc0d2860ebeff70f1629b64d4b0b360e16f5de251db9ddb9a5efb18e133125';
+api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+
+async function fetchAlbum() {
+
+  try {
+    const response = await api.get('/api/photos?filters[collection][Title][$eq]=Cats&populate=*')
+    data.value = response.data;
+  }
+  catch (error) {
+    $q.notify({
+      color: 'negative',
+      position: 'top',
+      message: 'Error fetching album data',
+      icon: 'report_problem'
+    })
+    console.log('Error fetching album data:', error);
+  }
+}
+
+onMounted(async () => {
+  await fetchAlbum()
+  console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
+})
+
 const route = useRoute();
 const { t } = useI18n();
 
@@ -198,7 +232,48 @@ const makeCollectionPlaceholders = (slug: string): ImageMeta[] => {
   });
 };
 
-const collectionImages = computed<ImageMeta[]>(() => makeCollectionPlaceholders(collection.value));
+// Map a Strapi album response into the ImageMeta[] shape we use in this component.
+// We only extract url, thumbUrl and fullUrl from Strapi for now; other fields remain placeholders.
+function mapStrapiToImages(resp: any): ImageMeta[] {
+  if (!resp || !resp.data || !Array.isArray(resp.data)) return [];
+  const base = (api && api.defaults && api.defaults.baseURL) ? api.defaults.baseURL.replace(/\/$/, '') : '';
+  return resp.data.flatMap((entry: any) => {
+    const img = entry?.Image?.[0];
+    if (!img) return [];
+    const toFull = (p: string | null | undefined) => {
+      if (!p) return '';
+      // if Strapi returned an absolute URL already, use it as-is
+      if (/^https?:\/\//i.test(p)) return p;
+      return `${base}${p}`;
+    };
+    // prefer thumbnail and large; fall back to image.url when missing
+    const thumb = img.formats?.thumbnail?.url ? toFull(img.formats.thumbnail.url) : toFull(img.url);
+    const full = toFull(img.url);
+    const url = toFull(img.url);
+    return [{
+      url,
+      thumbUrl: thumb,
+      fullUrl: full,
+      // keep other fields as simple placeholders so rest of UI works
+      title: entry?.collection?.Title ?? entry?.Title ?? `Photo ${entry?.id ?? '1'}`,
+      iso: 100,
+      aperture: 'f/2.8',
+      shutter: '1/125s',
+      focalLength: '50mm',
+      colors: ['#444', '#666', '#888', '#aaa'],
+    } as ImageMeta];
+  });
+}
+
+const collectionImages = computed<ImageMeta[]>(() => {
+  // if Strapi data is loaded and contains images, map it
+  if (data.value && data.value.data && Array.isArray(data.value.data) && data.value.data.length > 0) {
+    const mapped = mapStrapiToImages(data.value);
+    // if mapping produced any images, use them; otherwise fall back to placeholders
+    if (mapped.length > 0) return mapped;
+  }
+  return makeCollectionPlaceholders(collection.value);
+});
 
 // Lightbox state
 const isLightboxOpen = ref(false);
