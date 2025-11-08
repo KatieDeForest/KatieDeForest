@@ -14,14 +14,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/gallery',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/GalleryColPage.vue') }],
+    children: [{ path: '', component: () => import('pages/CollectionPage.vue') }],
   },
   {
     path: '/gallery/:collection',
     component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/GalleryPage.vue') },
-    ],
+    children: [{ path: '', component: () => import('pages/GalleryPage.vue') }],
   },
 ];
 

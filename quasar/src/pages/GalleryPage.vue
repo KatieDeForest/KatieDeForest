@@ -1,13 +1,15 @@
 <template>
   <q-page>
-    <GalleryColHeroBanner />
-    <GalleryColGrid />
+    <GalleryHeroBanner />
+    <GalleryGrid />
     <SearchReminder />
+    <ScrollToTop />
   </q-page>
 </template>
 
 <script setup lang="ts">
-import GalleryColHeroBanner from 'src/components/GalleryColHeroBanner.vue';
-import GalleryColGrid from 'src/components/GalleryColGrid.vue';
+import GalleryHeroBanner from 'src/components/GalleryHeroBanner.vue';
+import GalleryGrid from 'src/components/GalleryGrid.vue';
 import SearchReminder from 'src/components/SearchReminder.vue';
+import ScrollToTop from 'components/ScrollToTop.vue';
 </script>
