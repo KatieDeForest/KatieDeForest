@@ -5,76 +5,79 @@ export default {
     home: 'Hem',
     gallery: 'Galleri',
     about: 'Om mig',
-    contact: 'Kontakt'
+    contact: 'Kontakt',
   },
   header: {
     selectLanguage: 'Välj språk',
-    manualTranslations: '(Manuella översättningar)'
+    manualTranslations: '(Manuella översättningar)',
   },
   search: {
     placeholder: 'Skriv din sökning...',
-    noResults: 'Inga resultat.'
+    noResults: 'Inga resultat.',
   },
   aria: {
     selectLanguage: 'Välj språk',
     openSearch: 'Öppna sök',
     closeSearch: 'Stäng sök',
-    closeLanguage: 'Stäng språk'
+    closeLanguage: 'Stäng språk',
   },
   hero: {
     galleryWelcomeTitle: 'Välkommen till mitt galleri!',
-    galleryWelcomeDescription: 'Utforska en kuraterad samling av vackra bilder och kreativa verk.'
+    galleryWelcomeDescription: 'Utforska en kuraterad samling av vackra bilder och kreativa verk.',
+    aboutWelcomeTitle: 'Välkommen till min Om-sida!',
+    aboutWelcomeDescription:
+      'Lär dig mer om min berättelse, min process och värderingarna bakom mitt arbete.',
   },
   collection: {
     defaultTitle: 'Välkommen till mitt galleri!',
-    defaultDescription: 'Utforska en kuraterad samling av vackra bilder och kreativa verk.'
+    defaultDescription: 'Utforska en kuraterad samling av vackra bilder och kreativa verk.',
   },
   searchReminder: {
     lookingFor: 'Letar du efter något specifikt? (t.ex. berg)',
     useSearchPrefix: 'Använd',
     searchButton: 'sökknappen',
-    useSearchSuffix: 'längst upp på sidan för att hitta bilder via taggar!'
+    useSearchSuffix: 'längst upp på sidan för att hitta bilder via taggar!',
   },
   footer: {
     description: 'Konst-, porträtt- och naturfotografi\nFångar känslor och ljus.',
     links: {
       gallery: 'Galleri',
       about: 'Om',
-      contact: 'Kontakt'
+      contact: 'Kontakt',
     },
     legal: {
       privacy: 'Integritetspolicy',
-      terms: 'Användarvillkor'
+      terms: 'Användarvillkor',
     },
-    copyright: '© {year} Katie De Forest. Alla rättigheter förbehållna.'
+    copyright: '© {year} Katie De Forest. Alla rättigheter förbehållna.',
   },
   collections: {
     'featured-collection': {
       name: 'Utvald samling',
-      description: 'Ett kuraterat urval av framstående bilder utvalda för uttryck och hantverk.'
+      description: 'Ett kuraterat urval av framstående bilder utvalda för uttryck och hantverk.',
     },
     'nature-collection': {
       name: 'Natursamling',
-      description: 'Landskap, djurliv och scener från naturen — fångade med omsorg.'
+      description: 'Landskap, djurliv och scener från naturen — fångade med omsorg.',
     },
     'urban-collection': {
       name: 'Stadssamling',
-      description: 'Stadsscener, arkitektur och det urbana livets energi.'
+      description: 'Stadsscener, arkitektur och det urbana livets energi.',
     },
     'studio-collection': {
       name: 'Studiosamling',
-      description: 'Porträtt och kreativa verk skapade i studion.'
-    }
+      description: 'Porträtt och kreativa verk skapade i studion.',
+    },
   },
   error: {
     notFoundTitle: '404: Sidan hittades inte',
-    notFoundDescription: 'Hoppsan. Ingenting här...'
+    notFoundDescription: 'Hoppsan. Ingenting här...',
   },
   carousel: {
     prev: 'Föregående bild',
     next: 'Nästa bild',
     goToSlide: 'Gå till bild',
-    slideAlt: 'Bild i bildspelet'
+    slideAlt: 'Bild i bildspelet',
   },
   lightbox: {
     close: 'Stäng',
@@ -90,6 +93,6 @@ export default {
     showDetails: 'Visa detaljer',
     hideDetails: 'Dölj detaljer',
     colorTheme: 'Färgtema',
-    showColorCodes: 'Visa hex- och RGB-färgkoder {color}'
-  }
+    showColorCodes: 'Visa hex- och RGB-färgkoder {color}',
+  },
 };
