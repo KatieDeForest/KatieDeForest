@@ -18,12 +18,10 @@
 <script setup lang="ts">
 interface Gear { name: string; desc: string; icon: string }
 const gear: Gear[] = [
-  { name: 'ASP-C body', desc: 'High dynamic range for pre-dawn scenes.', icon: 'photo_camera' },
-  { name: '24–70mm f/2.8', desc: 'Walkabout lens for evolving light.', icon: 'lens' },
-  { name: '70–200mm', desc: 'Compression for fog layers and distant forms.', icon: 'center_focus_strong' },
-  { name: 'Prime 50mm', desc: 'For intimate textures and series consistency.', icon: 'filter_center_focus' },
-  { name: 'Carbon tripod', desc: 'Long exposures without compromise.', icon: 'hdr_strong' },
-  { name: 'ND + CPL filters', desc: 'Control reflections and extend time.', icon: 'tonality' }
+  { name: 'Canon EOS R50', desc: '...', icon: 'photo_camera' },
+  { name: 'RF 100mm f/2.8L IS USM', desc: '...', icon: 'filter_center_focus' },
+  { name: 'Carbon tripod', desc: '...', icon: 'hdr_strong' },
+  { name: 'ND + CPL filters', desc: '...', icon: 'tonality' }
 ];
 </script>
 
@@ -32,8 +30,11 @@ const gear: Gear[] = [
 
 .gear-list {
   background: $primary;
-  padding: 3rem 1rem;
+  padding: 1rem 1rem 2rem;
+  /* extra space for seamless fade into CTA */
   color: #f2f2f2;
+  position: relative;
+  /* creates positioning context for the fade */
 }
 
 .gear-inner {

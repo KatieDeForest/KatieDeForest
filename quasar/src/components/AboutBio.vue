@@ -3,7 +3,7 @@
     <div class="about-bio-inner">
       <div class="portrait">
         <template v-if="hasPortrait">
-          <q-img :src="portraitSrc" alt="Artist portrait" ratio="4/5" class="portrait-img" />
+          <q-img :src="portraitSrc" alt="Artist portrait" ratio="4/3" class="portrait-img" />
         </template>
         <template v-else>
           <div class="portrait-placeholder" aria-label="Portrait placeholder">
@@ -17,22 +17,54 @@
         </template>
       </div>
       <div class="bio">
-        <h2 class="section-title">About Katie</h2>
-        <p class="lead">I’m a nature-first fine art photographer exploring the soft geometry of light and the stories
-          found in stillness.</p>
-        <p>
-          Based in Scandinavia, my work blends contemplative landscape with intimate details—driftwood, moss,
-          fog—seeking the quiet moments between seasons.
-          I create limited series prints and collections for galleries and private collectors.
-        </p>
-        <div class="bullets">
-          <div class="bullet"><q-icon name="photo_camera" class="q-mr-sm" /> {{ yearsExperience }} years behind the lens
+        <div class="bio-silhouette">
+          <h2 class="section-title">About Katie</h2>
+          <p>
+            I’m Katie, a 2000s kid from Denmark who feels most at home around nature, animals, open landscapes, and the
+            kind of quiet that lets you breathe. Nature grounds me. Travel wakes me up. Photography sits right in the
+            middle of those two things, giving me a place to explore and a place to rest.
+          </p>
+          <p>
+            I’m a chill, respectful, easy-going trans woman who tends to see the world in textures and small details.
+            My autism shapes how I notice things, how I slow down, and how I read the atmosphere around me. It isn’t a
+            “superpower”, it’s simply part of how I move through the world, and it naturally shows up in my work.
+          </p>
+          <p>
+            My style leans toward the subtle and the understated. I like honest light, real expressions, and the moments
+            that happen in between the expected ones.
+            My attention often goes to things that feel overlooked or quiet: how a forest
+            holds its breath right before sunrise, how an animal pauses when it thinks no one is watching, how a scene
+            shifts the moment you stop trying to control it.
+          </p>
+          <p>
+            I think in fragments and instinct. I follow curiosity wherever it pulls, even when the path isn’t obvious.
+            That’s what guides my images. Sometimes the result is soft, sometimes raw, sometimes dreamlike, but it’s
+            always sincere. I aim to make space for people who appreciate the offbeat, the gentle, and the quietly
+            emotional.
+          </p>
+          <p>
+            I’m not interested in perfection as a goal. What interests me is authenticity, atmosphere, and the
+            complexity of real moments.
+            I believe people and places carry many layers, and that this depth is what makes them beautiful.
+          </p>
+          <p>
+            If any of this resonates with you, then we’re already speaking the same language. I lead with softness, stay
+            curious, and try to create work that feels quietly meaningful.
+          </p>
+          <p>
+            - Love everyone until else has been proven.
+
+          </p>
+          <div class="bullets">
+            <div class="bullet"><q-icon name="photo_camera" class="q-mr-sm" /> {{ yearsExperience }} years behind the
+              lens
+            </div>
+            <div class="bullet"><q-icon name="diversity_3" class="q-mr-sm" /> Neurodivergent & LGBTQIA+ affirming safe
+              space
+            </div>
+            <div class="bullet"><q-icon name="tonality" class="q-mr-sm" /> Soft natural light; minimal retouching</div>
+            <div class="bullet"><q-icon name="handshake" class="q-mr-sm" /> Collaborative, transparent process</div>
           </div>
-          <div class="bullet"><q-icon name="diversity_3" class="q-mr-sm" /> Neurodivergent & LGBTQIA+ affirming safe
-            space
-          </div>
-          <div class="bullet"><q-icon name="tonality" class="q-mr-sm" /> Soft natural light; minimal retouching</div>
-          <div class="bullet"><q-icon name="handshake" class="q-mr-sm" /> Collaborative, transparent process</div>
         </div>
       </div>
     </div>
@@ -89,19 +121,11 @@ onBeforeUnmount(() => {
 @import '../css/quasar.variables.scss';
 
 .about-bio {
-  background: linear-gradient(90deg, #0c0c0c 50%, #1e241e, #121212 50%);
+  background: $primary;
   padding: 3.75rem 1.25rem 3.5rem;
   color: #f2f2f2;
   position: relative;
   overflow: hidden;
-}
-
-.about-bio:before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50%, rgba(90, 190, 140, 0.28), transparent 50%);
-  pointer-events: none;
 }
 
 .about-bio-inner {
@@ -110,7 +134,8 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 2.5rem;
   grid-template-columns: 1fr 1.25fr;
-  align-items: center;
+  /* Top-align by default; we'll center the portrait item specifically */
+  align-items: start;
 }
 
 .section-title {
@@ -118,13 +143,10 @@ onBeforeUnmount(() => {
   margin-bottom: 0.75rem;
 }
 
-.lead {
-  font-size: 1.125rem;
-  opacity: 0.92;
-}
-
 .portrait {
   position: relative;
+  /* Center the portrait vertically within the grid row (relative to the bio text height) */
+  align-self: center;
 }
 
 .portrait-img {
@@ -132,15 +154,6 @@ onBeforeUnmount(() => {
   box-shadow: 0 14px 36px -6px #000c, 0 0 0 1px #2a3a2a;
   position: relative;
   z-index: 1;
-}
-
-.portrait:before {
-  content: '';
-  position: absolute;
-  inset: -8%;
-  background: radial-gradient(circle at 50% 40%, rgba(80, 180, 130, 0.42), transparent 70%);
-  filter: blur(38px) opacity(.7);
-  z-index: 0;
 }
 
 .portrait-placeholder {
@@ -154,14 +167,6 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.portrait-placeholder:before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 40%, rgba(80, 180, 130, 0.32), transparent 70%);
-  filter: blur(36px) opacity(.55);
 }
 
 .placeholder-inner {
@@ -245,6 +250,35 @@ onBeforeUnmount(() => {
   border-radius: 12px;
 }
 
+/* Readability silhouette behind the bio text */
+.bio {
+  position: relative;
+}
+
+.bio-silhouette {
+  position: relative;
+  padding: 1.25rem 1.25rem 1.25rem;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(20, 24, 21, 0.92) 0%, rgba(15, 20, 16, 0.82) 100%);
+  border: 1px solid #2e3c2e;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.bio-silhouette .section-title {
+  margin-top: 0;
+}
+
+.bio-silhouette p {
+  margin: 0 0 0.85rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .bio-silhouette {
+    padding: 1rem;
+  }
+}
+
 @media (max-width: 900px) {
   .about-bio-inner {
     grid-template-columns: 1fr;
@@ -252,10 +286,6 @@ onBeforeUnmount(() => {
 
   .about-bio {
     padding: 3rem 1rem 2.75rem;
-  }
-
-  .portrait:before {
-    inset: -12%;
   }
 
   .portrait-placeholder {
