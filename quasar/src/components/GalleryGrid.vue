@@ -149,7 +149,7 @@ const data = ref<any>(null);
 async function fetchCollection() {
 
   try {
-    const response = await api.get('/api/photos?filters[collection][Name][$eq]=animals&populate=*')
+    const response = await api.get(`/api/photos?filters[collections][Name][$eq]=${collection.value}&populate=*`);
     data.value = response.data;
   }
   catch (error) {
