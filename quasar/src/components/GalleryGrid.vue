@@ -196,79 +196,45 @@ type ImageMeta = {
   colors: string[]; // up to 4 hex/rgb
 };
 
-// per-collection visible placeholders with basic EXIF-like metadata and color theme
-const makeCollectionPlaceholders = (slug: string): ImageMeta[] => {
-  const apertures = ['f/1.8', 'f/2', 'f/2.8', 'f/4', 'f/5.6'];
-  const shutters = ['1/60s', '1/125s', '1/250s', '1/500s', '1/1000s'];
-  const focals = ['24mm', '35mm', '50mm', '85mm', '135mm'];
-  const palettes = [
-    ['#2b2d42', '#8d99ae', '#edf2f4', '#ef233c'],
-    ['#1b4332', '#2d6a4f', '#40916c', '#95d5b2'],
-    ['#003049', '#d62828', '#f77f00', '#fcbf49'],
-    ['#0a9396', '#94d2bd', '#e9d8a6', '#ee9b00'],
-    ['#2d3142', '#4f5d75', '#bfc0c0', '#ef8354'],
-  ];
-  const seed = encodeURIComponent(slug || 'collection');
-  return Array.from({ length: 12 }, (_, i) => {
-    const aperture = apertures[i % apertures.length] ?? 'f/2.8';
-    const shutter = shutters[i % shutters.length] ?? '1/125s';
-    const focal = focals[i % focals.length] ?? '50mm';
-    const colors = palettes[i % palettes.length] ?? ['#444', '#666', '#888', '#aaa'];
-    return {
-      url: `https://picsum.photos/seed/${seed}-${i}/1600/900`,
-      thumbUrl: `https://picsum.photos/seed/${seed}-${i}/800/600`,
-      fullUrl: `https://picsum.photos/seed/${seed}-${i}/2560/1440`,
-      title: `Photo ${i + 1}`,
-      iso: 100 * (1 + (i % 5)),
-      aperture,
-      shutter,
-      focalLength: focal,
-      colors,
-    } as ImageMeta;
-  });
-};
+// NOTE: placeholders removed — this component now only uses images returned by Strapi.
 
 // Map a Strapi album response into the ImageMeta[] shape we use in this component.
 // We only extract url, thumbUrl and fullUrl from Strapi for now; other fields remain placeholders.
 function mapStrapiToImages(resp: any): ImageMeta[] {
   if (!resp || !resp.data || !Array.isArray(resp.data)) return [];
   const base = (api && api.defaults && api.defaults.baseURL) ? api.defaults.baseURL.replace(/\/$/, '') : '';
-  return resp.data.flatMap((entry: any) => {
+  const items = resp.data.map((entry: any) => {
     const img = entry?.Image?.[0];
-    if (!img) return [];
+    if (!img) return null;
     const toFull = (p: string | null | undefined) => {
       if (!p) return '';
-      // if Strapi returned an absolute URL already, use it as-is
       if (/^https?:\/\//i.test(p)) return p;
       return `${base}${p}`;
     };
-    // prefer thumbnail and large; fall back to image.url when missing
     const thumb = img.formats?.thumbnail?.url ? toFull(img.formats.thumbnail.url) : toFull(img.url);
-    const full = toFull(img.url);
+    const full = img.formats?.large?.url ? toFull(img.formats.large.url) : toFull(img.url);
     const url = toFull(img.url);
-    return [{
+    return {
       url,
       thumbUrl: thumb,
       fullUrl: full,
-      // keep other fields as simple placeholders so rest of UI works
       title: entry?.Title ?? `Photo ${entry?.id ?? '1'}`,
-      iso: 100,
-      aperture: 'f/2.8',
+      iso: entry?.ISO,
+      aperture: entry?.Aperture,
       shutter: '1/125s',
       focalLength: '50mm',
       colors: ['#444', '#666', '#888', '#aaa'],
-    } as ImageMeta];
+    } as ImageMeta;
   });
+  return items.filter(Boolean) as ImageMeta[];
 }
 
 const collectionImages = computed<ImageMeta[]>(() => {
-  // if Strapi data is loaded and contains images, map it
-  if (data.value && data.value.data && Array.isArray(data.value.data) && data.value.data.length > 0) {
-    const mapped = mapStrapiToImages(data.value);
-    // if mapping produced any images, use them; otherwise fall back to placeholders
-    if (mapped.length > 0) return mapped;
+  // only use Strapi-provided images; no placeholder fallback
+  if (data.value && data.value.data && Array.isArray(data.value.data)) {
+    return mapStrapiToImages(data.value);
   }
-  return makeCollectionPlaceholders(collection.value);
+  return [];
 });
 
 // Lightbox state
@@ -278,8 +244,8 @@ const currentIndex = ref(0);
 const currentItem = computed(() => collectionImages.value[currentIndex.value] ?? null);
 const currentFullImage = computed(() => currentItem.value?.fullUrl || currentItem.value?.url || '');
 const currentTitle = computed(() => currentItem.value?.title ?? t('lightbox.imageTitle', { index: currentIndex.value + 1 }));
-const currentISO = computed(() => currentItem.value?.iso ?? 100);
-const currentAperture = computed(() => currentItem.value?.aperture ?? 'f/2.8');
+const currentISO = computed(() => currentItem.value?.iso);
+const currentAperture = computed(() => currentItem.value?.aperture);
 const currentShutter = computed(() => currentItem.value?.shutter ?? '1/125s');
 const currentFocal = computed(() => currentItem.value?.focalLength ?? '50mm');
 const currentColors = computed(() => currentItem.value?.colors ?? ['#444', '#666', '#888', '#aaa']);

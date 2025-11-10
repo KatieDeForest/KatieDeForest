@@ -36,7 +36,7 @@ async function fetchCollection() {
   }
 }
 
-await fetchCollection();
+// await fetchCollection();
 
 // shared collection definitions used across gallery pages/components
 export const collections: CollectionDef[] = await fetchCollection();
