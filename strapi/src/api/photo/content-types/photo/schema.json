@@ -44,14 +44,6 @@
       "target": "api::collection.collection",
       "inversedBy": "photos"
     },
-    "ISO": {
-      "type": "integer",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
     "Aperture": {
       "type": "string",
       "pluginOptions": {
@@ -75,6 +67,15 @@
           "localized": true
         }
       }
+    },
+    "ISO": {
+      "type": "integer",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "default": 100
     }
   }
 }

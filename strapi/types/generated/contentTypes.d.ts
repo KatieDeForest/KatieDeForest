@@ -531,7 +531,8 @@ export interface ApiPhotoPhoto extends Struct.CollectionTypeSchema {
         i18n: {
           localized: true;
         };
-      }>;
+      }> &
+      Schema.Attribute.DefaultTo<100>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::photo.photo'>;
     publishedAt: Schema.Attribute.DateTime;
