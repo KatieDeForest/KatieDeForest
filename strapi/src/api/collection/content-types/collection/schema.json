@@ -9,19 +9,33 @@
   "options": {
     "draftAndPublish": true
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
   "attributes": {
     "Title": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "photos": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::photo.photo",
-      "mappedBy": "collection"
+      "mappedBy": "collections"
     },
     "Image": {
       "type": "media",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
       "multiple": false,
       "allowedTypes": [
         "images",
@@ -29,6 +43,22 @@
         "videos",
         "audios"
       ]
+    },
+    "Description": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "Name": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   }
 }
