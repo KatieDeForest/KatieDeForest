@@ -27,8 +27,8 @@
       "target": "api::collection.collection",
       "inversedBy": "photos"
     },
-    "Test": {
-      "type": "text"
+    "Title": {
+      "type": "string"
     }
   }
 }
