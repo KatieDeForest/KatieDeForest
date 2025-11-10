@@ -741,8 +741,8 @@ onBeforeUnmount(() => {
   transition: background 160ms ease, box-shadow 50ms ease, transform 180ms ease;
 }
 .nav-btn:disabled { opacity: 0.4; cursor: default; }
-.nav-btn.prev { left: max(8px, env(safe-area-inset-left)); }
-.nav-btn.next { right: max(8px, env(safe-area-inset-right)); }
+.nav-btn.prev { left: max(1.5%, env(safe-area-inset-left)); }
+.nav-btn.next { right: max(1.5%, env(safe-area-inset-right)); }
 
 /* Hover/active/focus states for better affordance */
 .nav-btn:hover:not(:disabled), .nav-btn:focus-visible:not(:disabled) {

@@ -5,76 +5,78 @@ export default {
     home: 'Hjem',
     gallery: 'Galleri',
     about: 'Om meg',
-    contact: 'Kontakt'
+    contact: 'Kontakt',
   },
   header: {
     selectLanguage: 'Velg språk',
-    manualTranslations: '(Manuelle oversettelser)'
+    manualTranslations: '(Manuelle oversettelser)',
   },
   search: {
     placeholder: 'Skriv søket ditt...',
-    noResults: 'Ingen treff.'
+    noResults: 'Ingen treff.',
   },
   aria: {
     selectLanguage: 'Velg språk',
     openSearch: 'Åpne søk',
     closeSearch: 'Lukk søk',
-    closeLanguage: 'Lukk språk'
+    closeLanguage: 'Lukk språk',
   },
   hero: {
     galleryWelcomeTitle: 'Velkommen til galleriet mitt!',
-    galleryWelcomeDescription: 'Utforsk en kuratert samling av vakre bilder og kreative verk.'
+    galleryWelcomeDescription: 'Utforsk en kuratert samling av vakre bilder og kreative verk.',
+    aboutWelcomeTitle: 'Velkommen til Om meg-siden!',
+    aboutWelcomeDescription: 'Lær mer om min historie, prosess og verdiene bak arbeidet mitt.',
   },
   collection: {
     defaultTitle: 'Velkommen til galleriet mitt!',
-    defaultDescription: 'Utforsk en kuratert samling av vakre bilder og kreative verk.'
+    defaultDescription: 'Utforsk en kuratert samling av vakre bilder og kreative verk.',
   },
   searchReminder: {
     lookingFor: 'Leter du etter noe spesielt? (f.eks. fjell)',
     useSearchPrefix: 'Bruk',
     searchButton: 'søke-knappen',
-    useSearchSuffix: 'øverst på siden for å finne bilder etter tag!'
+    useSearchSuffix: 'øverst på siden for å finne bilder etter tag!',
   },
   footer: {
     description: 'Kunst-, portrett- og naturfotografi\nFanger følelser og lys.',
     links: {
       gallery: 'Galleri',
       about: 'Om',
-      contact: 'Kontakt'
+      contact: 'Kontakt',
     },
     legal: {
       privacy: 'Personvern',
-      terms: 'Vilkår for bruk'
+      terms: 'Vilkår for bruk',
     },
-    copyright: '© {year} Katie De Forest. Alle rettigheter forbeholdt.'
+    copyright: '© {year} Katie De Forest. Alle rettigheter forbeholdt.',
   },
   collections: {
     'featured-collection': {
       name: 'Utvalgt samling',
-      description: 'Et kuratert utvalg av sterke bilder valgt for uttrykk og håndverk.'
+      description: 'Et kuratert utvalg av sterke bilder valgt for uttrykk og håndverk.',
     },
     'nature-collection': {
       name: 'Natursamling',
-      description: 'Landskap, dyreliv og scener fra naturen — fanget med omtanke.'
+      description: 'Landskap, dyreliv og scener fra naturen — fanget med omtanke.',
     },
     'urban-collection': {
       name: 'By-samling',
-      description: 'Byscener, arkitektur og energien i bylivet.'
+      description: 'Byscener, arkitektur og energien i bylivet.',
     },
     'studio-collection': {
       name: 'Studiosamling',
-      description: 'Portretter og kreative arbeider laget i studio.'
-    }
+      description: 'Portretter og kreative arbeider laget i studio.',
+    },
   },
   error: {
     notFoundTitle: '404: Side ikke funnet',
-    notFoundDescription: 'Ups. Ingenting her...'
+    notFoundDescription: 'Ups. Ingenting her...',
   },
   carousel: {
     prev: 'Forrige lysbilde',
     next: 'Neste lysbilde',
     goToSlide: 'Gå til lysbilde',
-    slideAlt: 'Lysbildebilde'
+    slideAlt: 'Lysbildebilde',
   },
   lightbox: {
     close: 'Lukk',
@@ -90,6 +92,6 @@ export default {
     showDetails: 'Vis detaljer',
     hideDetails: 'Skjul detaljer',
     colorTheme: 'Fargetema',
-    showColorCodes: 'Vis hex- og RGB-fargekoder {color}'
-  }
+    showColorCodes: 'Vis hex- og RGB-fargekoder {color}',
+  },
 };

@@ -1,15 +1,34 @@
 <template>
-    <div class="hero-banner q-pa-xl">
-        <h1 class="hero-title q-mb-md">{{ t('hero.galleryWelcomeTitle') }}</h1>
-        <p class="hero-description q-mb-lg">
-            {{ t('hero.galleryWelcomeDescription') }}
-        </p>
-    </div>
+        <div class="hero-banner q-pa-xl">
+                <h1 class="hero-title q-mb-md">{{ title }}</h1>
+                <p class="hero-description q-mb-lg">{{ description }}</p>
+        </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
+import useCollections from 'src/composables/useCollections';
+
+const route = useRoute();
+const { findCollectionBySlug } = useCollections();
+
+const slugFromRoute = computed(() => (route.params.collection as string) || '');
+
 const { t } = useI18n();
+
+const title = computed(() => {
+    const meta = findCollectionBySlug(slugFromRoute.value);
+    if (meta) return t(`collections.${meta.slug}.name`) || meta.name;
+    return slugFromRoute.value ? slugFromRoute.value.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : t('collection.defaultTitle');
+});
+
+const description = computed(() => {
+    const meta = findCollectionBySlug(slugFromRoute.value);
+    if (meta) return t(`collections.${meta.slug}.description`) || meta.description;
+    return t('collection.defaultDescription');
+});
 </script>
 
 <style lang="scss" scoped>
@@ -38,3 +57,4 @@ const { t } = useI18n();
     margin: 0 auto;
 }
 </style>
+
