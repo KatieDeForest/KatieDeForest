@@ -145,15 +145,11 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 // store raw Strapi response (object with `data` and `meta` keys)
 const data = ref<any>(null);
-// const data = ref<any[]>([]);
 
-const accessToken = 'aee3fc6822e242b81e85fbd6ceffcf154e9e617b9c88fff16755085679b00cfd7c2197b461186c7c7cda4078d7b25c250cfa26bc9e7d2f72e5c45f1c31694fe3f1abcef1c11dcd775c8981266f9de6860a314936e84918c671eccb3f264fcfca0bbc0d2860ebeff70f1629b64d4b0b360e16f5de251db9ddb9a5efb18e133125';
-api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-
-async function fetchAlbum() {
+async function fetchCollection() {
 
   try {
-    const response = await api.get('/api/photos?filters[collection][Title][$eq]=Cats&populate=*')
+    const response = await api.get('/api/photos?filters[collection][Name][$eq]=animals&populate=*')
     data.value = response.data;
   }
   catch (error) {
@@ -168,7 +164,7 @@ async function fetchAlbum() {
 }
 
 onMounted(async () => {
-  await fetchAlbum()
+  await fetchCollection()
   console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
 })
 
