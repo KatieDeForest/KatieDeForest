@@ -31,7 +31,7 @@ async function fetchCollection() {
     });
   }
   catch (error) {
-    console.log('Error fetching album data:', error);
+    console.log('Error fetching collection data:', error);
     return [];
   }
 }

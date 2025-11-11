@@ -149,17 +149,17 @@ const data = ref<any>(null);
 async function fetchCollection() {
 
   try {
-    const response = await api.get(`/api/photos?filters[collections][Name][$eq]=${collection.value}&populate=*`);
-    data.value = response.data;
+    const response = await api.get(`/api/Photos?filters[Collections][Slug][$eq]=${collection.value}&populate=*`);
+    data.value = response.data.data;
   }
   catch (error) {
     $q.notify({
       color: 'negative',
       position: 'top',
-      message: 'Error fetching album data',
+      message: 'Error fetching collection data',
       icon: 'report_problem'
     })
-    console.log('Error fetching album data:', error);
+    console.log('Error fetching collection data:', error);
   }
 }
 
@@ -221,8 +221,8 @@ function mapStrapiToImages(resp: any): ImageMeta[] {
       title: entry?.Title ?? `Photo ${entry?.id ?? '1'}`,
       iso: entry?.ISO,
       aperture: entry?.Aperture,
-      shutter: '1/125s',
-      focalLength: '50mm',
+      shutter: entry?.ShutterSpeed,
+      focalLength: entry?.FocalLength,
       colors: ['#444', '#666', '#888', '#aaa'],
     } as ImageMeta;
   });
@@ -246,9 +246,9 @@ const currentFullImage = computed(() => currentItem.value?.fullUrl || currentIte
 const currentTitle = computed(() => currentItem.value?.title ?? t('lightbox.imageTitle', { index: currentIndex.value + 1 }));
 const currentISO = computed(() => currentItem.value?.iso);
 const currentAperture = computed(() => currentItem.value?.aperture);
-const currentShutter = computed(() => currentItem.value?.shutter ?? '1/125s');
-const currentFocal = computed(() => currentItem.value?.focalLength ?? '50mm');
-const currentColors = computed(() => currentItem.value?.colors ?? ['#444', '#666', '#888', '#aaa']);
+const currentShutter = computed(() => currentItem.value?.shutter);
+const currentFocal = computed(() => currentItem.value?.focalLength);
+const currentColors = computed(() => currentItem.value?.colors);
 const currentAlt = computed(() => `${currentTitle.value} — ${displayName.value}`);
 // With wrap-around navigation, both are enabled if there is more than one image
 const hasPrev = computed(() => collectionImages.value.length > 1);
@@ -661,7 +661,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   overflow: hidden;
   /* smaller top padding, a bit more bottom padding to keep separation from info bar */
-  padding: 
+  padding:
     clamp(4px, 1vw, 4px)   /* top */
     clamp(8px, 2vw, 24px)   /* right */
     calc(var(--arrow-protrusion) + clamp(4px, 1vw, 6px))/* bottom depends on arrow */
@@ -742,7 +742,7 @@ onBeforeUnmount(() => {
   margin: 0px auto 0; /* top auto bottom */
   border-top: 1px solid rgba(255,255,255,0.08);
   /* padding: top | left+right | bottom */
-  padding: 
+  padding:
     clamp(8px, 1.4vw, 8px) /* top */
     clamp(8px, 1.2vw, 14px)  /* left+right */
     clamp(10px, 1.4vw, 16px);/* bottom */

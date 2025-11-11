@@ -409,14 +409,14 @@ export interface ApiCollectionCollection extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::collection.collection'
     >;
-    Name: Schema.Attribute.String &
+    Photos: Schema.Attribute.Relation<'manyToMany', 'api::photo.photo'>;
+    publishedAt: Schema.Attribute.DateTime;
+    Slug: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
-    photos: Schema.Attribute.Relation<'manyToMany', 'api::photo.photo'>;
-    publishedAt: Schema.Attribute.DateTime;
     Title: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -504,14 +504,14 @@ export interface ApiPhotoPhoto extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    collections: Schema.Attribute.Relation<
+    Collections: Schema.Attribute.Relation<
       'manyToMany',
       'api::collection.collection'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Focal: Schema.Attribute.String &
+    FocalLength: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -536,7 +536,7 @@ export interface ApiPhotoPhoto extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::photo.photo'>;
     publishedAt: Schema.Attribute.DateTime;
-    Shutter: Schema.Attribute.String &
+    ShutterSpeed: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

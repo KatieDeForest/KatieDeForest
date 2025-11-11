@@ -23,11 +23,11 @@
         }
       }
     },
-    "photos": {
+    "Photos": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::photo.photo",
-      "mappedBy": "collections"
+      "inversedBy": "Collections"
     },
     "Image": {
       "type": "media",
@@ -52,7 +52,7 @@
         }
       }
     },
-    "Name": {
+    "Slug": {
       "type": "string",
       "pluginOptions": {
         "i18n": {

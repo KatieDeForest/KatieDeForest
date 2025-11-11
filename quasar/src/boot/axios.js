@@ -4,16 +4,16 @@ import axios from 'axios'
 const api = axios.create({ baseURL: 'http://localhost:1337' })
 const base = (api && api.defaults && api.defaults.baseURL) ? api.defaults.baseURL.replace(/\/$/, '') : '';
 
-const accessToken = 'aee3fc6822e242b81e85fbd6ceffcf154e9e617b9c88fff16755085679b00cfd7c2197b461186c7c7cda4078d7b25c250cfa26bc9e7d2f72e5c45f1c31694fe3f1abcef1c11dcd775c8981266f9de6860a314936e84918c671eccb3f264fcfca0bbc0d2860ebeff70f1629b64d4b0b360e16f5de251db9ddb9a5efb18e133125';
+const accessToken = '2ced834c80a29e83c61f5a1bc9475bc7767e4bf57038336c68a1ec0f1ef2e721cc917bd2a2a08671372efffd254758cfe9d396d89d402b68a4866d094fa86c3523d8c21e9f6454d634403437dc89374f9a3108d0c0fd2d17aebf53c41d123e818b90b4843de121013d64bac3d2604f7bc41662ac6bc4a463ee906307f2d4a665';
 api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 export default defineBoot(({ app }) => {
 
     // for use inside Vue files (Options API) through this.$axios and this.$api
-    
+
     app.config.globalProperties.$axios = axios
     // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
     //       so you won't necessarily have to import axios in each vue file
-    
+
     app.config.globalProperties.$api = api
     // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
     //       so you can easily perform requests against your app's API
