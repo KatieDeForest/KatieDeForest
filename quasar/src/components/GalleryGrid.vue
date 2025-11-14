@@ -165,7 +165,7 @@ async function fetchCollection() {
 
 onMounted(async () => {
   await fetchCollection()
-  console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
+  // console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
 })
 
 const route = useRoute();
@@ -201,9 +201,9 @@ type ImageMeta = {
 // Map a Strapi album response into the ImageMeta[] shape we use in this component.
 // We only extract url, thumbUrl and fullUrl from Strapi for now; other fields remain placeholders.
 function mapStrapiToImages(resp: any): ImageMeta[] {
-  if (!resp || !resp.data || !Array.isArray(resp.data)) return [];
+  if (!resp || !Array.isArray(resp)) return [];
   const base = (api && api.defaults && api.defaults.baseURL) ? api.defaults.baseURL.replace(/\/$/, '') : '';
-  const items = resp.data.map((entry: any) => {
+  const items = resp.map((entry: any) => {
     const img = entry?.Image?.[0];
     if (!img) return null;
     const toFull = (p: string | null | undefined) => {
@@ -231,7 +231,7 @@ function mapStrapiToImages(resp: any): ImageMeta[] {
 
 const collectionImages = computed<ImageMeta[]>(() => {
   // only use Strapi-provided images; no placeholder fallback
-  if (data.value && data.value.data && Array.isArray(data.value.data)) {
+  if (data.value && Array.isArray(data.value)) {
     return mapStrapiToImages(data.value);
   }
   return [];
@@ -577,8 +577,6 @@ onBeforeUnmount(() => {
   max-width: none;
   margin: 0 auto;
 }
-
-
 
 .photo-grid {
   width: 100%;
