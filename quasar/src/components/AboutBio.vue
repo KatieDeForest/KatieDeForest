@@ -136,7 +136,7 @@ onBeforeUnmount(() => {
 
 .about-bio {
   background: $primary;
-  padding: 3.75rem 1.25rem 3.5rem;
+  padding: 3.75rem 1.25rem 6rem;
   color: #f2f2f2;
   position: relative;
   overflow: hidden;
@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
 .about-bio-inner {
   /* Fill more of the screen on large displays, similar to GalleryGrid */
   width: 86%;
-  max-width: none;
+  max-width: 1200px; /* cap for typical 1080p so content doesn't over-expand */
   margin: 0 auto;
   display: grid;
   grid-template-columns: clamp(240px, 24vw, 360px) 1fr; /* portrait scales with viewport */
@@ -153,21 +153,55 @@ onBeforeUnmount(() => {
   align-items: start;
 }
 
+/* High-resolution caps: keep width fluid (86%) but limit max readable span */
+@media (min-width: 1600px) { /* large desktop */
+  .about-bio-inner {
+    transform: scale(1.06);
+    transform-origin: top center;
+    width: calc(86% / 1.06);
+    max-width: calc(1400px / 1.06);
+  }
+}
+@media (min-width: 2000px) { /* 2K / big monitors */
+  .about-bio-inner {
+    transform: scale(1.06);
+    transform-origin: top center;
+    width: calc(86% / 1.06);
+    max-width: calc(1500px / 1.06);
+  }
+}
+@media (min-width: 2500px) { /* 1440p / 2.5K+ */
+  .about-bio-inner {
+    transform: scale(1.06);
+    transform-origin: top center;
+    width: calc(86% / 1.06);
+    max-width: calc(1500px / 1.06);
+  }
+}
+@media (min-width: 3440px) { /* ultrawide */
+  .about-bio-inner {
+    transform: scale(1.06);
+    transform-origin: top center;
+    width: calc(86% / 1.06);
+    max-width: calc(1700px / 1.06);
+  }
+}
+
 .section-title {
   font-size: 1.8rem;
-  margin-bottom: 1.1rem; /* a bit more space below title */
+  margin-bottom: 2rem; /* a bit more space below title */
 }
 
 .bio-sections {
   display: flex;
   flex-direction: column;
-  gap: 1.35rem;
+  gap: 1.8rem;
   margin-top: 0.25rem;
 }
 
 .bio-section {
   position: relative;
-  padding: 0.55rem 0 0.35rem 0.85rem; /* more top padding so label chip clears text */
+  padding: 0.55rem 0 0rem 0.85rem; /* more top padding so label chip clears text */
   border-left: 2px dashed #2b3a2b;
 }
 
@@ -179,7 +213,7 @@ onBeforeUnmount(() => {
   background: #1b1b1b;
   border: 1px solid #2b3a2b;
   color: #dfeee6;
-  font-size: 0.62rem;
+  font-size: 0.8rem;
   line-height: 1;
   border-radius: 999px;
   padding: 0.2rem 0.55rem;
@@ -187,7 +221,7 @@ onBeforeUnmount(() => {
 }
 
 .bio-section p {
-  margin: 0 0 0.65rem;
+  margin: 0.4rem 0 0.65rem;
   line-height: 1.6;
 }
 /* remove alternating alignment classes */
@@ -205,10 +239,10 @@ onBeforeUnmount(() => {
 .side-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.8rem;
 }
 .quote-column .quote-block {
-  padding: 0.55rem 0 0.35rem 0.85rem;
+  padding: 0.55rem 0 0rem 0.85rem;
   border-left: 2px dashed #2b3a2b;
 }
 .quote-column .quote-block::before {
@@ -219,7 +253,7 @@ onBeforeUnmount(() => {
   background: #1b1b1b;
   border: 1px solid #2b3a2b;
   color: #dfeee6;
-  font-size: 0.62rem;
+  font-size: 0.8rem;
   line-height: 1;
   border-radius: 999px;
   padding: 0.2rem 0.55rem;
