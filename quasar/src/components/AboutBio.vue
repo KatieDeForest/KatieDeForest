@@ -20,14 +20,12 @@
         <div class="experience-block bio-section" data-label="Experience">
           <p>{{ yearsExperience }} years behind the lens</p>
         </div>
-        <div class="quote-column">
-          <div class="bio-section quote-block" data-label="Quote">
+          <div class="bio-section" data-label="Quote">
             <p>
               - Love everyone until else has been proven.
 
             </p>
           </div>
-        </div>
       </div>
       <div class="bio-flow">
         <h2 class="section-title">About Katie</h2>
@@ -153,40 +151,6 @@ onBeforeUnmount(() => {
   align-items: start;
 }
 
-/* High-resolution caps: keep width fluid (86%) but limit max readable span */
-@media (min-width: 1600px) { /* large desktop */
-  .about-bio-inner {
-    transform: scale(1.06);
-    transform-origin: top center;
-    width: calc(86% / 1.06);
-    max-width: calc(1400px / 1.06);
-  }
-}
-@media (min-width: 2000px) { /* 2K / big monitors */
-  .about-bio-inner {
-    transform: scale(1.06);
-    transform-origin: top center;
-    width: calc(86% / 1.06);
-    max-width: calc(1500px / 1.06);
-  }
-}
-@media (min-width: 2500px) { /* 1440p / 2.5K+ */
-  .about-bio-inner {
-    transform: scale(1.06);
-    transform-origin: top center;
-    width: calc(86% / 1.06);
-    max-width: calc(1500px / 1.06);
-  }
-}
-@media (min-width: 3440px) { /* ultrawide */
-  .about-bio-inner {
-    transform: scale(1.06);
-    transform-origin: top center;
-    width: calc(86% / 1.06);
-    max-width: calc(1700px / 1.06);
-  }
-}
-
 .section-title {
   font-size: 1.8rem;
   margin-bottom: 2rem; /* a bit more space below title */
@@ -240,24 +204,6 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 1.8rem;
-}
-.quote-column .quote-block {
-  padding: 0.55rem 0 0rem 0.85rem;
-  border-left: 2px dashed #2b3a2b;
-}
-.quote-column .quote-block::before {
-  content: attr(data-label);
-  position: absolute;
-  top: -0.85rem;
-  left: 0.65rem;
-  background: #1b1b1b;
-  border: 1px solid #2b3a2b;
-  color: #dfeee6;
-  font-size: 0.8rem;
-  line-height: 1;
-  border-radius: 999px;
-  padding: 0.2rem 0.55rem;
-  box-shadow: 0 4px 10px #0007;
 }
 
 /* Add a bit more separation between the portrait and experience section */

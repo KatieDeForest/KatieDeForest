@@ -24,7 +24,7 @@
   text-align: center;
   position: relative;
   overflow: visible;
-  margin-top: 0;
+  margin-top: 0px;
   z-index: 1;
   /* ensure CTA (and its content) paints above the previous section's fade */
 }
