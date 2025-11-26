@@ -49,7 +49,7 @@ const searchInput = ref<HTMLInputElement | null>(null);
 // timers for JS-driven staggered reveal (cleared when modal closes)
 const _revealTimers: number[] = [];
 // separate timers for the language modal reveal so we don't mix with search timers
-const _langRevealTimers: number[] = [];
+// const _langRevealTimers: number[] = []; // legacy (unused)
 
 // searchResults is now computed from searchQuery; no manual watcher required.
 
@@ -87,14 +87,9 @@ watch(searchResults, async (val) => {
 const collapse1 = ref(false);
 const { t, locale } = useI18n();
 const showSearchModal = ref(false);
-const showLanguageModal = ref(false);
-const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'da', name: 'Dansk' },
-  { code: 'de', name: 'Deutsch' },
-  { code: 'no', name: 'Norsk' },
-  { code: 'sv', name: 'Svenska' }
-].sort((a, b) => a.name.localeCompare(b.name));
+// const showLanguageModal = ref(false); // legacy (unused after toggle)
+// Simplified language support: toggle between Danish ('da') and English ('en')
+// const languages = [ { code: 'da', name: 'Dansk' }, { code: 'en', name: 'English' } ]; // legacy (unused)
 
 const STORAGE_KEY = 'app:locale';
 
@@ -110,38 +105,12 @@ function localeToCode(loc: string): string {
 }
 
 const selectedLanguage = ref(localeToCode(String(locale.value)) || 'en');
-function openLanguageModal() {
-  showLanguageModal.value = true;
-  // prevent background scroll when language modal opens (coordinate with search modal)
-  try {
-    if (_prevBodyOverflow === null) _prevBodyOverflow = document.body.style.overflow || null;
-    document.body.style.overflow = 'hidden';
-  } catch {
-    /* ignore */
-  }
-}
-function closeLanguageModal() {
-  showLanguageModal.value = false;
-  // only restore body scroll if no other modal (search) is open
-  try {
-    if (!showSearchModal.value) {
-      if (_prevBodyOverflow === null) {
-        document.body.style.overflow = '';
-      } else {
-        document.body.style.overflow = _prevBodyOverflow;
-      }
-      _prevBodyOverflow = null;
-    }
-  } catch {
-    /* ignore */
-  }
-}
-function selectLanguage(code: string) {
-  selectedLanguage.value = code;
-  const target = codeToLocale(code);
+function toggleLanguage() {
+  const next = selectedLanguage.value === 'da' ? 'en' : 'da';
+  selectedLanguage.value = next;
+  const target = codeToLocale(next);
   locale.value = target as MessageLanguages;
-  try { localStorage.setItem(STORAGE_KEY, code); } catch { /* ignore */ }
-  closeLanguageModal();
+  try { localStorage.setItem(STORAGE_KEY, next); } catch { /* ignore */ }
 }
 
 // Save previous body overflow so we can restore it when the modal closes
@@ -232,34 +201,7 @@ onUnmounted(() => {
   }
 });
 
-// Watcher to create the same staggered 'revealed' animation for language items
-watch(showLanguageModal, async (open) => {
-  // clear any pending language timers first
-  while (_langRevealTimers.length) {
-    const t = _langRevealTimers.pop();
-    if (t) clearTimeout(t);
-  }
-
-  if (!open) {
-    // remove revealed classes when closed
-    const items = document.querySelectorAll('.language-modal-content .list-group-item');
-    items.forEach(i => i.classList.remove('revealed'));
-    return;
-  }
-
-  // wait for DOM to render
-  await nextTick();
-  const items = document.querySelectorAll('.language-modal-content .list-group-item');
-  items.forEach(i => i.classList.remove('revealed'));
-
-  const gap = 90;
-  items.forEach((el, idx) => {
-    const t = window.setTimeout(() => {
-      (el as HTMLElement).classList.add('revealed');
-    }, idx * gap);
-    _langRevealTimers.push(t);
-  });
-});
+// Legacy watcher removed (language modal no longer used)
 </script>
 
 <template>
@@ -309,13 +251,22 @@ watch(showLanguageModal, async (open) => {
           </div>
           <!-- Header controls: search only -->
           <div class="d-flex w-auto justify-content-end align-items-center">
-            <button
-              class="control-btn"
+            <!-- Language toggle: Danish / English (flags directly in header) -->
+            <div
+              class="lang-toggle"
               :aria-label="t('aria.selectLanguage')"
-              @click="openLanguageModal"
+              role="button"
+              @click="toggleLanguage"
             >
-              <MDBIcon icon="globe" size="sm" class="text-white" />
-            </button>
+              <span class="half left" :class="{ active: selectedLanguage === 'da', inactive: selectedLanguage !== 'da' }">
+                <span class="flag-wrap"><span class="flag fi fi-dk" aria-hidden="true"></span></span>
+                <span class="sr-only">Danish</span>
+              </span>
+              <span class="half right" :class="{ active: selectedLanguage === 'en', inactive: selectedLanguage !== 'en' }">
+                <span class="flag-wrap"><span class="flag fi fi-us" aria-hidden="true"></span></span>
+                <span class="sr-only">English</span>
+              </span>
+            </div>
             <button
               class="control-btn"
               :aria-label="t('aria.openSearch')"
@@ -348,40 +299,16 @@ watch(showLanguageModal, async (open) => {
                   </div>
                 </div>
               </teleport>
-              <!-- Language Modal (teleported to body) -->
-              <teleport to="body" v-if="showLanguageModal">
-                <div class="search-modal-overlay">
-                  <div class="language-modal-content">
-                    <button class="close-btn" @click="closeLanguageModal" :aria-label="t('aria.closeLanguage')">&times;</button>
-                    <div class="d-flex align-items-center mb-3">
-                      <h5 class="mb-0 me-2">{{ t('header.selectLanguage') }}</h5>
-                      <span class="manual-translations-label">{{ t('header.manualTranslations') }}</span>
-                    </div>
-                    <ul class="list-group">
-                      <li
-                        v-for="(lang) in languages"
-                        :key="lang.code"
-                        class="list-group-item bg-dark text-white border-0 d-flex flex-column align-items-stretch language-option"
-                        :style="{ cursor: 'pointer', fontWeight: selectedLanguage === lang.code ? 'bold' : 'normal' }"
-                        @click="selectLanguage(lang.code)"
-                      >
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                          <span>{{ lang.name }}</span>
-                          <span v-if="selectedLanguage === lang.code" style="font-size:1.2em;">
-                            <MDBIcon icon="check" size="sm" style="color: #39ff14;" />
-                          </span>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </teleport>
+              <!-- Language Modal removed: using simple toggle button -->
         </div>
       </MDBCollapse>
     </MDBNavbar>
 </template>
 
 <style scoped lang="scss">
+/* Flag icons CSS (lightweight CDN). If you later bundle locally, remove this import
+  and include the package styles globally. */
+@import url('https://cdn.jsdelivr.net/npm/flag-icons@6.6.6/css/flag-icons.min.css');
 @font-face {
   font-family: 'CustomLeafFont';
   src: url('/fonts/leavesfont.ttf') format('truetype');
@@ -415,6 +342,7 @@ watch(showLanguageModal, async (open) => {
   padding: 0;
   margin: 0;
   line-height: 1;
+  z-index: 5; /* ensure brand stays above decorative seams */
 }
 /* `.brand-link` removed — styles consolidated into `.brand-text` */
 .search-modal-content {
@@ -655,5 +583,91 @@ watch(showLanguageModal, async (open) => {
   text-shadow: 0 1px 0 #222, 0 4px 12px rgba(0,0,0,1), 0 0 8px rgba(57,255,20,1);
   color: inherit;
   transform: translateY(-2px);
+}
+
+/* Language toggle button */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-right: 10px;
+  position: relative;
+  overflow: visible;   /* allow soft glow/shadow not to be clipped */
+  transition: transform 160ms ease; /* match search button timing */
+  will-change: transform;
+}
+.lang-toggle:hover,
+.lang-toggle:focus-within {
+  transform: translateY(-2px); /* same lift as .control-btn hover */
+}
+.lang-toggle .half {
+  width: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: filter 160ms ease, opacity 160ms ease;
+  position: relative;
+}
+.lang-toggle .half.left { justify-content: flex-end; }
+.lang-toggle .half.right { justify-content: flex-start; }
+.lang-toggle .half.left { margin-right: -11px; }
+.lang-toggle .half.right { margin-left: -11px; }
+.lang-toggle .half.left .flag {
+  /* Cut only the inner diagonal (preserve outer corners) */
+  -webkit-clip-path: polygon(0% 0%, 99% 0%, 6% 100%, 0% 100%); /* tweak for sharper diagonal */
+  clip-path: polygon(0% 0%, 94% 0%, 6% 100%, 0% 100%);
+  will-change: clip-path;
+  position: relative;
+  border-top-left-radius: 8px; /* maintain outer corner rounding on actual flag */
+}
+.lang-toggle .half.right .flag {
+  -webkit-clip-path: polygon(2% 100%, 94% 0%, 100% 0%, 100% 100%); /* matching tweak */
+  clip-path: polygon(3% 100%, 94% 0%, 100% 0%, 100% 100%);
+  will-change: clip-path;
+  position: relative;
+  border-bottom-right-radius: 8px; /* maintain outer corner rounding on actual flag */
+}
+
+.lang-toggle .flag-wrap {
+  width: 28px;
+  height: 19px;
+  display: block;
+  position: relative;
+  overflow: visible;
+  transition: filter 160ms ease;
+  z-index: 1;
+  /* baseline subtle glow */
+  filter: drop-shadow(0 0 1px rgba(57,255,20,0.45));
+}
+.lang-toggle .half.left .flag-wrap { border-radius: 8px 0 0 0; }
+.lang-toggle .half.right .flag-wrap { border-radius: 0 0 8px 0; }
+
+/* intensify glow when hovering or focusing the toggle */
+.lang-toggle:hover .flag-wrap,
+.lang-toggle:focus-within .flag-wrap { filter: drop-shadow(0 0 3px rgba(57,255,20,0.5)); }
+
+.lang-toggle .half.inactive .flag { filter: grayscale(100%); }
+/* Ensure active flag keeps color (override any inheritance) */
+.lang-toggle .half.active .flag { filter: none; }
+.lang-toggle .flag {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 0; /* keep diagonal edge crisp */
+  will-change: clip-path;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>
