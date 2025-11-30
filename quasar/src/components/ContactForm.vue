@@ -1,38 +1,38 @@
 <template>
   <div class="contact-wrap">
   <section class="hero">
-    <h1>Contact Me</h1>
-    <p>If you have a question, a collaboration idea, or want to book a shoot, send me a message and I’ll get back to you.</p>
+    <h1>{{ t('contact.title') }}</h1>
+    <p>{{ t('contact.intro') }}</p>
   </section>
   <form class="contact-form" @submit.prevent="submit" novalidate>
     <div class="row">
-      <label for="name">Name</label>
-      <input id="name" v-model.trim="form.name" type="text" required :class="{ invalid: errors.name }" />
-      <small v-if="errors.name" class="error">Please enter your name.</small>
+  <label for="name">{{ t('contact.form.nameLabel') }}</label>
+  <input id="name" v-model.trim="form.name" type="text" required :placeholder="t('contact.form.namePlaceholder')" :class="{ invalid: errors.name }" />
+  <small v-if="errors.name" class="error">{{ t('contact.form.validation.nameRequired') }}</small>
     </div>
 
     <div class="row">
-      <label for="email">Email</label>
-      <input id="email" v-model.trim="form.email" type="email" required :class="{ invalid: errors.email }" />
-      <small v-if="errors.email" class="error">Please enter a valid email.</small>
+  <label for="email">{{ t('contact.form.emailLabel') }}</label>
+  <input id="email" v-model.trim="form.email" type="email" required :placeholder="t('contact.form.emailPlaceholder')" :class="{ invalid: errors.email }" />
+  <small v-if="errors.email" class="error">{{ t('contact.form.validation.emailRequired') }}</small>
     </div>
 
     <div class="row">
-      <label for="subject">Subject</label>
-      <input id="subject" v-model.trim="form.subject" type="text" required :class="{ invalid: errors.subject }" />
-      <small v-if="errors.subject" class="error">Please enter a subject.</small>
+  <label for="subject">{{ t('contact.form.subjectLabel') }}</label>
+  <input id="subject" v-model.trim="form.subject" type="text" required :placeholder="t('contact.form.subjectPlaceholder')" :class="{ invalid: errors.subject }" />
+  <small v-if="errors.subject" class="error">{{ t('contact.form.validation.subjectRequired') }}</small>
     </div>
 
     <div class="row">
-      <label for="message">Message</label>
-      <textarea id="message" v-model.trim="form.message" rows="6" required :class="{ invalid: errors.message }"></textarea>
-      <small v-if="errors.message" class="error">Please enter your message.</small>
+  <label for="message">{{ t('contact.form.messageLabel') }}</label>
+  <textarea id="message" v-model.trim="form.message" rows="6" required :placeholder="t('contact.form.messagePlaceholder')" :class="{ invalid: errors.message }"></textarea>
+  <small v-if="errors.message" class="error">{{ t('contact.form.validation.messageRequired') }}</small>
     </div>
 
     <div class="actions">
-      <button class="submit" type="submit" :disabled="loading">{{ loading ? 'Sending…' : 'Send Message' }}</button>
-      <p v-if="status==='success'" class="status success">Thanks! Your message has been sent.</p>
-      <p v-if="status==='error'" class="status error">Sorry, something went wrong. Please try again later.</p>
+  <button class="submit" type="submit" :disabled="loading">{{ loading ? t('contact.form.sending') : t('contact.form.submit') }}</button>
+  <p v-if="status==='success'" class="status success">{{ t('contact.form.success') }}</p>
+  <p v-if="status==='error'" class="status error">{{ t('contact.form.error') }}</p>
     </div>
   </form>
   </div>
@@ -41,6 +41,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import axios from 'axios';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const form = reactive({ name: '', email: '', subject: '', message: '' });
 const errors = reactive<{[k:string]: boolean}>({ name: false, email: false, subject: false, message: false });
@@ -96,7 +99,7 @@ async function submit() {
 .contact-form { max-width: 760px; margin: 0 auto; padding: 0 24px; }
 .contact-form .row { margin-bottom: 16px; display: grid; gap: 6px; }
 label { font-weight: 600; }
-input, textarea { padding: 10px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; width: 100%; }
+input, textarea { padding: 10px 12px; border: 1px solid #ccc; color: #ccc; background-color: #000000; border-radius: 8px; font-size: 14px; width: 100%; transition: box-shadow 240ms ease, border-color 200ms ease, transform 120ms ease; }
 textarea { line-height: 1.4; min-height: 140px; resize: vertical; overflow: auto; }
 input.invalid, textarea.invalid { border-color: #e45757; }
 .error { color: #e45757; }
@@ -124,4 +127,20 @@ button.submit:disabled { opacity: 0.6; cursor: default; }
 .status.error { color: #c62828; }
 .more-ways { max-width: 760px; margin: 32px auto 0; padding: 0 24px; }
 .more-ways h2 { font-size: 20px; margin-bottom: 8px; }
+
+/* Glowing focus to match the site's search input aesthetic. Uses a soft green glow. */
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  /* Ring-only focus: thin outer ring without a large halo */
+  box-shadow: 0 0 0 0.18rem rgba(57,255,20,0.22);
+  border-color: rgba(57,255,20,0.6);
+}
+
+/* If field is invalid, keep the red invalid border to take precedence visually */
+.contact-form input.invalid:focus,
+.contact-form textarea.invalid:focus {
+  box-shadow: none;
+  border-color: #e45757;
+}
 </style>
