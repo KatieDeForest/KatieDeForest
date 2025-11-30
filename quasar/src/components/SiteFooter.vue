@@ -5,12 +5,14 @@
         <span class="footer-brand" v-bind:style="footerBrandStyle">Katie De Forest</span>
         <span class="footer-description mt-2" v-html="footerDescription"></span>
       </div>
-  <span class="footer-copyright">{{ copyright }}</span>
+    <span class="footer-cvr">{{ t('footer.cvr') }}</span>
+    <span class="footer-copyright">{{ copyright }}</span>
       <div class="footer-links-legal d-flex flex-row align-items-start">
         <nav class="footer-links d-flex flex-column align-items-end me-4">
           <a href="#" class="footer-link">{{ t('footer.links.gallery') }}</a>
           <a href="#" class="footer-link">{{ t('footer.links.about') }}</a>
           <a href="#" class="footer-link">{{ t('footer.links.contact') }}</a>
+          <router-link to="/services" class="footer-link">{{ t('nav.services') }}</router-link>
         </nav>
         <nav class="footer-legal-links d-flex flex-column align-items-end">
           <a href="#" class="footer-link legal">{{ t('footer.legal.privacy') }}</a>
@@ -152,6 +154,16 @@ const copyright = computed(() => t('footer.copyright', { year }));
   -webkit-text-stroke: 0.5px #b5ffb5;
   transition: color 0.35s, text-shadow 0.35s;
   margin-bottom: 0.3rem;
+}
+.footer-cvr {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 2.6rem; /* sits just above the copyright line */
+  color: #b5ffb5;
+  font-size: 0.95rem;
+  pointer-events: auto;
+  z-index: 10;
 }
 @font-face {
   font-family: 'CustomLeafFont';
