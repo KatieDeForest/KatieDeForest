@@ -236,6 +236,9 @@ onUnmounted(() => {
             <MDBNavbarItem to="/gallery" active>
               <span class="text-white nav-item-text">{{ t('nav.gallery') }}</span>
             </MDBNavbarItem>
+              <MDBNavbarItem to="/services">
+                <span class="text-white nav-item-text">{{ t('nav.services') }}</span>
+              </MDBNavbarItem>
             <MDBNavbarItem to="/about">
               <span class="text-white nav-item-text">{{ t('nav.about') }}</span>
             </MDBNavbarItem>
@@ -563,13 +566,13 @@ onUnmounted(() => {
 /* Shared control buttons (globe, search) use same softer brand glow */
 .control-btn {
   color: inherit;
-  font-size: 1.2em;
+  font-size: 1.35em; /* slightly larger */
   background: none !important;
   border: none;
-  margin-right: 10px;
-  padding: 8px;
-  min-width: 40px;
-  min-height: 40px;
+  margin-right: 12px;
+  padding: 10px;
+  min-width: 48px; /* bigger touch target */
+  min-height: 48px; /* bigger touch target */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -602,7 +605,7 @@ onUnmounted(() => {
   transform: translateY(-2px); /* same lift as .control-btn hover */
 }
 .lang-toggle .half {
-  width: 30px;
+  width: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -612,8 +615,8 @@ onUnmounted(() => {
 }
 .lang-toggle .half.left { justify-content: flex-end; }
 .lang-toggle .half.right { justify-content: flex-start; }
-.lang-toggle .half.left { margin-right: -11px; }
-.lang-toggle .half.right { margin-left: -11px; }
+.lang-toggle .half.left { margin-right: -15px; }
+.lang-toggle .half.right { margin-left: -15px; }
 .lang-toggle .half.left .flag {
   /* Cut only the inner diagonal (preserve outer corners) */
   -webkit-clip-path: polygon(0% 0%, 99% 0%, 6% 100%, 0% 100%); /* tweak for sharper diagonal */
@@ -631,8 +634,8 @@ onUnmounted(() => {
 }
 
 .lang-toggle .flag-wrap {
-  width: 28px;
-  height: 19px;
+  width: 36px;
+  height: 24px;
   display: block;
   position: relative;
   overflow: visible;
@@ -641,8 +644,8 @@ onUnmounted(() => {
   /* baseline subtle glow */
   filter: drop-shadow(0 0 1px rgba(57,255,20,0.45));
 }
-.lang-toggle .half.left .flag-wrap { border-radius: 8px 0 0 0; }
-.lang-toggle .half.right .flag-wrap { border-radius: 0 0 8px 0; }
+.lang-toggle .half.left .flag-wrap { border-radius: 10px 0 0 0; }
+.lang-toggle .half.right .flag-wrap { border-radius: 0 0 10px 0; }
 
 /* intensify glow when hovering or focusing the toggle */
 .lang-toggle:hover .flag-wrap,
