@@ -5,6 +5,7 @@ export default {
     home: 'Home',
     gallery: 'Gallery',
     about: 'About Me',
+    services: 'Services',
     contact: 'Contact',
   },
   header: {
@@ -49,6 +50,7 @@ export default {
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
     },
+    cvr: 'CVR: 12345678',
     copyright: '© {year} Katie De Forest. All rights reserved.',
   },
   collections: {
@@ -94,5 +96,29 @@ export default {
     hideDetails: 'Hide details',
     colorTheme: 'Color Theme',
     showColorCodes: 'Show hex and RGB color codes {color}',
+  },
+  contact: {
+    title: 'Contact Me',
+    intro: 'If you have a question, a collaboration idea, or want to book a shoot, send me a message and I’ll get back to you.',
+    form: {
+      nameLabel: 'Name',
+      namePlaceholder: 'Your name',
+      emailLabel: 'Email',
+      emailPlaceholder: 'Your email',
+      subjectLabel: 'Subject',
+      subjectPlaceholder: 'Short subject',
+      messageLabel: 'Message',
+      messagePlaceholder: 'Write your message here…',
+      submit: 'Send Message',
+      sending: 'Sending…',
+      success: 'Thanks! Your message has been sent.',
+      error: 'Sorry, something went wrong. Please try again later.',
+      validation: {
+        nameRequired: 'Please enter your name.',
+        emailRequired: 'Please enter a valid email.',
+        subjectRequired: 'Please enter a subject.',
+        messageRequired: 'Please enter your message.'
+      }
+    }
   },
 };

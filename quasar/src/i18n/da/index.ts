@@ -5,6 +5,7 @@ export default {
     home: 'Hjem',
     gallery: 'Galleri',
     about: 'Om mig',
+    services: 'Tjenester',
     contact: 'Kontakt',
   },
   header: {
@@ -49,6 +50,7 @@ export default {
       privacy: 'Privatlivspolitik',
       terms: 'Vilkår og betingelser',
     },
+    cvr: 'CVR: 12345678',
     copyright: '© {year} Katie De Forest. Alle rettigheder forbeholdes.',
   },
   collections: {
@@ -94,5 +96,29 @@ export default {
     hideDetails: 'Skjul detaljer',
     colorTheme: 'Farvetema',
     showColorCodes: 'Vis hex- og RGB-farvekoder {color}',
+  },
+  contact: {
+    title: 'Kontakt mig',
+    intro: 'Hvis du har et spørgsmål, en idé til samarbejde eller vil bestille en fotografering, så send mig en besked, og jeg vender tilbage hurtigst muligt.',
+    form: {
+      nameLabel: 'Navn',
+      namePlaceholder: 'Dit navn',
+      emailLabel: 'E-mail',
+      emailPlaceholder: 'Din e-mail',
+      subjectLabel: 'Emne',
+      subjectPlaceholder: 'Kort emne',
+      messageLabel: 'Besked',
+      messagePlaceholder: 'Skriv din besked her…',
+      submit: 'Send besked',
+      sending: 'Sender…',
+      success: 'Tak! Din besked er sendt.',
+      error: 'Beklager, noget gik galt. Prøv venligst igen senere.',
+      validation: {
+        nameRequired: 'Indtast dit navn.',
+        emailRequired: 'Indtast en gyldig e-mail.',
+        subjectRequired: 'Indtast et emne.',
+        messageRequired: 'Indtast din besked.'
+      }
+    }
   },
 };
