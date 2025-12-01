@@ -81,6 +81,10 @@ export default {
     goToSlide: 'Gå til slide',
     slideAlt: 'Slidebillede',
   },
+  servicesHero: {
+    title: 'Tjenester',
+    description: 'Udforsk de tjenester jeg tilbyder — fra portrætter til kæledyr — samt valgfrie tilkøb for dig, der vil løfte din session endnu mere.',
+  },
   lightbox: {
     close: 'Luk',
     prev: 'Forrige',
@@ -120,5 +124,83 @@ export default {
         messageRequired: 'Indtast din besked.'
       }
     }
+  },
+  servicesContent: {
+    title: 'Mine tjenester',
+    lead1: 'Jeg tilbyder sessioner med fokus på tryghed, kreativitet og ægte nærvær. Hver fotografering starter med en kort samtale, så jeg kan forstå dine ønsker og hvad der føles naturligt for dig. Jeg guider roligt, skaber en afslappet stemning og lader øjeblikkene opstå på en måde, der passer til din personlighed. Uanset om det er portrætter, kæledyr eller en skræddersyet idé, er målet det samme: ærlige billeder, der viser dig som du er.',
+    lead2: 'Jeg arbejder udelukkende på lokation og gør transport så enkel som muligt. Hvis din session kræver mere end én type offentlig transport for at nå frem, skal eventuelle ekstra rejseudgifter dækkes af dig. Jeg oplyser altid beløbet på forhånd, så der ikke opstår overraskelser.',
+    studentNote: 'Studierabat: Hvis du har et gyldigt studiekort, er du berettiget til studierabat — kontakt mig for detaljer.',
+    mainTitle: 'Hovedpakker',
+    addonsTitle: 'Tilvalg',
+    addonsLead: 'Valgfrie ekstra tilkøb du kan tilføje til enhver hovedpakke.',
+    packages: {
+      portraits: {
+        title: 'Portrætter',
+        description: [
+          '40–60 minutters session på lokation',
+          'Let redigerede billeder',
+          'Forskellige poseringer og omgivelser',
+          '5 redigerede billeder i høj opløsning inkluderet',
+        ],
+        price: 'Fra DKK 800',
+      },
+      couplePortraits: {
+        title: 'Parportrætter',
+        description: [
+          '40–60 minutters session på lokation',
+          'Let redigerede billeder',
+          'Forskellige poseringer og omgivelser',
+          '5 redigerede billeder i høj opløsning inkluderet',
+        ],
+        price: 'Fra DKK 1200',
+      },
+      pet: {
+        title: 'Kæledyrsportrætter',
+        description: [
+          '40–60 minutters session i hjemmet eller udendørs',
+          'Let redigerede billeder',
+          'Ejer kan deltage i fælles portrætter',
+          '5 redigerede billeder i høj opløsning inkluderet',
+        ],
+        price: 'Fra DKK 1000',
+      },
+      commercial: {
+        title: 'Kommerciel',
+        description: [
+          'On-site gennemgang af billeder under optagelsen',
+          'Enten let eller tungt redigerede billeder',
+          'Forudgående konsultation og planlægning',
+          'Test af dine produkter med detaljeret video- eller tekstgennemgang',
+        ],
+        price: 'Kontakt for tilbud',
+      },
+    },
+    addons: {
+      extraImage: {
+        title: 'Ekstra redigeret billede',
+        description: ['Et ekstra redigeret billede til din pakke'],
+        price: 'DKK 150 pr. billede',
+      },
+      rush: {
+        title: 'Hastelevering',
+        description: ['Hurtigere levering — modtag redigerede billeder inden for 48 timer'],
+        price: 'DKK 500',
+      },
+      extraEditing: {
+        title: 'Tung redigering',
+        description: ['Tungt redigerede billeder med avanceret retouchering'],
+        price: 'DKK 200 pr. billede',
+      },
+      realDeal: {
+        title: 'The real deal',
+        description: ['USB-levering i stedet for digital download'],
+        price: 'DKK 200',
+      },
+      extendedTime: {
+        title: 'Udvidet optagetid',
+        description: ['Forlæng din session med 30 minutter for ekstra dækning'],
+        price: 'DKK 300',
+      },
+    },
   },
 };
