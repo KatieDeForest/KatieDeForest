@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    <ContactHeroBanner />
     <ContactForm />
     <InstagramProfileEmbed />
   </q-page>
@@ -8,6 +9,7 @@
 <script setup lang="ts">
 import ContactForm from 'components/ContactForm.vue';
 import InstagramProfileEmbed from 'components/InstagramProfileEmbed.vue';
+import ContactHeroBanner from 'components/ContactHeroBanner.vue';
 </script>
 <style scoped>
 q-page {
