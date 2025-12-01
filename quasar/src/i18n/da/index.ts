@@ -101,8 +101,13 @@ export default {
     colorTheme: 'Farvetema',
     showColorCodes: 'Vis hex- og RGB-farvekoder {color}',
   },
-  contact: {
+  contactHero: {
     title: 'Kontakt mig',
+    description:
+      'Hvis du har et spørgsmål, en idé til samarbejde eller vil bestille en fotografering, så send mig en besked, og jeg vender tilbage hurtigst muligt.',
+  },
+  contact: {
+    title: 'Kontaktformular',
     intro: 'Hvis du har et spørgsmål, en idé til samarbejde eller vil bestille en fotografering, så send mig en besked, og jeg vender tilbage hurtigst muligt.',
     form: {
       nameLabel: 'Navn',

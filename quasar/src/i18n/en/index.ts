@@ -101,8 +101,13 @@ export default {
     colorTheme: 'Color Theme',
     showColorCodes: 'Show hex and RGB color codes {color}',
   },
-  contact: {
+  contactHero: {
     title: 'Contact Me',
+    description:
+      'If you have a question, a collaboration idea, or want to book a shoot, send me a message and I’ll get back to you.',
+  },
+  contact: {
+    title: 'Contact Form',
     intro: 'If you have a question, a collaboration idea, or want to book a shoot, send me a message and I’ll get back to you.',
     form: {
       nameLabel: 'Name',
