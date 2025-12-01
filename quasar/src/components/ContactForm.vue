@@ -1,9 +1,6 @@
 <template>
   <div class="contact-wrap">
-  <section class="hero">
-    <h1>{{ t('contact.title') }}</h1>
-    <p>{{ t('contact.intro') }}</p>
-  </section>
+  <h1 class="form-title">{{ t('contact.title') }}</h1>
   <form class="contact-form" @submit.prevent="submit" novalidate>
     <div class="row">
   <label for="name">{{ t('contact.form.nameLabel') }}</label>
@@ -83,9 +80,9 @@ async function submit() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .contact-wrap {
-  background-color: #111;
+  background-color: $primary;
   color: #fff;
   min-height: 100vh;
   width: 100%;
@@ -93,9 +90,7 @@ async function submit() {
   padding-bottom: 80px; /* keep space above footer when content grows */
   box-sizing: border-box;
 }
-.hero { max-width: 760px; margin: 0 auto 24px; padding: 0 24px; }
-.hero h1 { margin: 0 0 8px; font-size: 28px; }
-.hero p { color: #bbb; margin: 0 0 24px; }
+.form-title { max-width: 760px; margin: 0 auto 16px; padding: 0 24px; font-size: 24px; font-weight: 600; }
 .contact-form { max-width: 760px; margin: 0 auto; padding: 0 24px; }
 .contact-form .row { margin-bottom: 16px; display: grid; gap: 6px; }
 label { font-weight: 600; }
