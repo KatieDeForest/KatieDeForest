@@ -26,7 +26,7 @@ const { t } = useI18n();
 
 .hero-title {
   color: #fff;
-  font-size: 3.5rem;
+  font-size: 2.6rem;
   letter-spacing: 1px;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
