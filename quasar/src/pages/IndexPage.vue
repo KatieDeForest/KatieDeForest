@@ -2,6 +2,7 @@
   <q-page>
     <MainHeroBanner />
     <MainShortcut />
+    <HomeCTA />
     <ScrollToTop />
   </q-page>
 </template>
@@ -10,4 +11,5 @@
 import MainHeroBanner from 'components/MainHeroBanner.vue';
 import MainShortcut from 'components/MainShortcut.vue';
 import ScrollToTop from 'components/ScrollToTop.vue';
+import HomeCTA from 'components/HomeCTA.vue';
 </script>
