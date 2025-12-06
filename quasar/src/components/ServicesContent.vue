@@ -4,9 +4,10 @@
       <h2 class="section-title">{{ t('servicesContent.title') }}</h2>
       <p class="lead">{{ t('servicesContent.lead1') }}</p>
       <p class="lead">{{ t('servicesContent.lead2') }}</p>
-      <p class="student-note">{{ t('servicesContent.studentNote') }}</p>
+      <p class="student-note" v-html="t('servicesContent.studentNote')"></p>
       <div class="services-list">
         <h3 class="subsection-title">{{ t('servicesContent.mainTitle') }}</h3>
+        <p class="vat-note">{{ t('servicesContent.vatNote') }}</p>
         <div class="grid main-packages">
           <ServiceCard
             v-for="s in mainPackages"
@@ -17,7 +18,8 @@
           />
         </div>
 
-        <h3 class="subsection-title" style="margin-top: 28px">{{ t('servicesContent.addonsTitle') }}</h3>
+        <h3 class="subsection-title" style="margin-top: 50px">{{ t('servicesContent.addonsTitle') }}</h3>
+        <p class="vat-note">{{ t('servicesContent.vatNote') }}</p>
         <p class="lead" style="margin-top: 6px; margin-bottom: 10px; color: #d6d6d6">{{ t('servicesContent.addonsLead') }}</p>
         <div class="grid addons">
           <ServiceCard
@@ -129,7 +131,20 @@ const addons = computed(() => [
 }
 .student-note {
   color: #ddd;
-  margin-bottom: 18px;
+  margin-bottom: 50px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5px 15px;
+  border-radius: 8px;
+}
+.student-note strong {
+  font-weight: 700;
+  color: #fff;
+}
+.vat-note {
+  color: #cfcfcf;
+  font-size: 13px;
+  margin: -5px 0 10px; /* sit under the main packages title with light spacing */
 }
 .subsection-title {
   font-size: 18px;
@@ -143,7 +158,7 @@ const addons = computed(() => [
   gap: 18px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   align-items: stretch; /* ensure grid tracks allow children to stretch */
-  margin-top: 12px;
+  margin-top: 22px;
 }
 .services-list .grid > * {
   width: 100%;
