@@ -1,6 +1,7 @@
 <template>
   <div class="contact-wrap">
   <h1 class="form-title">{{ t('contact.title') }}</h1>
+  <p class="form-intro">{{ t('contact.formIntro') }}</p>
   <form class="contact-form" @submit.prevent="submit" novalidate>
     <div class="row">
   <label for="name">{{ t('contact.form.nameLabel') }}</label>
@@ -90,28 +91,31 @@ async function submit() {
   padding-bottom: 80px; /* keep space above footer when content grows */
   box-sizing: border-box;
 }
-.form-title { max-width: 760px; margin: 0 auto 16px; padding: 0 24px; font-size: 24px; font-weight: 600; }
-.contact-form { max-width: 760px; margin: 0 auto; padding: 0 24px; }
-.contact-form .row { margin-bottom: 16px; display: grid; gap: 6px; }
+.form-title { max-width: 760px; margin: 0 auto 8px; padding: 0 24px; font-size: 26px; font-weight: 700; letter-spacing: 0.01em; }
+.form-intro { max-width: 760px; margin: 0 auto 20px; padding: 0 24px; color: #d6e6d6; font-size: 15px; line-height: 1.55; }
+.contact-form { max-width: 760px; margin: 0 auto; padding: 16px 24px 20px; background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; box-shadow: 0 14px 28px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.04); transition: box-shadow 180ms ease, transform 160ms ease; }
+.contact-form .row { margin-bottom: 16px; display: grid; gap: 8px; }
 label { font-weight: 600; }
-input, textarea { padding: 10px 12px; border: 1px solid #ccc; color: #ccc; background-color: #000000; border-radius: 8px; font-size: 14px; width: 100%; transition: box-shadow 240ms ease, border-color 200ms ease, transform 120ms ease; }
-textarea { line-height: 1.4; min-height: 140px; resize: vertical; overflow: auto; }
+input, textarea { padding: 12px 14px; border: 1px solid rgba(255,255,255,0.22); color: #e6e6e6; background-color: #111; border-radius: 12px; font-size: 15px; width: 100%; transition: box-shadow 200ms ease, border-color 180ms ease, transform 120ms ease, background 180ms ease; }
+input::placeholder, textarea::placeholder { color: #9fb79f; }
+textarea { line-height: 1.5; min-height: 150px; resize: vertical; overflow: auto; }
 input.invalid, textarea.invalid { border-color: #e45757; }
 .error { color: #e45757; }
-.actions { display: flex; align-items: center; gap: 12px; }
+.actions { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
 button.submit {
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid #8a8a8a;
-  background: #141414;
-  color: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(57,255,20,0.4);
+  background: linear-gradient(180deg, #192019, #141914);
+  color: #d8ffd8;
   cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease, transform 120ms ease;
+  transition: background 160ms ease, border-color 160ms ease, transform 120ms ease, box-shadow 160ms ease;
 }
 button.submit:hover:not(:disabled),
 button.submit:focus-visible:not(:disabled) {
-  background: #1a1a1a;
-  border-color: #b0b0b0;
+  background: linear-gradient(180deg, #1b241b, #161d16);
+  border-color: rgba(57,255,20,0.65);
+  box-shadow: 0 0 0 0.18rem rgba(57,255,20,0.18);
   transform: translateY(-1px);
 }
 button.submit:active:not(:disabled) {
@@ -128,7 +132,7 @@ button.submit:disabled { opacity: 0.6; cursor: default; }
 .contact-form textarea:focus {
   outline: none;
   /* Ring-only focus: thin outer ring without a large halo */
-  box-shadow: 0 0 0 0.18rem rgba(57,255,20,0.22);
+  box-shadow: 0 0 0 0.16rem rgba(57,255,20,0.22);
   border-color: rgba(57,255,20,0.6);
 }
 
