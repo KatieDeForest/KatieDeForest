@@ -2,7 +2,7 @@
 	<div class="hero-banner q-pa-xl">
 		<div class="hero-inner">
 			<h1 class="hero-title">{{ t('contactHero.title') }}</h1>
-			<p class="hero-description">{{ t('contactHero.description') }}</p>
+			<p class="hero-description">{{ t('contact.intro') }}</p>
 		</div>
 	</div>
 </template>
@@ -20,7 +20,7 @@ const { t } = useI18n({ useScope: 'global' });
 	align-items: center;
 	background: $primary;
 	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-	min-height: 180px;
+	height: 180px;
 	border-bottom: 2px solid $light-accent; /* separator line to content below */
 	padding: 36px 18px;
 }

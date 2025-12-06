@@ -38,8 +38,9 @@ const description = computed(() => {
     align-items: center;
     background: $primary;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-    min-height: 180px;
-    border-bottom: 2px solid $accent;
+    height: 180px;
+    padding: 36px 18px;
+    border-bottom: 2px solid $light-accent;
 }
 
 .hero-title {
