@@ -1,17 +1,18 @@
 <template>
   <section class="about-cta" aria-labelledby="about-cta-title">
     <div class="cta-inner">
-      <h2 id="about-cta-title" class="cta-title">Explore My Collections</h2>
-      <p class="cta-desc">Dive deeper into themed bodies of work—seasonal studies, quiet waters, and abstract
-        botanicals.</p>
+      <h2 id="about-cta-title" class="cta-title">{{ t('aboutCTA.title') }}</h2>
+      <p class="cta-desc">{{ t('aboutCTA.description') }}</p>
       <div class="cta-actions">
-        <q-btn color="accent" unelevated to="/gallery" label="Browse Gallery" />
+        <q-btn color="accent" unelevated to="/gallery" :label="t('aboutCTA.button')" />
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n({ useScope: 'global' });
 </script>
 
 <style scoped lang="scss">
@@ -20,24 +21,18 @@
 .about-cta {
   background: #0f1410;
   padding: 12rem 1rem 2rem;
-  /* large top padding so gradient finishes before content */
   text-align: center;
   position: relative;
   overflow: visible;
   margin-top: 0px;
   z-index: 1;
-  /* ensure CTA (and its content) paints above the previous section's fade */
 }
 
-/* Unified top seam blend (Field Kit -> CTA) using combined radial + linear layers */
 .about-cta::before {
   content: '';
   position: absolute;
   inset: 0 0 auto 0;
-  /* top region only */
   height: 220px;
-  /* tall enough to hide seam without mid hotspot */
-  /* Pure linear blend that starts exactly at $primary (#222222) to match Field Kit, no radial/tint at the very top */
   background: linear-gradient(to bottom,
       #222222 0%,
       #222222 42%,
@@ -48,16 +43,12 @@
   z-index: 0;
 }
 
-/* Subtle background depth accent (very low opacity) */
-/* Removed radial accent to avoid any top-center half-moon effect */
-
 .cta-inner {
   max-width: 900px;
   margin: 0 auto;
   color: #f4f7f4;
   position: relative;
   z-index: 2;
-  /* ensure content sits above the blend layers */
 }
 
 .cta-title {
@@ -91,7 +82,6 @@
   flex-wrap: wrap;
 }
 
-/* Tweak spacing on smaller screens so it doesn't push content too far down */
 @media (max-width: 700px) {
   .about-cta {
     padding-top: 8rem;
