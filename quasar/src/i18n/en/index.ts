@@ -126,6 +126,10 @@ export default {
       sending: 'Sending…',
       success: 'Thanks! Your message has been sent.',
       error: 'Sorry, something went wrong. Please try again later.',
+      legalPrefix: 'By clicking send, you agree to my',
+      terms: 'Terms of Service',
+      privacy: 'Privacy Policy',
+      and: 'and',
       validation: {
         nameRequired: 'Please enter your name.',
         emailRequired: 'Please enter a valid email.',

@@ -123,6 +123,10 @@ export default {
       sending: 'Sender…',
       success: 'Tak! Din besked er sendt.',
       error: 'Beklager, noget gik galt. Prøv venligst igen senere.',
+      legalPrefix: 'Når du klikker send, accepterer du mine',
+      terms: 'Vilkår og betingelser',
+      privacy: 'Privatlivspolitik',
+      and: 'og',
       validation: {
         nameRequired: 'Indtast dit navn.',
         emailRequired: 'Indtast en gyldig e-mail.',
