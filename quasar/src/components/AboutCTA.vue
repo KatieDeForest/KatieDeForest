@@ -4,7 +4,7 @@
       <h2 id="about-cta-title" class="cta-title">{{ t('aboutCTA.title') }}</h2>
       <p class="cta-desc">{{ t('aboutCTA.description') }}</p>
       <div class="cta-actions">
-        <q-btn color="accent" unelevated to="/gallery" :label="t('aboutCTA.button')" />
+        <q-btn color="accent" unelevated to="/services" :label="t('aboutCTA.button')" />
       </div>
     </div>
   </section>

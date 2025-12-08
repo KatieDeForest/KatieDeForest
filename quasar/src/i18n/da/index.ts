@@ -23,14 +23,14 @@ export default {
     closeLanguage: 'Luk sprog',
   },
   hero: {
-    galleryWelcomeTitle: 'Velkommen til mit galleri!',
+    galleryWelcomeTitle: 'Galleri',
     galleryWelcomeDescription:
       'Udforsk en kurateret samling af smukke billeder og kreative værker.',
-    aboutWelcomeTitle: 'Velkommen til min Om mig-side!',
+    aboutWelcomeTitle: 'Om mig',
     aboutWelcomeDescription: 'Læs mere om min historie, min proces og værdierne bag mit arbejde.',
   },
   collection: {
-    defaultTitle: 'Velkommen til mit galleri!',
+    defaultTitle: 'Galleri',
     defaultDescription: 'Udforsk en kurateret samling af smukke billeder og kreative værker.',
   },
   searchReminder: {
@@ -142,14 +142,14 @@ export default {
     button: 'Kontakt mig',
   },
   aboutCTA: {
-    title: 'Udforsk mine samlinger',
-    description: 'Gennemse kuraterede samlinger — portrætter, natur og abstrakte studier.',
-    button: 'Gennemse galleri',
-  },
-  homeCTA: {
     title: 'Klar til at se tjenester?',
     description: 'Se pakker, tilvalg og hvordan sessioner foregår. Find det der passer til dig.',
     button: 'Se tjenester',
+  },
+  indexCTA: {
+    title: 'Udforsk mine samlinger',
+    description: 'Gennemse kuraterede samlinger — portrætter, natur og abstrakte studier.',
+    button: 'Gennemse galleri',
   },
   privacy: {
     title: 'Privatlivspolitik',

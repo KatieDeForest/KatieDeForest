@@ -23,14 +23,14 @@ export default {
     closeLanguage: 'Close language',
   },
   hero: {
-    galleryWelcomeTitle: 'Welcome to my Gallery!',
+    galleryWelcomeTitle: 'Gallery',
     galleryWelcomeDescription:
       'Explore a curated collection of beautiful images and creative works.',
-    aboutWelcomeTitle: 'Welcome to my About page!',
+    aboutWelcomeTitle: 'About Me',
     aboutWelcomeDescription: 'Learn more about my story, process, and the values behind my work.',
   },
   collection: {
-    defaultTitle: 'Welcome to my Gallery!',
+    defaultTitle: 'Gallery',
     defaultDescription: 'Explore a curated collection of beautiful images and creative works.',
   },
   searchReminder: {
@@ -145,14 +145,14 @@ export default {
     button: 'Contact Me',
   },
   aboutCTA: {
-    title: 'Explore My Collections',
-    description: 'Browse curated collections — portraits, nature, and abstract studies.',
-    button: 'Browse Gallery',
-  },
-  homeCTA: {
     title: 'Ready to Explore Services?',
     description: 'See packages, add-ons, and how sessions work. Find the right fit for you.',
     button: 'View Services',
+  },
+  indexCTA: {
+    title: 'Explore My Collections',
+    description: 'Browse curated collections — portraits, nature, and abstract studies.',
+    button: 'Browse Gallery',
   },
   privacy: {
     title: 'Privacy Policy',
