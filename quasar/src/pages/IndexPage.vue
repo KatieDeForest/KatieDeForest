@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="index-page">
     <MainHeroBanner />
     <MainShortcut />
     <HomeCTA />
@@ -13,3 +13,7 @@ import MainShortcut from 'components/MainShortcut.vue';
 import ScrollToTop from 'components/ScrollToTop.vue';
 import HomeCTA from 'components/HomeCTA.vue';
 </script>
+
+<style scoped>
+.index-page { background: var(--q-primary); min-height: 100vh; }
+</style>
