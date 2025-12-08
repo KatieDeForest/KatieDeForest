@@ -1,76 +1,97 @@
 <template>
-  <div class="ig-grid" v-if="images.length > 0">
-    <div v-for="img in images" :key="img.id" class="ig-item">
-      <a :href="img.permalink" target="_blank" rel="noopener">
-        <img :src="img.media_url" alt="Instagram image" loading="lazy" />
-      </a>
+  <!-- Card-like wrapper with title to match site style -->
+  <div class="ig-card">
+    <div class="ig-card-header">
+      <div class="ig-card-title">You can also check me out on Instagram</div>
     </div>
-  </div>
-
-  <div class="ig-loading" v-else>
-    Loading Instagram…
+    <div class="ig-card-body">
+      <!-- EmbedSocial Instagram widget container -->
+      <div
+        class="embedsocial-hashtag"
+        data-ref="66bf9e56169ee4f2071c7d3091874194984f8541"
+        data-lazyload="yes"
+      ></div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, onBeforeUnmount } from 'vue'
 
-type IgItem = {
-  id: string
-  media_url: string
-  permalink: string
+const SCRIPT_ID = 'EmbedSocialHashtagScript'
+const DATA_REF = '66bf9e56169ee4f2071c7d3091874194984f8541'
+
+function rebuildContainer(): void {
+  const parent = document.querySelector('.ig-card-body')
+  if (!parent) return
+  // Remove any previous container/widget DOM the script may have created
+  parent.querySelectorAll('.embedsocial-hashtag').forEach((n) => n.remove())
+  // Create a fresh container with lazyload enabled
+  const container = document.createElement('div')
+  container.className = 'embedsocial-hashtag'
+  container.setAttribute('data-ref', DATA_REF)
+  parent.appendChild(container)
 }
 
-const images = ref<IgItem[]>([])
-
-async function loadFeed(): Promise<void> {
-  const apiUrl = 'https://instagram-scraper-stable-api.p.rapidapi.com/get_ig_user_posts.php'
-
-  const response = await fetch(apiUrl, {
-    method: 'GET',
-    headers: {
-      'x-rapidapi-host': 'instagram-scraper-stable-api.p.rapidapi.com',
-      'x-rapidapi-key': 'YHe6sSB2Mtmsh4vfTkqDHXP85YBEp1IBpI5jsnBeSWiRy6p2JQ'
-    }
-  })
-
-  const data = await response.json()
-
-  // API returns posts under "data.user.edge_owner_to_timeline_media.edges"
-  const edges = data?.data?.user?.edge_owner_to_timeline_media?.edges ?? []
-
-  images.value = edges.map((edge: any) => ({
-    id: edge.node.id,
-    media_url: edge.node.display_url,
-    permalink: `https://instagram.com/p/${edge.node.shortcode}`
-  }))
+function injectScript(): void {
+  // Remove existing script to force re-initialization on SPA navigation
+  const existing = document.getElementById(SCRIPT_ID)
+  if (existing) existing.remove()
+  const js = document.createElement('script')
+  js.id = SCRIPT_ID
+  js.src = 'https://embedsocial.com/cdn/ht.js'
+  const headEl = document.head || document.getElementsByTagName('head')[0]
+  if (headEl) {
+    headEl.appendChild(js)
+  } else if (document.body) {
+    document.body.appendChild(js)
+  }
 }
 
 onMounted(() => {
-  void loadFeed()
+  rebuildContainer()
+  injectScript()
+})
+
+onBeforeUnmount(() => {
+  // Optional: clean up container to reduce duplicates on rapid nav
+  const parent = document.querySelector('.ig-card-body')
+  parent?.querySelectorAll('.embedsocial-hashtag').forEach((n) => n.remove())
 })
 </script>
 
-<style scoped>
-.ig-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
-  padding: 20px;
-  background: #0d0d0d;
+<style scoped lang="scss">
+.ig-card {
+  max-width: 980px;
+  margin: -50px auto 64px;
+  border-radius: 14px;
+  background: $primary;
+  box-shadow: 0 8px 32px 0 #0007;
+  overflow: hidden;
 }
 
-.ig-item img {
-  width: 100%;
-  border-radius: 8px;
-  background: #111;
-  object-fit: cover;
-  display: block;
+.ig-card-header {
+  background: $primary;
+  color: #ffffff;
+  padding: 12px 16px;
+  border-bottom: 1px solid #1a1a1a;
 }
 
-.ig-loading {
-  padding: 40px;
-  text-align: center;
-  color: #aaa;
+.ig-card-title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.ig-card-body {
+  padding: 0px 16px 0px 16px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 14px 14px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* Hide EmbedSocial branding button injected by the widget */
+:deep(.es-widget-branding) {
+  display: none !important;
 }
 </style>
