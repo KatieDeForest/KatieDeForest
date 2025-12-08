@@ -19,7 +19,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 const visible = ref(false);
 
 // Show when near the bottom of the document (within `bottomThreshold` px)
-const bottomThreshold = 100; // px from bottom
+const bottomThreshold = 80; // px from bottom
 
 function onScroll() {
   const scrolled = window.innerHeight + window.scrollY;
@@ -47,7 +47,7 @@ onBeforeUnmount(() => {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 84px; /* raised so it doesn't overlap footer text */
+  bottom: 84px; /* closer to bottom; still above footer */
   z-index: 9999;
   background: rgba(0,0,0,0.6);
   color: white;
