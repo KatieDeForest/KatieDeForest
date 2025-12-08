@@ -1,10 +1,12 @@
 <template>
   <q-page class="policy-page">
+    <PrivacyHeroBanner />
     <PrivacyContent />
   </q-page>
 </template>
 
 <script setup lang="ts">
+import PrivacyHeroBanner from 'components/PrivacyHeroBanner.vue';
 import PrivacyContent from 'components/PrivacyContent.vue';
 </script>
 
