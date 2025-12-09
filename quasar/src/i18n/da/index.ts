@@ -15,6 +15,7 @@ export default {
   search: {
     placeholder: 'Skriv din søgning...',
     noResults: 'Ingen resultater.',
+    gotoPage: 'Gå til side',
   },
   aria: {
     selectLanguage: 'Vælg sprog',

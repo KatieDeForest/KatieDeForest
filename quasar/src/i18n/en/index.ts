@@ -15,6 +15,7 @@ export default {
   search: {
     placeholder: 'Type your search...',
     noResults: 'No results found.',
+    gotoPage: 'Go to page',
   },
   aria: {
     selectLanguage: 'Select language',
