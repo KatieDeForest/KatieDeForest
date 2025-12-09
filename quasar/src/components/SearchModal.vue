@@ -28,8 +28,8 @@ async function fetchTagsForLocale(loc: 'en' | 'da') {
     const resp = await api.get(`/api/tags?fields[0]=Slug&fields[1]=Name&pagination[pageSize]=1000&locale=${encodeURIComponent(loc)}`);
     const arr = resp?.data?.data ?? [];
     for (const entry of arr) {
-      const slug = entry?.attributes?.Slug as string | undefined;
-      const name = entry?.attributes?.Name as string | undefined;
+      const slug = entry?.Slug as string | undefined;
+      const name = entry?.Name as string | undefined;
       if (!slug) continue;
       const rec = tagsBySlug.value[slug] || {};
       if (loc === 'en') rec.en = name ?? rec.en;
