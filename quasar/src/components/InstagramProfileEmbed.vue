@@ -2,7 +2,7 @@
   <!-- Card-like wrapper with title to match site style -->
   <div class="ig-card">
     <div class="ig-card-header">
-      <div class="ig-card-title">You can also check me out on Instagram</div>
+      <div class="ig-card-title">{{ t('instagram.embedTitle') }}</div>
     </div>
     <div class="ig-card-body">
       <!-- EmbedSocial Instagram widget container -->
@@ -17,6 +17,9 @@
 
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n({ useScope: 'global' })
 
 const SCRIPT_ID = 'EmbedSocialHashtagScript'
 const DATA_REF = '66bf9e56169ee4f2071c7d3091874194984f8541'

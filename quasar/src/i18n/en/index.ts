@@ -155,6 +155,9 @@ export default {
     description: 'Browse curated collections — portraits, nature, and abstract studies.',
     button: 'Browse Gallery',
   },
+  instagram: {
+    embedTitle: 'You can also check me out on Instagram',
+  },
   privacy: {
     title: 'Privacy Policy',
     desc: 'Your privacy matters. This policy explains what personal data I collect, how I use it, and your rights under applicable law (including GDPR).',

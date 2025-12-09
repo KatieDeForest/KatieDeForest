@@ -152,6 +152,9 @@ export default {
     description: 'Gennemse kuraterede samlinger — portrætter, natur og abstrakte studier.',
     button: 'Gennemse galleri',
   },
+  instagram: {
+    embedTitle: 'Du kan også finde mig på Instagram',
+  },
   privacy: {
     title: 'Privatlivspolitik',
     desc: 'Dit privatliv er vigtigt. Denne politik forklarer hvilke personoplysninger jeg indsamler, hvordan jeg bruger dem, og dine rettigheder efter gældende lov (herunder GDPR).',
