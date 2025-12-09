@@ -63,7 +63,7 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .ig-card {
   max-width: 980px;
-  margin: -50px auto 64px;
+  margin: 0px auto 100px;
   border-radius: 14px;
   background: $primary;
   box-shadow: 0 8px 32px 0 #0007;

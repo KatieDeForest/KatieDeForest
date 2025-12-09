@@ -185,10 +185,9 @@ onBeforeUnmount(() => {
 .contact-wrap {
   background-color: $primary;
   color: #fff;
-  min-height: 100vh;
   width: 100%;
-  padding-top: 80px;
-  padding-bottom: 120px;
+  padding-top: 100px;
+  padding-bottom: 100px;
   box-sizing: border-box;
 }
 
@@ -208,6 +207,10 @@ onBeforeUnmount(() => {
   color: #d6e6d6;
   font-size: 15px;
   line-height: 1.55;
+  /* Keep layout stable: prevent wrapping and ellipsize overflow */
+  white-space: nowrap;
+  overflow: show;
+  text-overflow: ellipsis;
 }
 
 .contact-form {
