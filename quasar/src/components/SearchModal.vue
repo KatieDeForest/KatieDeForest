@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { api } from 'src/boot/axios';
 
 const props = defineProps<{ modelValue: boolean }>();
 const emit = defineEmits<{ (e: 'update:modelValue', v: boolean): void }>();
 const { t, locale } = useI18n({ useScope: 'global' });
+const router = useRouter();
 
 const show = computed({
   get: () => props.modelValue,
@@ -239,8 +241,8 @@ function getRouteFor(query: string): RouteSuggestion {
 function handleSearch(query: string): boolean {
   const target = getRouteFor(query);
   if (target) {
-    // Use global router if available
-    void (window as any).$router?.push?.(target.to);
+    // Navigate via Vue Router
+    void router.push(target.to);
     return true;
   }
   return false;
@@ -326,7 +328,7 @@ function navigateResult(result: string) {
   const target = getRouteFor(result);
   if (target) {
     close();
-    void (window as any).$router?.push?.(target.to);
+    void router.push(target.to);
   }
 }
 
