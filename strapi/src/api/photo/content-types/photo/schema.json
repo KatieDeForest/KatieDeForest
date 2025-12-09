@@ -38,11 +38,11 @@
         "audios"
       ]
     },
-    "collections": {
+    "Collections": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::collection.collection",
-      "inversedBy": "photos"
+      "mappedBy": "Photos"
     },
     "Aperture": {
       "type": "string",
@@ -52,7 +52,7 @@
         }
       }
     },
-    "Shutter": {
+    "ShutterSpeed": {
       "type": "string",
       "pluginOptions": {
         "i18n": {
@@ -60,7 +60,7 @@
         }
       }
     },
-    "Focal": {
+    "FocalLength": {
       "type": "string",
       "pluginOptions": {
         "i18n": {
@@ -76,6 +76,12 @@
         }
       },
       "default": 100
+    },
+    "Tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "Photos"
     }
   }
 }

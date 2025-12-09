@@ -1,1 +1,21 @@
-// app global css in SCSS form
+// Global app styles
+html, body {
+	background: var(--q-primary);
+	min-height: 100%;
+}
+
+#q-app {
+	background: var(--q-primary);
+	min-height: 100vh;
+}
+
+.q-page {
+	background: var(--q-primary);
+}
+
+/* Prevent 1px seams due to subpixel rounding at page end */
+.cta-section,
+.hero-banner {
+	backface-visibility: hidden;
+	transform: translateZ(0);
+}

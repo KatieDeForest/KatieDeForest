@@ -1,18 +1,15 @@
 <template>
   <div class="hero-banner q-pa-xl">
-    <h1 class="hero-title q-mb-md">{{ t('hero.galleryWelcomeTitle') }}</h1>
-    <p class="hero-description q-mb-lg">
-      {{ t('hero.galleryWelcomeDescription') }}
-    </p>
+    <h1 class="hero-title q-mb-md">{{ title }}</h1>
+    <p class="hero-description q-mb-lg">{{ description }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
+defineProps<{ title: string; description: string }>();
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .hero-banner {
   display: flex;
   flex-direction: column;

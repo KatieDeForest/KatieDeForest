@@ -22,9 +22,34 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/GalleryPage.vue') }],
   },
   {
+    path: '/tags/:slug',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/TagPage.vue') }],
+  },
+  {
     path: '/about',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
+  },
+  {
+    path: '/contact',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ContactPage.vue') }],
+  },
+  {
+    path: '/services',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ServicesPage.vue') }],
+  },
+  {
+    path: '/privacy',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/PrivacyPage.vue') }],
+  },
+  {
+    path: '/terms',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/TermsPage.vue') }],
   },
 ];
 

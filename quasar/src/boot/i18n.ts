@@ -39,9 +39,6 @@ function resolveInitialLocale(): MessageLanguages {
   const nav = (navigator?.language || navigator?.languages?.[0] || '').toLowerCase();
   if (nav.startsWith('en') && 'en' in messages) return 'en' as MessageLanguages;
   if (nav.startsWith('da') && 'da' in messages) return 'da' as MessageLanguages;
-  if (nav.startsWith('de') && 'de' in messages) return 'de' as MessageLanguages;
-  if (nav.startsWith('no') && 'no' in messages) return 'no' as MessageLanguages;
-  if (nav.startsWith('sv') && 'sv' in messages) return 'sv' as MessageLanguages;
   return 'en' as MessageLanguages;
 }
 

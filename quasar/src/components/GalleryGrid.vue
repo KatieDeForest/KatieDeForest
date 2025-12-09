@@ -136,7 +136,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import { api } from 'src/boot/axios';
@@ -146,38 +146,67 @@ const $q = useQuasar()
 // store raw Strapi response (object with `data` and `meta` keys)
 const data = ref<any>(null);
 
+// Allow overriding the tag via prop for dedicated tag pages
+const props = defineProps<{ tagSlug?: string }>();
+
 async function fetchCollection() {
 
   try {
-    const response = await api.get(`/api/photos?filters[collections][Name][$eq]=${collection.value}&populate=*`);
-    data.value = response.data;
+    const tag = props.tagSlug ?? ((route.query.tag as string) || '');
+    const base = '/api/Photos';
+    const loc = encodeURIComponent(String(locale.value));
+    const url = tag
+      ? `${base}?filters[Tags][Slug][$eq]=${encodeURIComponent(tag)}&populate=*&locale=${loc}`
+      : `${base}?filters[Collections][Slug][$eq]=${encodeURIComponent(collection.value)}&populate=*&locale=${loc}`;
+    const response = await api.get(url);
+    data.value = response.data.data;
   }
   catch (error) {
     $q.notify({
       color: 'negative',
       position: 'top',
-      message: 'Error fetching album data',
+      message: 'Error fetching collection data',
       icon: 'report_problem'
     })
-    console.log('Error fetching album data:', error);
+    console.log('Error fetching collection data:', error);
+  }
+}
+
+// Fetch localized tag name for display when filtering by tag
+const tagName = ref<string>('');
+async function fetchTagName(slug: string) {
+  if (!slug) { tagName.value = ''; return; }
+  try {
+    const loc = encodeURIComponent(String(locale.value));
+    const resp = await api.get(`/api/tags?filters[Slug][$eq]=${encodeURIComponent(slug)}&locale=${loc}`);
+    const arr = resp?.data?.data ?? [];
+    const entry = Array.isArray(arr) ? arr[0] : null;
+    tagName.value = entry?.attributes?.Name || slug;
+  } catch {
+    tagName.value = slug;
   }
 }
 
 onMounted(async () => {
-  await fetchCollection()
-  console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
+  await fetchCollection();
+  if (activeTag.value) await fetchTagName(activeTag.value);
+  // console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
 })
 
 const route = useRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 // current collection from route
 const collection = computed(() => (route.params.collection as string) || '');
+const activeTag = computed(() => props.tagSlug ?? ((route.query.tag as string) || ''));
 
 // i18n-aware collection name for lightbox/header with graceful fallback
 const toTitleCase = (s: string) => s.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
 const displayName = computed(() => {
   const slug = collection.value;
+  if (activeTag.value) {
+    return tagName.value || activeTag.value;
+  }
   if (!slug) return t('collection.defaultTitle');
   const key = `collections.${slug}.name`;
   const translated = t(key) as unknown as string;
@@ -201,9 +230,9 @@ type ImageMeta = {
 // Map a Strapi album response into the ImageMeta[] shape we use in this component.
 // We only extract url, thumbUrl and fullUrl from Strapi for now; other fields remain placeholders.
 function mapStrapiToImages(resp: any): ImageMeta[] {
-  if (!resp || !resp.data || !Array.isArray(resp.data)) return [];
+  if (!resp || !Array.isArray(resp)) return [];
   const base = (api && api.defaults && api.defaults.baseURL) ? api.defaults.baseURL.replace(/\/$/, '') : '';
-  const items = resp.data.map((entry: any) => {
+  const items = resp.map((entry: any) => {
     const img = entry?.Image?.[0];
     if (!img) return null;
     const toFull = (p: string | null | undefined) => {
@@ -221,8 +250,8 @@ function mapStrapiToImages(resp: any): ImageMeta[] {
       title: entry?.Title ?? `Photo ${entry?.id ?? '1'}`,
       iso: entry?.ISO,
       aperture: entry?.Aperture,
-      shutter: '1/125s',
-      focalLength: '50mm',
+      shutter: entry?.ShutterSpeed,
+      focalLength: entry?.FocalLength,
       colors: ['#444', '#666', '#888', '#aaa'],
     } as ImageMeta;
   });
@@ -231,7 +260,7 @@ function mapStrapiToImages(resp: any): ImageMeta[] {
 
 const collectionImages = computed<ImageMeta[]>(() => {
   // only use Strapi-provided images; no placeholder fallback
-  if (data.value && data.value.data && Array.isArray(data.value.data)) {
+  if (data.value && Array.isArray(data.value)) {
     return mapStrapiToImages(data.value);
   }
   return [];
@@ -246,9 +275,9 @@ const currentFullImage = computed(() => currentItem.value?.fullUrl || currentIte
 const currentTitle = computed(() => currentItem.value?.title ?? t('lightbox.imageTitle', { index: currentIndex.value + 1 }));
 const currentISO = computed(() => currentItem.value?.iso);
 const currentAperture = computed(() => currentItem.value?.aperture);
-const currentShutter = computed(() => currentItem.value?.shutter ?? '1/125s');
-const currentFocal = computed(() => currentItem.value?.focalLength ?? '50mm');
-const currentColors = computed(() => currentItem.value?.colors ?? ['#444', '#666', '#888', '#aaa']);
+const currentShutter = computed(() => currentItem.value?.shutter);
+const currentFocal = computed(() => currentItem.value?.focalLength);
+const currentColors = computed(() => currentItem.value?.colors);
 const currentAlt = computed(() => `${currentTitle.value} — ${displayName.value}`);
 // With wrap-around navigation, both are enabled if there is more than one image
 const hasPrev = computed(() => collectionImages.value.length > 1);
@@ -294,6 +323,11 @@ function onKey(e: KeyboardEvent) {
 onMounted(() => window.addEventListener('keydown', onKey));
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 
+// Close lightbox when navigating away; scroll restoration is handled globally in router
+onBeforeRouteLeave(() => {
+  isLightboxOpen.value = false;
+});
+
 // Lightbox info collapse with global persistence across collections
 const isInfoCollapsed = ref(false);
 const collapseStorageKey = 'gallery:infoCollapsed';
@@ -324,6 +358,10 @@ function toggleInfo() {
 // Load on mount (same for every collection); keep watch to reload if route logic ever reuses component
 onMounted(loadCollapseState);
 watch(collection, () => loadCollapseState());
+watch(activeTag, async (v) => {
+  await fetchCollection();
+  if (v) await fetchTagName(v);
+});
 
 // Palette swatch: click to show hex color code temporarily
 const hexCodeVisible = ref<boolean[]>([]);
@@ -578,8 +616,6 @@ onBeforeUnmount(() => {
   margin: 0 auto;
 }
 
-
-
 .photo-grid {
   width: 100%;
   margin: 0 auto;
@@ -661,7 +697,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   overflow: hidden;
   /* smaller top padding, a bit more bottom padding to keep separation from info bar */
-  padding: 
+  padding:
     clamp(4px, 1vw, 4px)   /* top */
     clamp(8px, 2vw, 24px)   /* right */
     calc(var(--arrow-protrusion) + clamp(4px, 1vw, 6px))/* bottom depends on arrow */
@@ -742,7 +778,7 @@ onBeforeUnmount(() => {
   margin: 0px auto 0; /* top auto bottom */
   border-top: 1px solid rgba(255,255,255,0.08);
   /* padding: top | left+right | bottom */
-  padding: 
+  padding:
     clamp(8px, 1.4vw, 8px) /* top */
     clamp(8px, 1.2vw, 14px)  /* left+right */
     clamp(10px, 1.4vw, 16px);/* bottom */

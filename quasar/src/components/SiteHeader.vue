@@ -8,77 +8,18 @@ import {
   MDBNavbarItem,
   MDBCollapse,
 } from 'mdb-vue-ui-kit';
-import { ref, watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { MessageLanguages } from 'src/boot/i18n';
+import SearchModal from './SearchModal.vue';
 
-// Demo search data (replace with your real search logic)
-const allResults = [
-  'Gallery',
-  'About Me',
-  'Contact',
-  'Featured Album',
-  'Nature Collection',
-  'Urban Scenes',
-  'Studio Works',
-  'Photography',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Art',
-  'Blog'
-];
-
-const searchQuery = ref('');
-// Derive searchResults from searchQuery using a computed — clearer and more
-// idiomatic than manually syncing a ref via a watcher.
-const searchResults = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return [] as string[];
-  return allResults.filter(item => item.toLowerCase().startsWith(q));
-});
-
-// template ref for the search input so we can programmatically focus it
-const searchInput = ref<HTMLInputElement | null>(null);
-
-// timers for JS-driven staggered reveal (cleared when modal closes)
-const _revealTimers: number[] = [];
+// Modal-specific reveal timers moved to SearchModal component
 // separate timers for the language modal reveal so we don't mix with search timers
-const _langRevealTimers: number[] = [];
+// const _langRevealTimers: number[] = []; // legacy (unused)
 
 // searchResults is now computed from searchQuery; no manual watcher required.
 
-// When searchResults changes, add a JS-driven staggered 'revealed' class to each item
-watch(searchResults, async (val) => {
-  // clear any pending timers first
-  while (_revealTimers.length) {
-    const t = _revealTimers.pop();
-    if (t) clearTimeout(t);
-  }
-
-  if (!val || val.length === 0) return;
-
-  // wait for DOM to update
-  await nextTick();
-
-  const items = document.querySelectorAll('.live-search-results .list-group-item');
-  // remove any existing revealed classes
-  items.forEach(i => i.classList.remove('revealed'));
-
-  // stagger adding 'revealed' via setTimeout — small gaps to avoid heavy parallel work
-  const gap = 90; // ms between items (match CSS nth-child delays)
-  items.forEach((el, idx) => {
-    const t = window.setTimeout(() => {
-      (el as HTMLElement).classList.add('revealed');
-    }, idx * gap);
-    _revealTimers.push(t);
-  });
-});
+// Reveal animation handled inside SearchModal
 
 // NOTE: Replaced JS computed inline style with a CSS class `.brand-text` in the
 // <style scoped> block below. If you need to change font family/size or the
@@ -87,14 +28,9 @@ watch(searchResults, async (val) => {
 const collapse1 = ref(false);
 const { t, locale } = useI18n();
 const showSearchModal = ref(false);
-const showLanguageModal = ref(false);
-const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'da', name: 'Dansk' },
-  { code: 'de', name: 'Deutsch' },
-  { code: 'no', name: 'Norsk' },
-  { code: 'sv', name: 'Svenska' }
-].sort((a, b) => a.name.localeCompare(b.name));
+// const showLanguageModal = ref(false); // legacy (unused after toggle)
+// Simplified language support: toggle between Danish ('da') and English ('en')
+// const languages = [ { code: 'da', name: 'Dansk' }, { code: 'en', name: 'English' } ]; // legacy (unused)
 
 const STORAGE_KEY = 'app:locale';
 
@@ -110,96 +46,32 @@ function localeToCode(loc: string): string {
 }
 
 const selectedLanguage = ref(localeToCode(String(locale.value)) || 'en');
-function openLanguageModal() {
-  showLanguageModal.value = true;
-  // prevent background scroll when language modal opens (coordinate with search modal)
-  try {
-    if (_prevBodyOverflow === null) _prevBodyOverflow = document.body.style.overflow || null;
-    document.body.style.overflow = 'hidden';
-  } catch {
-    /* ignore */
-  }
-}
-function closeLanguageModal() {
-  showLanguageModal.value = false;
-  // only restore body scroll if no other modal (search) is open
-  try {
-    if (!showSearchModal.value) {
-      if (_prevBodyOverflow === null) {
-        document.body.style.overflow = '';
-      } else {
-        document.body.style.overflow = _prevBodyOverflow;
-      }
-      _prevBodyOverflow = null;
-    }
-  } catch {
-    /* ignore */
-  }
-}
-function selectLanguage(code: string) {
-  selectedLanguage.value = code;
-  const target = codeToLocale(code);
+function toggleLanguage() {
+  const next = selectedLanguage.value === 'da' ? 'en' : 'da';
+  selectedLanguage.value = next;
+  const target = codeToLocale(next);
   locale.value = target as MessageLanguages;
-  try { localStorage.setItem(STORAGE_KEY, code); } catch { /* ignore */ }
-  closeLanguageModal();
+  try { localStorage.setItem(STORAGE_KEY, next); } catch { /* ignore */ }
 }
 
-// Save previous body overflow so we can restore it when the modal closes
-let _prevBodyOverflow: string | null = null;
+// Body scroll is disabled while the search modal is open
 
-async function openSearchModal() {
+function openSearchModal() {
   showSearchModal.value = true;
-  searchQuery.value = '';
+  // search state handled inside SearchModal; manage body scroll only
   // Prevent the main page from scrolling while the modal is open. The modal
   // itself (teleported to body) contains `.live-search-results` which already
   // has `overflow-y: auto` so it can scroll independently.
   try {
-    _prevBodyOverflow = document.body.style.overflow || null;
     document.body.style.overflow = 'hidden';
-  } catch {
-    _prevBodyOverflow = null;
-  }
-
-  // wait for DOM to render the input, then focus it for immediate typing
-  await nextTick();
-  if (searchInput.value) {
-    try {
-      searchInput.value.focus();
-      // select any prefilled text (usually empty) so typing replaces it
-      searchInput.value.select();
-    } catch {
-      // ignore focus errors (some browsers may block focus in certain contexts)
-    }
-  }
-}
-
-function closeSearchModal() {
-  showSearchModal.value = false;
-  searchQuery.value = '';
-  // restore page scroll
-  try {
-    if (_prevBodyOverflow === null) {
-      document.body.style.overflow = '';
-    } else {
-      document.body.style.overflow = _prevBodyOverflow;
-    }
-    _prevBodyOverflow = null;
   } catch {
     /* ignore */
   }
 
-  // cleanup any pending reveal timers and classes
-  while (_revealTimers.length) {
-    const t = _revealTimers.pop();
-    if (t) clearTimeout(t);
-  }
-  const items = document.querySelectorAll('.live-search-results .list-group-item');
-  items.forEach(i => i.classList.remove('revealed'));
-  // blur the input to release any focus when closing
-  if (searchInput.value) {
-    try { searchInput.value.blur(); } catch { /* ignore */ }
-  }
+  // Focus management is handled inside SearchModal
 }
+
+// Search UI moved to SearchModal component
 
 function onGlobalOpenSearch() {
   // The call returns a Promise (async function). It's intentionally not awaited
@@ -232,34 +104,9 @@ onUnmounted(() => {
   }
 });
 
-// Watcher to create the same staggered 'revealed' animation for language items
-watch(showLanguageModal, async (open) => {
-  // clear any pending language timers first
-  while (_langRevealTimers.length) {
-    const t = _langRevealTimers.pop();
-    if (t) clearTimeout(t);
-  }
-
-  if (!open) {
-    // remove revealed classes when closed
-    const items = document.querySelectorAll('.language-modal-content .list-group-item');
-    items.forEach(i => i.classList.remove('revealed'));
-    return;
-  }
-
-  // wait for DOM to render
-  await nextTick();
-  const items = document.querySelectorAll('.language-modal-content .list-group-item');
-  items.forEach(i => i.classList.remove('revealed'));
-
-  const gap = 90;
-  items.forEach((el, idx) => {
-    const t = window.setTimeout(() => {
-      (el as HTMLElement).classList.add('revealed');
-    }, idx * gap);
-    _langRevealTimers.push(t);
-  });
-});
+// Legacy watcher removed (language modal no longer used)
+// Mark typing as idle only after a short delay; animations run only when idle
+// Idle typing handling moved to SearchModal
 </script>
 
 <template>
@@ -294,6 +141,9 @@ watch(showLanguageModal, async (open) => {
             <MDBNavbarItem to="/gallery" active>
               <span class="text-white nav-item-text">{{ t('nav.gallery') }}</span>
             </MDBNavbarItem>
+              <MDBNavbarItem to="/services">
+                <span class="text-white nav-item-text">{{ t('nav.services') }}</span>
+              </MDBNavbarItem>
             <MDBNavbarItem to="/about">
               <span class="text-white nav-item-text">{{ t('nav.about') }}</span>
             </MDBNavbarItem>
@@ -309,13 +159,22 @@ watch(showLanguageModal, async (open) => {
           </div>
           <!-- Header controls: search only -->
           <div class="d-flex w-auto justify-content-end align-items-center">
-            <button
-              class="control-btn"
+            <!-- Language toggle: Danish / English (flags directly in header) -->
+            <div
+              class="lang-toggle"
               :aria-label="t('aria.selectLanguage')"
-              @click="openLanguageModal"
+              role="button"
+              @click="toggleLanguage"
             >
-              <MDBIcon icon="globe" size="sm" class="text-white" />
-            </button>
+              <span class="half left" :class="{ active: selectedLanguage === 'da', inactive: selectedLanguage !== 'da' }">
+                <span class="flag-wrap"><span class="flag fi fi-dk" aria-hidden="true"></span></span>
+                <span class="sr-only">Danish</span>
+              </span>
+              <span class="half right" :class="{ active: selectedLanguage === 'en', inactive: selectedLanguage !== 'en' }">
+                <span class="flag-wrap"><span class="flag fi fi-us" aria-hidden="true"></span></span>
+                <span class="sr-only">English</span>
+              </span>
+            </div>
             <button
               class="control-btn"
               :aria-label="t('aria.openSearch')"
@@ -324,64 +183,17 @@ watch(showLanguageModal, async (open) => {
               <MDBIcon icon="search" size="sm" class="text-white" />
             </button>
           </div>
-              <!-- Search Modal (teleported to body so it overlays entire page) -->
-              <teleport to="body" v-if="showSearchModal">
-                <div class="search-modal-overlay">
-                  <div class="search-modal-content">
-                    <button class="close-btn" @click="closeSearchModal" :aria-label="t('aria.closeSearch')">&times;</button>
-                    <input
-                      ref="searchInput"
-                      v-model="searchQuery"
-                      type="search"
-                      class="form-control"
-                      :placeholder="t('search.placeholder')"
-                      autofocus
-                    />
-                    <div v-if="searchQuery.trim().length > 0" class="live-search-results">
-                      <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">{{ t('search.noResults') }}</div>
-                      <ul v-else class="list-group">
-                        <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
-                          {{ result }}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </teleport>
-              <!-- Language Modal (teleported to body) -->
-              <teleport to="body" v-if="showLanguageModal">
-                <div class="search-modal-overlay">
-                  <div class="language-modal-content">
-                    <button class="close-btn" @click="closeLanguageModal" :aria-label="t('aria.closeLanguage')">&times;</button>
-                    <div class="d-flex align-items-center mb-3">
-                      <h5 class="mb-0 me-2">{{ t('header.selectLanguage') }}</h5>
-                      <span class="manual-translations-label">{{ t('header.manualTranslations') }}</span>
-                    </div>
-                    <ul class="list-group">
-                      <li
-                        v-for="(lang) in languages"
-                        :key="lang.code"
-                        class="list-group-item bg-dark text-white border-0 d-flex flex-column align-items-stretch language-option"
-                        :style="{ cursor: 'pointer', fontWeight: selectedLanguage === lang.code ? 'bold' : 'normal' }"
-                        @click="selectLanguage(lang.code)"
-                      >
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                          <span>{{ lang.name }}</span>
-                          <span v-if="selectedLanguage === lang.code" style="font-size:1.2em;">
-                            <MDBIcon icon="check" size="sm" style="color: #39ff14;" />
-                          </span>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </teleport>
+              <SearchModal v-model="showSearchModal" />
+              <!-- Language Modal removed: using simple toggle button -->
         </div>
       </MDBCollapse>
     </MDBNavbar>
 </template>
 
 <style scoped lang="scss">
+/* Flag icons CSS (lightweight CDN). If you later bundle locally, remove this import
+  and include the package styles globally. */
+@import url('https://cdn.jsdelivr.net/npm/flag-icons@6.6.6/css/flag-icons.min.css');
 @font-face {
   font-family: 'CustomLeafFont';
   src: url('/fonts/leavesfont.ttf') format('truetype');
@@ -415,98 +227,9 @@ watch(showLanguageModal, async (open) => {
   padding: 0;
   margin: 0;
   line-height: 1;
+  z-index: 5; /* ensure brand stays above decorative seams */
 }
 /* `.brand-link` removed — styles consolidated into `.brand-text` */
-.search-modal-content {
-  background: #181818;
-  padding: 0.8rem 1rem;
-  border-radius: 10px;
-  /* match language modal width exactly */
-  width: min(520px, 94%);
-  max-width: 640px;
-  height: auto;
-  max-height: calc(80vh - 7rem); /* leave a bit more space from top */
-  box-shadow: 0 8px 48px #000a;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  box-sizing: border-box;
-  /* keep modal content contained */
-  overflow: hidden;
-}
-
-.live-search-results .list-group-item {
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity 520ms ease-out, transform 520ms ease-out;
-  will-change: transform, opacity;
-}
-
-/* JS-driven revealed state (added by watcher) */
-.live-search-results .list-group-item.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Stagger items for top-to-bottom flow (small gaps to avoid heavy parallel work) */
-.live-search-results .list-group-item:nth-child(1) { animation-delay: 80ms; }
-.live-search-results .list-group-item:nth-child(2) { animation-delay: 120ms; }
-.live-search-results .list-group-item:nth-child(3) { animation-delay: 160ms; }
-.live-search-results .list-group-item:nth-child(4) { animation-delay: 200ms; }
-.live-search-results .list-group-item:nth-child(5) { animation-delay: 240ms; }
-.live-search-results .list-group-item:nth-child(6) { animation-delay: 280ms; }
-.live-search-results .list-group-item:nth-child(7) { animation-delay: 320ms; }
-.live-search-results .list-group-item:nth-child(8) { animation-delay: 360ms; }
-.live-search-results .list-group-item:nth-child(9) { animation-delay: 400ms; }
-.live-search-results .list-group-item:nth-child(10) { animation-delay: 440ms; }
-
-.search-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: flex-start; /* align to top */
-  justify-content: center;
-  padding-top: 5rem; /* space from the very top - nudged down a bit */
-  z-index: 3000;
-  will-change: opacity;
-  animation: liveContainerFade 300ms ease-out both;
-}
-
-@keyframes liveContainerFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-.search-modal-content .form-control {
-  border-radius: 8px;
-  color: white;
-  background-color: $primary;
-  width: 97%;      /* visual box width */
-  max-width: 100%;   /* stay responsive on small screens */
-  padding: 0.5rem 1.2rem; /* slightly tighter padding without changing font */
-  margin: 0 auto;    /* center inside the modal */
-  margin-left: 0rem; /* push the search input down inside the modal for breathing room */
-  font-size: 1.3em; /* keep font size unchanged */
-  box-sizing: border-box;
-  transition: box-shadow 240ms ease, border-color 200ms ease;
-  will-change: box-shadow, border-color;
-}
-/* Focus styles for search input use the project's $light-accent color */
-.search-modal-content .form-control:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.15rem rgba($light-accent, 0.18), 0 0 12px rgba($light-accent, 0.25);
-  border-color: $light-accent;
-}
-/* Attempt to style browser autofill background on supported browsers */
-.search-modal-content .form-control:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px $primary inset;
-  box-shadow: 0 0 0px 1000px $primary inset;
-  -webkit-text-fill-color: #ffffff;
-}
 .language-modal-content {
   background: #181818;
   padding: 1em 1.2em;
@@ -574,50 +297,6 @@ watch(showLanguageModal, async (open) => {
   font-weight: 400;
   margin-top: 2px;
 }
-.live-search-results {
-  max-height: 40%;
-  overflow-y: auto;
-  margin-top: 0.75rem;
-}
-.live-search-results ul {
-  padding-left: 0;
-  margin-bottom: 0;
-}
-.live-search-results .list-group-item {
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-bottom: 0.5em;
-  border-radius: 8px;
-  background: #232323 !important;
-  border: 1px solid #333;
-  box-shadow: 0 2px 8px #0002;
-  padding: 0.75em 1em;
-  font-size: 1.3em;
-}
-.live-search-results .list-group-item:hover {
-  /* Add a subtle green tint on hover using the project's light accent */
-  background: mix($light-accent, #3a3a3a, 12%) !important;
-  border-color: rgba($light-accent, 0.18);
-  box-shadow: 0 2px 8px #0002, inset 0 0 10px rgba($light-accent, 0.06);
-}
-.close-btn {
-  position: absolute;
-  top: 0em;
-  right: 0em;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  background: none;
-  border: none;
-  color: #b5ffb5;
-  font-size: 1.75em;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 80; /* above modal */
-}
 .nav-item-text {
   font-size: 1.15em;
   color: inherit;
@@ -635,13 +314,13 @@ watch(showLanguageModal, async (open) => {
 /* Shared control buttons (globe, search) use same softer brand glow */
 .control-btn {
   color: inherit;
-  font-size: 1.2em;
+  font-size: 1.35em; /* slightly larger */
   background: none !important;
   border: none;
-  margin-right: 10px;
-  padding: 8px;
-  min-width: 40px;
-  min-height: 40px;
+  margin-right: 12px;
+  padding: 10px;
+  min-width: 48px; /* bigger touch target */
+  min-height: 48px; /* bigger touch target */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -655,5 +334,91 @@ watch(showLanguageModal, async (open) => {
   text-shadow: 0 1px 0 #222, 0 4px 12px rgba(0,0,0,1), 0 0 8px rgba(57,255,20,1);
   color: inherit;
   transform: translateY(-2px);
+}
+
+/* Language toggle button */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-right: 10px;
+  position: relative;
+  overflow: visible;   /* allow soft glow/shadow not to be clipped */
+  transition: transform 160ms ease; /* match search button timing */
+  will-change: transform;
+}
+.lang-toggle:hover,
+.lang-toggle:focus-within {
+  transform: translateY(-2px); /* same lift as .control-btn hover */
+}
+.lang-toggle .half {
+  width: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: filter 160ms ease, opacity 160ms ease;
+  position: relative;
+}
+.lang-toggle .half.left { justify-content: flex-end; }
+.lang-toggle .half.right { justify-content: flex-start; }
+.lang-toggle .half.left { margin-right: -15px; }
+.lang-toggle .half.right { margin-left: -15px; }
+.lang-toggle .half.left .flag {
+  /* Cut only the inner diagonal (preserve outer corners) */
+  -webkit-clip-path: polygon(0% 0%, 99% 0%, 6% 100%, 0% 100%); /* tweak for sharper diagonal */
+  clip-path: polygon(0% 0%, 94% 0%, 6% 100%, 0% 100%);
+  will-change: clip-path;
+  position: relative;
+  border-top-left-radius: 8px; /* maintain outer corner rounding on actual flag */
+}
+.lang-toggle .half.right .flag {
+  -webkit-clip-path: polygon(2% 100%, 94% 0%, 100% 0%, 100% 100%); /* matching tweak */
+  clip-path: polygon(3% 100%, 94% 0%, 100% 0%, 100% 100%);
+  will-change: clip-path;
+  position: relative;
+  border-bottom-right-radius: 8px; /* maintain outer corner rounding on actual flag */
+}
+
+.lang-toggle .flag-wrap {
+  width: 36px;
+  height: 24px;
+  display: block;
+  position: relative;
+  overflow: visible;
+  transition: filter 160ms ease;
+  z-index: 1;
+  /* baseline subtle glow */
+  filter: drop-shadow(0 0 1px rgba(57,255,20,0.45));
+}
+.lang-toggle .half.left .flag-wrap { border-radius: 10px 0 0 0; }
+.lang-toggle .half.right .flag-wrap { border-radius: 0 0 10px 0; }
+
+/* intensify glow when hovering or focusing the toggle */
+.lang-toggle:hover .flag-wrap,
+.lang-toggle:focus-within .flag-wrap { filter: drop-shadow(0 0 3px rgba(57,255,20,0.5)); }
+
+.lang-toggle .half.inactive .flag { filter: grayscale(100%); }
+/* Ensure active flag keeps color (override any inheritance) */
+.lang-toggle .half.active .flag { filter: none; }
+.lang-toggle .flag {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 0; /* keep diagonal edge crisp */
+  will-change: clip-path;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>

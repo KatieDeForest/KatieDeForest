@@ -1,10 +1,10 @@
 <template>
-  <section class="about-cta" aria-labelledby="about-cta-title">
+  <section class="services-cta" aria-labelledby="services-cta-title">
     <div class="cta-inner">
-      <h2 id="about-cta-title" class="cta-title">{{ t('aboutCTA.title') }}</h2>
-      <p class="cta-desc">{{ t('aboutCTA.description') }}</p>
+      <h2 id="services-cta-title" class="cta-title">{{ t('servicesCTA.title') }}</h2>
+      <p class="cta-desc">{{ t('servicesCTA.description') }}</p>
       <div class="cta-actions">
-        <q-btn color="accent" unelevated to="/services" :label="t('aboutCTA.button')" />
+        <q-btn color="accent" unelevated to="/contact" :label="t('servicesCTA.button')" />
       </div>
     </div>
   </section>
@@ -18,7 +18,7 @@ const { t } = useI18n({ useScope: 'global' });
 <style scoped lang="scss">
 @import '../css/quasar.variables.scss';
 
-.about-cta {
+.services-cta {
   background: #0f1410;
   padding: 12rem 1rem 2rem;
   text-align: center;
@@ -28,7 +28,8 @@ const { t } = useI18n({ useScope: 'global' });
   z-index: 1;
 }
 
-.about-cta::before {
+
+.services-cta::before {
   content: '';
   position: absolute;
   inset: 0 0 auto 0;
@@ -83,7 +84,7 @@ const { t } = useI18n({ useScope: 'global' });
 }
 
 @media (max-width: 700px) {
-  .about-cta {
+  .services-cta {
     padding-top: 8rem;
     padding-bottom: 3.75rem;
   }
