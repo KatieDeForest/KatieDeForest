@@ -22,7 +22,14 @@ const route = useRoute();
 const { t, locale } = useI18n();
 
 const slug = computed(() => (route.params.slug as string) || '');
-const title = computed(() => tagName.value || slug.value || t('collection.defaultTitle'));
+function capitalizeFirst(s: string): string {
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+const title = computed(() => {
+  const base = tagName.value || slug.value || (t('collection.defaultTitle') as unknown as string);
+  return capitalizeFirst(base);
+});
 const bannerDesc = computed(() => {
   const name = tagName.value || slug.value;
   if (!name) return '';
