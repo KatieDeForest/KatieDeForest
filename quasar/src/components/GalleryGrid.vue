@@ -136,7 +136,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import { api } from 'src/boot/axios';
@@ -322,6 +322,11 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(() => window.addEventListener('keydown', onKey));
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
+
+// Close lightbox when navigating away; scroll restoration is handled globally in router
+onBeforeRouteLeave(() => {
+  isLightboxOpen.value = false;
+});
 
 // Lightbox info collapse with global persistence across collections
 const isInfoCollapsed = ref(false);
