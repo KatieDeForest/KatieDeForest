@@ -1,4 +1,4 @@
 {
   "extends": "./.quasar/tsconfig.json",
-  "exclude": ["src/components/EssentialLink.vue", "src/components/ExampleComponent.vue"]
+  "exclude": ["src/components/EssentialLink.vue", "src/components/ExampleComponent.vue", "models.ts"]
 }
