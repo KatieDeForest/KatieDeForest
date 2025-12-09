@@ -8,77 +8,18 @@ import {
   MDBNavbarItem,
   MDBCollapse,
 } from 'mdb-vue-ui-kit';
-import { ref, watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { MessageLanguages } from 'src/boot/i18n';
+import SearchModal from './SearchModal.vue';
 
-// Demo search data (replace with your real search logic)
-const allResults = [
-  'Gallery',
-  'About Me',
-  'Contact',
-  'Featured Album',
-  'Nature Collection',
-  'Urban Scenes',
-  'Studio Works',
-  'Photography',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Phone',
-  'Art',
-  'Blog'
-];
-
-const searchQuery = ref('');
-// Derive searchResults from searchQuery using a computed — clearer and more
-// idiomatic than manually syncing a ref via a watcher.
-const searchResults = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return [] as string[];
-  return allResults.filter(item => item.toLowerCase().startsWith(q));
-});
-
-// template ref for the search input so we can programmatically focus it
-const searchInput = ref<HTMLInputElement | null>(null);
-
-// timers for JS-driven staggered reveal (cleared when modal closes)
-const _revealTimers: number[] = [];
+// Modal-specific reveal timers moved to SearchModal component
 // separate timers for the language modal reveal so we don't mix with search timers
 // const _langRevealTimers: number[] = []; // legacy (unused)
 
 // searchResults is now computed from searchQuery; no manual watcher required.
 
-// When searchResults changes, add a JS-driven staggered 'revealed' class to each item
-watch(searchResults, async (val) => {
-  // clear any pending timers first
-  while (_revealTimers.length) {
-    const t = _revealTimers.pop();
-    if (t) clearTimeout(t);
-  }
-
-  if (!val || val.length === 0) return;
-
-  // wait for DOM to update
-  await nextTick();
-
-  const items = document.querySelectorAll('.live-search-results .list-group-item');
-  // remove any existing revealed classes
-  items.forEach(i => i.classList.remove('revealed'));
-
-  // stagger adding 'revealed' via setTimeout — small gaps to avoid heavy parallel work
-  const gap = 90; // ms between items (match CSS nth-child delays)
-  items.forEach((el, idx) => {
-    const t = window.setTimeout(() => {
-      (el as HTMLElement).classList.add('revealed');
-    }, idx * gap);
-    _revealTimers.push(t);
-  });
-});
+// Reveal animation handled inside SearchModal
 
 // NOTE: Replaced JS computed inline style with a CSS class `.brand-text` in the
 // <style scoped> block below. If you need to change font family/size or the
@@ -113,62 +54,24 @@ function toggleLanguage() {
   try { localStorage.setItem(STORAGE_KEY, next); } catch { /* ignore */ }
 }
 
-// Save previous body overflow so we can restore it when the modal closes
-let _prevBodyOverflow: string | null = null;
+// Body scroll is disabled while the search modal is open
 
-async function openSearchModal() {
+function openSearchModal() {
   showSearchModal.value = true;
-  searchQuery.value = '';
+  // search state handled inside SearchModal; manage body scroll only
   // Prevent the main page from scrolling while the modal is open. The modal
   // itself (teleported to body) contains `.live-search-results` which already
   // has `overflow-y: auto` so it can scroll independently.
   try {
-    _prevBodyOverflow = document.body.style.overflow || null;
     document.body.style.overflow = 'hidden';
-  } catch {
-    _prevBodyOverflow = null;
-  }
-
-  // wait for DOM to render the input, then focus it for immediate typing
-  await nextTick();
-  if (searchInput.value) {
-    try {
-      searchInput.value.focus();
-      // select any prefilled text (usually empty) so typing replaces it
-      searchInput.value.select();
-    } catch {
-      // ignore focus errors (some browsers may block focus in certain contexts)
-    }
-  }
-}
-
-function closeSearchModal() {
-  showSearchModal.value = false;
-  searchQuery.value = '';
-  // restore page scroll
-  try {
-    if (_prevBodyOverflow === null) {
-      document.body.style.overflow = '';
-    } else {
-      document.body.style.overflow = _prevBodyOverflow;
-    }
-    _prevBodyOverflow = null;
   } catch {
     /* ignore */
   }
 
-  // cleanup any pending reveal timers and classes
-  while (_revealTimers.length) {
-    const t = _revealTimers.pop();
-    if (t) clearTimeout(t);
-  }
-  const items = document.querySelectorAll('.live-search-results .list-group-item');
-  items.forEach(i => i.classList.remove('revealed'));
-  // blur the input to release any focus when closing
-  if (searchInput.value) {
-    try { searchInput.value.blur(); } catch { /* ignore */ }
-  }
+  // Focus management is handled inside SearchModal
 }
+
+// Search UI moved to SearchModal component
 
 function onGlobalOpenSearch() {
   // The call returns a Promise (async function). It's intentionally not awaited
@@ -202,6 +105,8 @@ onUnmounted(() => {
 });
 
 // Legacy watcher removed (language modal no longer used)
+// Mark typing as idle only after a short delay; animations run only when idle
+// Idle typing handling moved to SearchModal
 </script>
 
 <template>
@@ -278,30 +183,7 @@ onUnmounted(() => {
               <MDBIcon icon="search" size="sm" class="text-white" />
             </button>
           </div>
-              <!-- Search Modal (teleported to body so it overlays entire page) -->
-              <teleport to="body" v-if="showSearchModal">
-                <div class="search-modal-overlay">
-                  <div class="search-modal-content">
-                    <button class="close-btn" @click="closeSearchModal" :aria-label="t('aria.closeSearch')">&times;</button>
-                    <input
-                      ref="searchInput"
-                      v-model="searchQuery"
-                      type="search"
-                      class="form-control"
-                      :placeholder="t('search.placeholder')"
-                      autofocus
-                    />
-                    <div v-if="searchQuery.trim().length > 0" class="live-search-results">
-                      <div v-if="searchResults.length === 0" class="text-muted px-2 py-1">{{ t('search.noResults') }}</div>
-                      <ul v-else class="list-group">
-                        <li v-for="result in searchResults" :key="result" class="list-group-item bg-dark text-white border-0">
-                          {{ result }}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </teleport>
+              <SearchModal v-model="showSearchModal" />
               <!-- Language Modal removed: using simple toggle button -->
         </div>
       </MDBCollapse>
@@ -348,96 +230,6 @@ onUnmounted(() => {
   z-index: 5; /* ensure brand stays above decorative seams */
 }
 /* `.brand-link` removed — styles consolidated into `.brand-text` */
-.search-modal-content {
-  background: #181818;
-  padding: 0.8rem 1rem;
-  border-radius: 10px;
-  /* match language modal width exactly */
-  width: min(520px, 94%);
-  max-width: 640px;
-  height: auto;
-  max-height: calc(80vh - 7rem); /* leave a bit more space from top */
-  box-shadow: 0 8px 48px #000a;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  box-sizing: border-box;
-  /* keep modal content contained */
-  overflow: hidden;
-}
-
-.live-search-results .list-group-item {
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity 520ms ease-out, transform 520ms ease-out;
-  will-change: transform, opacity;
-}
-
-/* JS-driven revealed state (added by watcher) */
-.live-search-results .list-group-item.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Stagger items for top-to-bottom flow (small gaps to avoid heavy parallel work) */
-.live-search-results .list-group-item:nth-child(1) { animation-delay: 80ms; }
-.live-search-results .list-group-item:nth-child(2) { animation-delay: 120ms; }
-.live-search-results .list-group-item:nth-child(3) { animation-delay: 160ms; }
-.live-search-results .list-group-item:nth-child(4) { animation-delay: 200ms; }
-.live-search-results .list-group-item:nth-child(5) { animation-delay: 240ms; }
-.live-search-results .list-group-item:nth-child(6) { animation-delay: 280ms; }
-.live-search-results .list-group-item:nth-child(7) { animation-delay: 320ms; }
-.live-search-results .list-group-item:nth-child(8) { animation-delay: 360ms; }
-.live-search-results .list-group-item:nth-child(9) { animation-delay: 400ms; }
-.live-search-results .list-group-item:nth-child(10) { animation-delay: 440ms; }
-
-.search-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: flex-start; /* align to top */
-  justify-content: center;
-  padding-top: 5rem; /* space from the very top - nudged down a bit */
-  z-index: 3000;
-  will-change: opacity;
-  animation: liveContainerFade 300ms ease-out both;
-}
-
-@keyframes liveContainerFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-.search-modal-content .form-control {
-  border-radius: 8px;
-  color: white;
-  background-color: $primary;
-  width: 97%;      /* visual box width */
-  max-width: 100%;   /* stay responsive on small screens */
-  padding: 0.5rem 1.2rem; /* slightly tighter padding without changing font */
-  margin: 0 auto;    /* center inside the modal */
-  margin-left: 0rem; /* push the search input down inside the modal for breathing room */
-  font-size: 1.3em; /* keep font size unchanged */
-  box-sizing: border-box;
-  transition: box-shadow 240ms ease, border-color 200ms ease;
-  will-change: box-shadow, border-color;
-}
-/* Focus styles for search input use the project's $light-accent color */
-.search-modal-content .form-control:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.15rem rgba($light-accent, 0.18), 0 0 12px rgba($light-accent, 0.25);
-  border-color: $light-accent;
-}
-/* Attempt to style browser autofill background on supported browsers */
-.search-modal-content .form-control:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px $primary inset;
-  box-shadow: 0 0 0px 1000px $primary inset;
-  -webkit-text-fill-color: #ffffff;
-}
 .language-modal-content {
   background: #181818;
   padding: 1em 1.2em;
@@ -504,50 +296,6 @@ onUnmounted(() => {
   color: #aaa;
   font-weight: 400;
   margin-top: 2px;
-}
-.live-search-results {
-  max-height: 40%;
-  overflow-y: auto;
-  margin-top: 0.75rem;
-}
-.live-search-results ul {
-  padding-left: 0;
-  margin-bottom: 0;
-}
-.live-search-results .list-group-item {
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-bottom: 0.5em;
-  border-radius: 8px;
-  background: #232323 !important;
-  border: 1px solid #333;
-  box-shadow: 0 2px 8px #0002;
-  padding: 0.75em 1em;
-  font-size: 1.3em;
-}
-.live-search-results .list-group-item:hover {
-  /* Add a subtle green tint on hover using the project's light accent */
-  background: mix($light-accent, #3a3a3a, 12%) !important;
-  border-color: rgba($light-accent, 0.18);
-  box-shadow: 0 2px 8px #0002, inset 0 0 10px rgba($light-accent, 0.06);
-}
-.close-btn {
-  position: absolute;
-  top: 0em;
-  right: 0em;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  background: none;
-  border: none;
-  color: #b5ffb5;
-  font-size: 1.75em;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 80; /* above modal */
 }
 .nav-item-text {
   font-size: 1.15em;

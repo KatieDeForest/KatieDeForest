@@ -146,10 +146,19 @@ const $q = useQuasar()
 // store raw Strapi response (object with `data` and `meta` keys)
 const data = ref<any>(null);
 
+// Allow overriding the tag via prop for dedicated tag pages
+const props = defineProps<{ tagSlug?: string }>();
+
 async function fetchCollection() {
 
   try {
-    const response = await api.get(`/api/Photos?filters[Collections][Slug][$eq]=${collection.value}&populate=*`);
+    const tag = props.tagSlug ?? ((route.query.tag as string) || '');
+    const base = '/api/Photos';
+    const loc = encodeURIComponent(String(locale.value));
+    const url = tag
+      ? `${base}?filters[Tags][Slug][$eq]=${encodeURIComponent(tag)}&populate=*&locale=${loc}`
+      : `${base}?filters[Collections][Slug][$eq]=${encodeURIComponent(collection.value)}&populate=*&locale=${loc}`;
+    const response = await api.get(url);
     data.value = response.data.data;
   }
   catch (error) {
@@ -163,21 +172,41 @@ async function fetchCollection() {
   }
 }
 
+// Fetch localized tag name for display when filtering by tag
+const tagName = ref<string>('');
+async function fetchTagName(slug: string) {
+  if (!slug) { tagName.value = ''; return; }
+  try {
+    const loc = encodeURIComponent(String(locale.value));
+    const resp = await api.get(`/api/tags?filters[Slug][$eq]=${encodeURIComponent(slug)}&locale=${loc}`);
+    const arr = resp?.data?.data ?? [];
+    const entry = Array.isArray(arr) ? arr[0] : null;
+    tagName.value = entry?.attributes?.Name || slug;
+  } catch {
+    tagName.value = slug;
+  }
+}
+
 onMounted(async () => {
-  await fetchCollection()
+  await fetchCollection();
+  if (activeTag.value) await fetchTagName(activeTag.value);
   // console.log('Data is now available outside try/catch:', JSON.stringify(data.value));
 })
 
 const route = useRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 // current collection from route
 const collection = computed(() => (route.params.collection as string) || '');
+const activeTag = computed(() => props.tagSlug ?? ((route.query.tag as string) || ''));
 
 // i18n-aware collection name for lightbox/header with graceful fallback
 const toTitleCase = (s: string) => s.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
 const displayName = computed(() => {
   const slug = collection.value;
+  if (activeTag.value) {
+    return tagName.value || activeTag.value;
+  }
   if (!slug) return t('collection.defaultTitle');
   const key = `collections.${slug}.name`;
   const translated = t(key) as unknown as string;
@@ -324,6 +353,10 @@ function toggleInfo() {
 // Load on mount (same for every collection); keep watch to reload if route logic ever reuses component
 onMounted(loadCollapseState);
 watch(collection, () => loadCollapseState());
+watch(activeTag, async (v) => {
+  await fetchCollection();
+  if (v) await fetchTagName(v);
+});
 
 // Palette swatch: click to show hex color code temporarily
 const hexCodeVisible = ref<boolean[]>([]);

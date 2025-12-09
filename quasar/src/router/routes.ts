@@ -22,6 +22,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/GalleryPage.vue') }],
   },
   {
+    path: '/tags/:slug',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/TagGalleryPage.vue') }],
+  },
+  {
     path: '/about',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],

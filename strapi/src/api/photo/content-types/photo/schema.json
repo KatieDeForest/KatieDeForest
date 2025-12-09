@@ -76,6 +76,12 @@
         }
       },
       "default": 100
+    },
+    "Tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "Photos"
     }
   }
 }

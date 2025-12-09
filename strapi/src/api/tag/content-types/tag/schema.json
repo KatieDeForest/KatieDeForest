@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tags",
+  "info": {
+    "singularName": "tag",
+    "pluralName": "tags",
+    "displayName": "Tag"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "Name": { 
+      "type": "string", 
+      "required": true,
+      "pluginOptions": { "i18n": { "localized": true } }
+    },
+    "Slug": { "type": "uid", "targetField": "Name", "required": true, "unique": true },
+    "Photos": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::photo.photo",
+      "mappedBy": "Tags"
+    }
+  }
+}
