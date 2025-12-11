@@ -352,7 +352,7 @@ export default {
         price: 'DKK 250',
       },
       extendedTime: {
-        title: 'Udvidet optagetid',
+        title: 'Udvidet billedetid',
         description: ['Forlæng din session med 30 minutter for ekstra dækning'],
         price: 'DKK 375',
       },
