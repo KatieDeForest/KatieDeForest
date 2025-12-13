@@ -33,18 +33,5 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  // Global guard: ensure body scroll is not locked after route changes
-  Router.afterEach(() => {
-    try {
-      const body = document.body;
-      body.classList.remove('q-body--prevent-scroll');
-      body.style.removeProperty('overflow');
-      const appRoot = document.querySelector('.q-layout');
-      if (appRoot instanceof HTMLElement) appRoot.style.removeProperty('overflow');
-    } catch {
-      // ignore
-    }
-  });
-
   return Router;
 });
